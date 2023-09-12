@@ -1,4 +1,4 @@
-﻿namespace FinTrac
+﻿namespace Domain
 {
     public class Class1
     {
