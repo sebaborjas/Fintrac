@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using System.Runtime.Serialization;
+using Domain;
 namespace TestDomain
 {
     [TestClass]
@@ -12,18 +13,16 @@ namespace TestDomain
             user = new User();
         }
 
-        [TestMethod]
-        public void CreateUser()
-        {
-            User u2 = new User();
-            Assert.AreEqual(u2, u2);
-        }
+        //[TestMethod]
+        //public void CreateUser()
+        //{
+        //    User u2 = new User();
+        //}
 
-        [TestMethod]
-        // CRUD method?
-        public void CreateUserAlreadyExists()
-        {
-        }
+        //[TestMethod]
+        //public void CreateUserAlreadyExists()
+        //{
+        //}
 
         [TestMethod]
         public void ModifyName()
@@ -62,7 +61,7 @@ namespace TestDomain
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(EmptyFieldException))]
         public void ModifyEmptyNameException()
         {
             String newName = "";
@@ -86,10 +85,24 @@ namespace TestDomain
         }
 
         [TestMethod]
-        public void PasswordBetweenTenAndTwentyCharacters()
+        public void SetUserPasswordTwelveCharacters()
         {
-            bool correctLength = user.Password.Length > 9 && user.Password.Length < 20;
-            Assert.IsTrue(correctLength);
+            user.Password = "123456789123";
+            Assert.AreEqual(12, user.Password.Length);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void SetUserPasswordEightCharacters()
+        {
+            user.Password = "12345678";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void SetUserPasswordTwentyFiveCharacters()
+        {
+            user.Password = "1234567891234567891234567";
         }
     }
 }

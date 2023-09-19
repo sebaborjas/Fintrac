@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Domain
             {
                 if (value == "") 
                 {
-                    throw new ArgumentException("No se admiten campos vacíos");
+                    throw new EmptyFieldException();
                 } else
                 {
                     _name = value;
@@ -51,13 +52,15 @@ namespace Domain
             }
             set
             {
-                if(value == "")
+                if (value.Length < 10 || value.Length > 20)
+                {
+                    throw new ArgumentException("La contraseña debe tener entre 10 y 20 caracteres");
+                }
+                if (value == "")
                 {
                     throw new ArgumentException("No se admiten campos vacios");
-                } else
-                {
+                } 
                     _password = value;
-                }
             } 
         }
     }
