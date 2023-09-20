@@ -1,5 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using Domain;
+using Domain.Excepciones;
+
 namespace TestDomain
 {
     [TestClass]
@@ -69,7 +71,7 @@ namespace TestDomain
 
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(EmptyFieldException))]
         public void ModifyEmptyEmailException()
         {
             String newMail = "";
@@ -77,7 +79,7 @@ namespace TestDomain
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(EmptyFieldException))]
         public void ModifyEmptyPasswordException()
         {
             String newPassword = "";

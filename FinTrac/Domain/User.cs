@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Excepciones;
 
 namespace Domain
 {
@@ -39,7 +40,7 @@ namespace Domain
             {
                 if(value == "")
                 {
-                    throw new ArgumentException("No se adminten campos vacios");
+                    throw new EmptyFieldException();
                 } else
                 {
                     _email = value;
@@ -52,14 +53,14 @@ namespace Domain
             }
             set
             {
+                if (value == "")
+                {
+                    throw new EmptyFieldException();
+                }
                 if (value.Length < 10 || value.Length > 20)
                 {
                     throw new ArgumentException("La contraseña debe tener entre 10 y 20 caracteres");
                 }
-                if (value == "")
-                {
-                    throw new ArgumentException("No se admiten campos vacios");
-                } 
                     _password = value;
             } 
         }
