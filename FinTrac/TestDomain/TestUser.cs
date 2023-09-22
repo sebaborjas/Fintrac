@@ -16,17 +16,6 @@ namespace TestDomain
             user = new User();
         }
 
-        //[TestMethod]
-        //public void CreateUser()
-        //{
-        //    User u2 = new User();
-        //}
-
-        //[TestMethod]
-        //public void CreateUserAlreadyExists()
-        //{
-        //}
-
         [TestMethod]
         public void ModifyName()
         {
@@ -81,7 +70,7 @@ namespace TestDomain
 
         [TestMethod]
         [ExpectedException(typeof(EmptyFieldException))]
-        public void ModifyEmptyNameException()
+        public void EmptyNameException()
         {
             String newName = "";
             user.Name = newName;
@@ -89,7 +78,7 @@ namespace TestDomain
         }
         [TestMethod]
         [ExpectedException(typeof(EmptyFieldException))]
-        public void ModifyEmptyEmailException()
+        public void EmptyEmailException()
         {
             String newMail = "";
             user.Email = newMail;
@@ -97,7 +86,7 @@ namespace TestDomain
 
         [TestMethod]
         [ExpectedException(typeof(EmptyFieldException))]
-        public void ModifyEmptyPasswordException()
+        public void EmptyPasswordException()
         {
             String newPassword = "";
             user.Password = newPassword;
