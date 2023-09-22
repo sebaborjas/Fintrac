@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Domain.Excepciones;
 
@@ -11,7 +12,8 @@ namespace Domain
     public class User
     {
         private string _name;
-        private string _email;
+		private string _lastName;
+		private string _email;
         private string _password;
         public string Name {
             get
@@ -29,8 +31,22 @@ namespace Domain
                 }
             } 
         }
-        public string LastName { get; set; }
-        public string Address { get; set; }
+        public string LastName 
+        { 
+            get
+            {
+                return _lastName;
+            }
+            set
+            {
+                if(value == "")
+                {
+                    throw new EmptyFieldException();
+                }
+                _lastName = value;
+            }
+        }
+        public string? Address { get; set; }
         public string Email { 
             get 
             { 
@@ -41,10 +57,17 @@ namespace Domain
                 if(value == "")
                 {
                     throw new EmptyFieldException();
-                } else
-                {
-                    _email = value;
                 }
+
+                string pattern = @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$";
+                Regex regex = new(pattern, RegexOptions.IgnoreCase);
+
+                if(!regex.IsMatch(value))
+                {
+					throw new ArgumentException("El email ingresado es invalido");
+				}
+				_email = value;
+                
             } }
         public string Password {
             get 
@@ -57,7 +80,7 @@ namespace Domain
                 {
                     throw new EmptyFieldException();
                 }
-                if (value.Length < 10 || value.Length > 20)
+                if (value.Length < 10 || value.Length > 30)
                 {
                     throw new ArgumentException("La contraseña debe tener entre 10 y 20 caracteres");
                 }

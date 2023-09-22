@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using Domain;
 using Domain.Excepciones;
 
@@ -41,6 +42,13 @@ namespace TestDomain
         }
 
         [TestMethod]
+        [ExpectedException(typeof(EmptyFieldException))]
+        public void EmptyLastNameException()
+        {
+            user.LastName = "";
+        }
+
+        [TestMethod]
         public void ModifyAddress()
         {
             user.Address = "New Address";
@@ -51,8 +59,17 @@ namespace TestDomain
         [TestMethod]
         public void ModifyEmail()
         {
-            user.Email = "New Email";
-            Assert.AreEqual("New Email", user.Email);
+            string validEmail = "email@email.com";
+
+			user.Email = validEmail;
+            Assert.AreEqual(validEmail, user.Email);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void InvalidEmailExcpetion()
+        {
+            user.Email = "email";
         }
 
         [TestMethod]
@@ -102,9 +119,9 @@ namespace TestDomain
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void SetUserPasswordTwentyFiveCharacters()
+        public void SetUserPasswordThirtyFiveCharacters()
         {
-            user.Password = "1234567891234567891234567";
+            user.Password = "1234567891234567891234567787678765";
         }
     }
 }
