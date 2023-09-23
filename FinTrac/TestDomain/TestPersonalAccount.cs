@@ -80,7 +80,7 @@ namespace TestDomain
 		}
 
 		[TestMethod]
-		public void StaringAmountCero()
+		public void StaringAmountZero()
 		{
 			double amount = 0;
 			account.StartingAmount = amount;
