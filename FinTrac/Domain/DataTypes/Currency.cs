@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.DataTypes
 {
-    internal class EnumCurrency
+    public enum Currency
     {
+        UYU,
+        USD
     }
 }
