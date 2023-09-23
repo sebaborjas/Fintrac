@@ -9,6 +9,6 @@ namespace Domain.DataTypes
 	public enum CategoryType
 	{
 		Income,
-		Come
+		Cost
 	}
 }
