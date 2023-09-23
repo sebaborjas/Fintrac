@@ -23,109 +23,63 @@ namespace TestDomain
 		[ExpectedException(typeof(EmptyFieldException))]
 		public void TestCategoryNameEmpty()
 		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void TestCategoryNameNull()
-		{
+			category.Name = "";
 		}
 
 		[TestMethod]
 		public void TestCategoryName()
 		{
-		}
-
-		
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public void TestCategoryNameAlreadyExists()
-		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void TestCategoryCreationDateNull()
-		{
+			category.Name = "Category Name";
+			Assert.AreEqual("Category Name", category.Name);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void TestCategoryCreationDateBeforeNow()
 		{
+			category.CreationDate = DateTime.Now.AddDays(-1);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void TestCategoryCreationDateAfterNow()
 		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(EmptyFieldException))]
-		public void TestCategoryCreationDateEmpty()
-		{
+			category.CreationDate = DateTime.Now.AddDays(1);
 		}
 
 		[TestMethod]
 		public void TestCategoryCreationDate()
 		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public void TestCategoryStatusInvalid()
-		{
+			category.CreationDate = DateTime.Today;
+			Assert.AreEqual(DateTime.Today, category.CreationDate);
 		}
 
 		[TestMethod]
 		public void TestCategoryStatusActive()
 		{
+			category.Status = Domain.DataTypes.CategoryStatus.Active;
+			Assert.AreEqual(Domain.DataTypes.CategoryStatus.Active, category.Status);
 		}
 
 		[TestMethod]
 		public void TestCategoryStatusInactive()
 		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void TestCategoryStatusNull()
-		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(EmptyFieldException))]
-		public void TestCategoryStatusEmpty()
-		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public void TestCategoryTypeInvalid()
-		{
+			category.Status = Domain.DataTypes.CategoryStatus.Inactive;
+			Assert.AreEqual(Domain.DataTypes.CategoryStatus.Inactive, category.Status);
 		}
 
 		[TestMethod]
 		public void TestCategoryTypeIncome()
 		{
+			category.Type = Domain.DataTypes.CategoryType.Income;
+			Assert.AreEqual(Domain.DataTypes.CategoryType.Income, category.Type);
 		}
 
 		[TestMethod]
 		public void TestCategoryTypeCost()
 		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void TestCategoryTypeNull()
-		{
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(EmptyFieldException))]
-		public void TestCategoryTypeEmpty()
-		{
+			category.Type = Domain.DataTypes.CategoryType.Cost;
+			Assert.AreEqual(Domain.DataTypes.CategoryType.Cost, category.Type);
 		}
 	}
 }
