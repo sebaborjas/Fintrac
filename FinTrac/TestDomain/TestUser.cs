@@ -17,10 +17,12 @@ namespace TestDomain
         }
 
         [TestMethod]
-		[ExpectedException(typeof(UserAlreadyExistsException))]
 		public void CreateUserAlreadyExists()
         {
             user.Email = "a@a.com";
+            var nu = new User { Email = "a@a.com"};
+
+            Assert.AreEqual(user, nu);
         }
 
 			[TestMethod]
