@@ -46,20 +46,6 @@ namespace TestDomain
 			transaction.Amount = 100;
 			Assert.AreEqual(100, transaction.Amount);
 		}
-
-		//[TestMethod]
-		//[ExpectedException(typeof(ArgumentException))]
-		//public void TestAddNegativeAmount()
-		//{
-		//	transaction.Amount = -100;
-		//}
-
-		/*[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public void TestAddZeroAmount()
-		{
-			transaction.Amount = 0;
-		}
 */
 		[TestMethod]
 		public void TestAddDecimalAmount()
@@ -67,29 +53,5 @@ namespace TestDomain
 			transaction.Amount = 100.5;
 			Assert.AreEqual(100.5, transaction.Amount);
 		}
-
-		/*
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public void TestAddNegativeDecimalAmount()
-		{
-			transaction.Amount = -100.5;
-		}
-
-
-		[TestMethod]
-		public void TestAddCurrency()
-		{
-			transaction.Currency = "UYU";
-			Assert.AreEqual("UYU", transaction.Currency);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public void TestAddInvalidCurrency()
-		{
-			transaction.Currency = "UY";
-		}
-		*/
 	}
 }
