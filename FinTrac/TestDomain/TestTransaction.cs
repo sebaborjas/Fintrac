@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
+using Domain.DataTypes;
 using Domain.Excepciones;
 
 namespace TestDomain
@@ -20,38 +21,119 @@ namespace TestDomain
 		}
 
 		[TestMethod]
-		public void TestAddTitle()
+		public void TestTitle()
 		{
-			transaction.Title = "Title";
-			Assert.AreEqual("Title", transaction.Title);
+			transaction.Title = "Test";
+			Assert.AreEqual("Test", transaction.Title);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(EmptyFieldException))]
-		public void TestAddEmptyTitle()
+		public void TestTitleEmpty()
 		{
 			transaction.Title = "";
 		}
 
 		[TestMethod]
-		public void TestAddDate()
+		public void TestCreationDate()
 		{
 			transaction.CreationDate = DateTime.Today;
 			Assert.AreEqual(DateTime.Today, transaction.CreationDate);
 		}
 
 		[TestMethod]
-		public void TestAddAmount()
+		public void TestCreationDateAnterior()
+		{
+			transaction.CreationDate = DateTime.Today.AddDays(-1);
+			Assert.AreEqual(DateTime.Today.AddDays(-1), transaction.CreationDate);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void TestCreationDatePosterior()
+		{
+			transaction.CreationDate = DateTime.Today.AddDays(1);
+		}
+
+		[TestMethod]
+		public void TestAmount()
 		{
 			transaction.Amount = 100;
 			Assert.AreEqual(100, transaction.Amount);
 		}
-*/
+
 		[TestMethod]
-		public void TestAddDecimalAmount()
+		public void TestAmountDecimal()
 		{
 			transaction.Amount = 100.5;
 			Assert.AreEqual(100.5, transaction.Amount);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(Exception))]
+		public void TestAmountNegativo()
+		{
+			transaction.Amount = -100;
+		}
+
+		[TestMethod]
+		public void TestCurrency()
+		{
+			transaction.Currency = CurrencyType.UYU;
+			Assert.AreEqual(CurrencyType.UYU, transaction.Currency);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(Exception))]
+		public void TestCurrencyInvalida()
+		{
+			transaction.Currency = (CurrencyType)3;
+		}
+
+		[TestMethod]
+		public void TestCategory()
+		{
+			transaction.Category = CategoryType.Cost;
+			Assert.AreEqual(CategoryType.Cost, transaction.Category);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(Exception))]
+		public void TestCategoryInvalida()
+		{
+			transaction.Category = (CategoryType)3;
+		}
+
+		// test account no puede ser un object null 
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void TestAccountNull()
+		{
+			transaction.Account = null;
+		}
+		
+
+		[TestMethod]
+		public void TestAccount()
+		{
+			Object account = new Object();
+			transaction.Account = account;
+			Assert.AreEqual(account, transaction.Account);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void TestWorkSpaceNull()
+		{
+			transaction.WorkSpace = null;
+		}
+
+		[TestMethod]
+		public void TestWorkSpace()
+		{
+			Object workSpace = new Object();
+			transaction.WorkSpace = workSpace;
+			Assert.AreEqual(workSpace, transaction.WorkSpace);
 		}
 	}
 }
