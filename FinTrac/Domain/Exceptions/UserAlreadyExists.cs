@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Domain.Excepciones
+namespace Domain.Exceptions
 {
 	[Serializable]
 	public class UserAlreadyExistsException : Exception
