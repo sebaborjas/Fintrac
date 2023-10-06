@@ -20,6 +20,29 @@ namespace TestDomain
 		}
 
 		[TestMethod]
+		public void EqualsCategories()
+		{
+			category.Name = "Test";
+			Category c = new Category
+			{
+				Name = "Test"
+			};
+			Assert.AreEqual(category, c);
+		}
+      
+		[TestMethod]
+		public void NotEqualsCategories()
+        {
+            category.Name = "Test";
+            Category c = new Category
+            {
+                Name = "Test"
+            };
+            Assert.AreNotEqual(category, c);
+        }
+
+
+        [TestMethod]
 		[ExpectedException(typeof(EmptyFieldException))]
 		public void TestCategoryNameEmpty()
 		{
