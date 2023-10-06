@@ -90,7 +90,8 @@ namespace Domain
 
 		public override bool Equals(object? u)
 		{
-			return true;
+            User nu = (User)u;
+			return this.Email == nu.Email;
 		}
 	}
 }

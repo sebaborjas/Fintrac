@@ -17,15 +17,24 @@ namespace TestDomain
         }
 
         [TestMethod]
-		public void CreateUserAlreadyExists()
+		public void EqualsUsers()
         {
             user.Email = "a@a.com";
-            var nu = new User { Email = "a@a.com"};
+            User otherUser = new User { Email = "a@a.com"};
 
-            Assert.AreEqual(user, nu);
+            Assert.AreEqual(user, otherUser);
         }
 
-			[TestMethod]
+		[TestMethod]
+		public void NotEqualsUsers()
+		{
+			user.Email = "a@a.com";
+			User otherUser = new User { Email = "b@a.com" };
+
+			Assert.AreNotEqual(user, otherUser);
+		}
+
+		[TestMethod]
         public void ModifyName()
         {
             user.Name = "Test";
