@@ -88,10 +88,10 @@ namespace Domain
             } 
         }
 
-		public override bool Equals(object? u)
+		public override bool Equals(object? obj)
 		{
-            User nu = (User)u;
-			return this.Email == nu.Email;
+            User user = (User)obj;
+			return this.Email == user.Email;
 		}
 	}
 }
