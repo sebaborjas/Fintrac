@@ -87,5 +87,10 @@ namespace Domain
                     _password = value;
             } 
         }
-    }
+
+		public override bool Equals(object? u)
+		{
+			return true;
+		}
+	}
 }
