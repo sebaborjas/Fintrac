@@ -73,5 +73,11 @@ namespace Domain
 			}
 		}
 
-	}
+
+        public override bool Equals(object? obj)
+        {
+			Category category = (Category)obj;
+			return this.Name == category.Name;
+        }
+    }
 }

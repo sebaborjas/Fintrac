@@ -36,7 +36,7 @@ namespace TestDomain
             category.Name = "Test";
             Category c = new Category
             {
-                Name = "Test"
+                Name = "Home"
             };
             Assert.AreNotEqual(category, c);
         }
