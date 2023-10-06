@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using Domain;
-using Domain.Excepciones;
+using Domain.Exceptions;
 
 namespace TestDomain
 {
@@ -17,6 +17,13 @@ namespace TestDomain
         }
 
         [TestMethod]
+		[ExpectedException(typeof(UserAlreadyExistsException))]
+		public void CreateUserAlreadyExists()
+        {
+            user.Email = "a@a.com";
+        }
+
+			[TestMethod]
         public void ModifyName()
         {
             user.Name = "Test";
