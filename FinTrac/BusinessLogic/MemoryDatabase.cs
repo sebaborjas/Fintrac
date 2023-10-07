@@ -4,29 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessLogic.Interfaces;
+using Domain;
 
 namespace BusinessLogic
 {
-	public class MemoryDatabase : IRepository
+	public class MemoryDatabase
 	{
-		public void Add<T>(T entity) where T : class
-		{
-			throw new NotImplementedException();
-		}
+		public List<User> Users { get; set; }
 
-		public void Delete<T>(T entity) where T : class
+		public MemoryDatabase ()
 		{
-			throw new NotImplementedException();
-		}
-
-		public T Get<T>(int id) where T : class
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Update<T>(T entity) where T : class
-		{
-			throw new NotImplementedException();
+			Users = new List<User>();
 		}
 	}	
 }
