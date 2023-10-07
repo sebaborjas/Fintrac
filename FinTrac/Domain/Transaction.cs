@@ -17,7 +17,7 @@ namespace Domain
 		private DateTime _creationDate = DateTime.Today;
 		private double _amount;
 		private CurrencyType _currency;
-		private CategoryType _category;
+		private Category _category;
 		private Object _account;
 		private Object _workSpace;
 
@@ -84,20 +84,18 @@ namespace Domain
 			}
 		}
 
-		public CategoryType Category
+		public Category Category
 		{
 			get => _category;
 			set
 			{
-				if (value == CategoryType.Cost || value == CategoryType.Income)
+				if (value == null)
 				{
-					_category = value;
+					throw new ArgumentNullException("No se permiten categorias vacias");
 				}
-				else
-				{
-					throw new Exception();
-				}
-			}
+				_category = value;
+			}	
+
 		}
 
 		public Object Account
