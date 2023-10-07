@@ -29,6 +29,4 @@ namespace BusinessLogic
 			throw new NotImplementedException();
 		}
 	}	
-	{
-	}
 }
