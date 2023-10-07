@@ -13,11 +13,13 @@ namespace TestDomain
 	public class TestTransaction
 	{
 		Transaction transaction;
+		Category category;
 
 		[TestInitialize]
 		public void TestInitialize()
 		{
 			transaction = new Transaction();
+			category = new Category();
 		}
 
 		[TestMethod]
@@ -89,29 +91,13 @@ namespace TestDomain
 		{
 			transaction.Currency = (CurrencyType)3;
 		}
-
-		[TestMethod]
-		public void TestCategory()
-		{
-			transaction.Category = CategoryType.Cost;
-			Assert.AreEqual(CategoryType.Cost, transaction.Category);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(Exception))]
-		public void TestCategoryInvalida()
-		{
-			transaction.Category = (CategoryType)3;
-		}
-
-		// test account no puede ser un object null 
+ 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestAccountNull()
 		{
 			transaction.Account = null;
 		}
-		
 
 		[TestMethod]
 		public void TestAccount()
@@ -134,6 +120,28 @@ namespace TestDomain
 			Object workSpace = new Object();
 			transaction.WorkSpace = workSpace;
 			Assert.AreEqual(workSpace, transaction.WorkSpace);
+		}
+
+		[TestMethod]
+		public void TestCategoryActive()
+		{
+			category.Status = CategoryStatus.Active;
+			transaction.Category = category;
+			Assert.AreEqual(CategoryStatus.Active, transaction.Category.Status);
+		}
+
+		[TestMethod] public void TestCategoryInactive()
+		{
+			category.Status = CategoryStatus.Inactive;
+			transaction.Category = category;
+		}
+
+		[TestMethod]
+		public void TestValidCategoryType()
+		{
+			category.Type = CategoryType.Cost;
+			transaction.Category = category;
+			Assert.AreEqual(CategoryType.Cost, transaction.Category.Type);
 		}
 	}
 }
