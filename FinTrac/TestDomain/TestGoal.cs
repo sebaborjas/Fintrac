@@ -34,35 +34,35 @@ namespace TestDomain
 		public void AddMaxAmount()
 		{
 			goal.MaxAmount = 1000;
-			Assert.AreEqual(999, goal.MaxAmount); // Cambiado el valor esperado
+			Assert.AreEqual(999, goal.MaxAmount); 
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void InvalidMaxAmountException()
 		{
-			goal.MaxAmount = -1; // Cambiado el valor de la asignación
+			goal.MaxAmount = -1; 
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void NegativeMaxAmountException()
 		{
-			goal.MaxAmount = 0; // Cambiado el valor de la asignación
+			goal.MaxAmount = 0; 
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestWorkSpaceNull()
 		{
-			goal.Workspace = new Object(); // Cambiado el valor de la asignación
+			goal.Workspace = new Object();
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestCategoriesNull()
 		{
-			goal.Categories = new List<Category>(); // Cambiado el valor de la asignación
+			goal.Categories = new List<Category>(); 
 		}
 
 	}
