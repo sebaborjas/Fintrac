@@ -68,5 +68,26 @@ namespace TestBusinessLogic
 			_service.DeleteUser(user);
 			Assert.AreEqual(null, _service.Get(email));
 		}
-	}
+
+		[TestMethod]
+		public void ValidUserAndPassword()
+		{
+            var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password="1234567890"};
+			string email = "test@test.com";
+			string password = "1234567890";
+			_service.Add(user);			
+			Assert.IsTrue(_service.Login(email, password));
+        }
+
+        [TestMethod]
+		[ExpectedException(typeof(InvalidUserException))]
+        public void InvalidUserAndPassword()
+        {
+            var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "1234567890" };
+            string email = "test@test.com";
+            string password = "12341234";
+            _service.Add(user);
+			_service.Login(email, password);
+        }
+    }
 }
