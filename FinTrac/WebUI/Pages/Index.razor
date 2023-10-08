@@ -2,8 +2,20 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+@if (!isLoggedIn)
+{
+    <p>Debes iniciar sesión para acceder a esta página.</p>
+    <a href="/login">Iniciar sesión</a>
+}
+@if (isLoggedIn)
+{
+    <h1>Hello, world!</h1>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    <p>Welcome to your new app.</p>
+
+}
+
+@code {
+    private bool isLoggedIn = false;
+}
