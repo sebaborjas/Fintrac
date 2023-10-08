@@ -1,3 +1,5 @@
+using BusinessLogic;
+using Domain;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using WebUI.Data;
@@ -13,7 +15,7 @@ namespace WebUI
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddSingleton<MemoryDatabase>();
 
             var app = builder.Build();
 
