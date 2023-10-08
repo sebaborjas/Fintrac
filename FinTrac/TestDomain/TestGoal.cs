@@ -6,7 +6,8 @@ using Domain.Exceptions;
 
 namespace TestDomain
 {
-	internal class TestGoal
+	[TestClass]
+	public class TestGoal
 	{
 		Goal goal;
 
@@ -20,50 +21,66 @@ namespace TestDomain
 		public void AddTitle()
 		{
 			goal.Title = "Test";
-			Assert.AreEqual("Fail", goal.Title); 
+			Assert.AreEqual("Test", goal.Title);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(EmptyFieldException))]
 		public void EmptyTitleException()
 		{
-			goal.Title = null;
+			goal.Title = "";
 		}
 
 		[TestMethod]
 		public void AddMaxAmount()
 		{
 			goal.MaxAmount = 1000;
-			Assert.AreEqual(999, goal.MaxAmount); 
+			Assert.AreEqual(1000, goal.MaxAmount);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void InvalidMaxAmountException()
 		{
-			goal.MaxAmount = -1; 
+			goal.MaxAmount = 0;
 		}
 
+		// monto maximo negativo lanza excepcion
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void NegativeMaxAmountException()
 		{
-			goal.MaxAmount = 0; 
+			goal.MaxAmount = -1;
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestWorkSpaceNull()
 		{
-			goal.Workspace = new Object();
+			goal.Workspace = null;
+		}
+
+		[TestMethod]
+		public void TestWorkSpace()
+		{
+			Object workSpace = new Object();
+			goal.Workspace = workSpace;
+			Assert.AreEqual(workSpace, goal.Workspace);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestCategoriesNull()
 		{
-			goal.Categories = new List<Category>(); 
+			goal.Categories = null;
 		}
 
+		[TestMethod]
+		public void TestCategories()
+		{
+			List<Category> categories = new List<Category>();
+			goal.Categories = categories;
+			Assert.AreEqual(categories, goal.Categories);
+		}
 	}
 }
