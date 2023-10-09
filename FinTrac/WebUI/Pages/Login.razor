@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
 
 @if (!MemoryDatabase.isLoggedIn)
 {
@@ -30,11 +31,11 @@
                                     <form @onsubmit="UserLogin">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Email address </label>
-                                            <input @bind="user.Email" type="email" class="form-control" id="exampleInputEmail1">
+                                            <input @bind="email" type="email" class="form-control" id="exampleInputEmail1">
                                         </div>
                                         <div class="form-group mb-5">
                                             <label for="exampleInputPassword1">Password</label>
-                                            <input @bind="user.Password" type="password" class="form-control" id="exampleInputPassword1">
+                                            <input @bind="password" type="password" class="form-control" id="exampleInputPassword1">
                                         </div>
                                         <button type="submit" class="btn btn-theme">Login</button>
                                         <a href="#l" class="forgot-link float-right text-primary">Forgot password?</a>
@@ -122,24 +123,28 @@
 
 @code {
 
-    private User user;
+    private String email;
+    private String password;
     private UserService userService;
 
     protected override void OnInitialized()
     {
-        user = new User();
         userService = new UserService(MemoryDatabase);
     }
 
 
     public void UserLogin()
     {
-        //  Aquí verifica las credenciales del usuario
-        if (userService.Login(user.Email, user.Password))
+        try
         {
+            userService.Login(email, password);
             MemoryDatabase.isLoggedIn = true;
             NavigationManager.NavigateTo("/");
         }
+        catch (Exception e)
+		{
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
 
     }
 
