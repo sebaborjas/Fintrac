@@ -38,7 +38,7 @@ namespace Domain
                 _creationDate = value;
             } 
         }
-        public Currency Currency { get; set; } = Currency.UYU;
+        public CurrencyType Currency { get; set; } = CurrencyType.UYU;
 
         public Object WorkSpace 
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.DataTypes
 {
-    public enum Currency
+    public enum CurrencyType
     {
         UYU,
         USD
