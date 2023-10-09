@@ -7,7 +7,6 @@ using System.Xml.Linq;
 using Domain.DataTypes;
 using Domain.Exceptions;
 
-
 namespace Domain
 {
 	public class Category

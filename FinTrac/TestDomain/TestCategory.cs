@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Domain;
 using Domain.Exceptions;
 
-
 namespace TestDomain
 {
     [TestClass]
