@@ -8,11 +8,26 @@ namespace Domain
 {
     public class AccountBalanceReport : Report
     {
-        public PersonalAccount Account { get; set; }
+        private PersonalAccount _account;
+        public PersonalAccount Account 
+        {
+            get 
+            { 
+                return this._account; 
+            }
+            set 
+            {
+                if (value == null)
+                {
+                    throw new NullReferenceException("No se admite una cuenta vacia"); 
+                }
+                this._account = value;
+            } 
+        }
 
         public double CalculateBalance()
         {
-            return 1;
+            this.Account.StartingAmount + this.WorkSpace.
         }
     }
 }

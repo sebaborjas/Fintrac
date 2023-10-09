@@ -34,7 +34,6 @@ namespace TestDomain
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
         public void CorrectBalanceOperation()
         {
             int montoInicial = 500;
