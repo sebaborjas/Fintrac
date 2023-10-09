@@ -15,6 +15,7 @@ namespace Domain
 		private DateTime _creationDate;
 		private CategoryType _type;
 		private CategoryStatus _status;
+		
 		public string Name
 		{
 			get
