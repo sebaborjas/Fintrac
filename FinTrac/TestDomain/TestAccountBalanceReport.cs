@@ -27,10 +27,27 @@ namespace TestDomain
         }
 
         [TestMethod]
+        public void SetCorrectWorkspace()
+        {
+            User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
+            Workspace newWorkspace = new Workspace { Name = "Nuevo", UserAdmin = newUser };
+            accountBalanceReport.WorkSpace = newWorkspace;
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public void NotAccountException()
         {
             accountBalanceReport.Account = null;
+        }
+
+        [TestMethod]
+        public void SetCorrectAccount()
+        {
+            User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
+            Workspace newWorkspace = new Workspace { Name = "Nuevo", UserAdmin = newUser };
+            PersonalAccount newAccount = new PersonalAccount { Name = "Nuevo", WorkSpace = newWorkspace, StartingAmount = 0 };
+            accountBalanceReport.Account = newAccount;
         }
 
         [TestMethod]
