@@ -3,12 +3,19 @@
 @inject NavigationManager NavigationManager
 @inject MemoryDatabase MemoryDatabase
 
-<PageTitle>Inicio</PageTitle>
+<PageTitle>Index</PageTitle>
 
 
 @if (!MemoryDatabase.isLoggedIn)
 {
-	NavigationManager.NavigateTo("/login");
+	try
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch (Exception e)
+	{
+		Console.WriteLine(e);
+	}
 }
 @if (MemoryDatabase.isLoggedIn)
 {
@@ -18,5 +25,4 @@
 		<div class="col-md-g">
 		</div>
 	</div>
-
 }
