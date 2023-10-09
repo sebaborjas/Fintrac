@@ -1,12 +1,22 @@
 ﻿@page "/"
+@using BusinessLogic
+@inject NavigationManager NavigationManager
+@inject MemoryDatabase MemoryDatabase
 
 <PageTitle>Inicio</PageTitle>
 
 
-<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
+@if (!MemoryDatabase.isLoggedIn)
+{
+	NavigationManager.NavigateTo("/login");
+}
+@if (MemoryDatabase.isLoggedIn)
+{
+	<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
 
-<div class="row mt-4">
-	<div class="col-md-g"> 
-
+	<div class="row mt-4">
+		<div class="col-md-g">
+		</div>
 	</div>
-</div>
+
+}
