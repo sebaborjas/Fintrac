@@ -10,6 +10,7 @@ namespace BusinessLogic
 {
     public class MemoryDatabase
     {
+        public bool isLoggedIn { get; set; } = false;
         public List<User> Users { get; set; }
 
         public MemoryDatabase()

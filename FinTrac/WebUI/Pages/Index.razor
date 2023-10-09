@@ -1,14 +1,16 @@
 ﻿@page "/"
+@using BusinessLogic
+@inject NavigationManager NavigationManager
+@inject MemoryDatabase MemoryDatabase
 
 <PageTitle>Index</PageTitle>
 
 
-@if (!isLoggedIn)
+@if (!MemoryDatabase.isLoggedIn)
 {
-    <p>Debes iniciar sesión para acceder a esta página.</p>
-    <a href="/login">Iniciar sesión</a>
+    NavigationManager.NavigateTo("/login");
 }
-@if (isLoggedIn)
+@if (MemoryDatabase.isLoggedIn)
 {
     <h1>Hello, world!</h1>
 
@@ -17,5 +19,7 @@
 }
 
 @code {
-    private bool isLoggedIn = false;
+    
+
+    }
 }

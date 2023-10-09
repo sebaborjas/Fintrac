@@ -1,6 +1,8 @@
 ﻿@page "/counter"
+@using BusinessLogic
+@inject MemoryDatabase MemoryDatabase
 
-@if (isLoggedIn)
+@if (MemoryDatabase.isLoggedIn)
 {
     <PageTitle>Counter</PageTitle>
 
@@ -11,7 +13,6 @@
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 }
 @code {
-    private bool isLoggedIn = false;
     private int currentCount = 0;
 
     private void IncrementCount()

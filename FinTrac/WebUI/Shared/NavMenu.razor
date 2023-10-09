@@ -1,8 +1,9 @@
-﻿@if (!isLoggedIn)
+﻿@using BusinessLogic
+@inject MemoryDatabase MemoryDatabse
+@if (MemoryDatabse.isLoggedIn)
 {
     
-
-<div class="top-row ps-3 navbar navbar-dark">
+    <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">WebUI</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -24,7 +25,7 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
+            <NavLink class="nav-link" href="">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
         </div>
@@ -33,7 +34,6 @@
 }
 
 @code {
-    private bool isLoggedIn = false;
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;

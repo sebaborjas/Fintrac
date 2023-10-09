@@ -1,4 +1,5 @@
-﻿@page "/login"
+﻿@layout LoginLayout
+@page "/login"
 <PageTitle>Login</PageTitle>
 @using Domain;
 @using BusinessLogic;
@@ -7,7 +8,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject MemoryDatabase MemoryDatabase
 
-@if (!isLoggedIn)
+@if (!MemoryDatabase.isLoggedIn)
 {
     <div id="main-wrapper" class="container">
         <div class="row justify-content-center">
@@ -116,14 +117,9 @@
         }
     </style>
 }
-else
-{
-    <p>¡Has iniciado sesión con éxito!</p>
-    <a href="/">Ir a la página de inicio</a>
-}
+
 @code {
 
-    private bool isLoggedIn = false;
     private User user;
     private UserService userService;
 
@@ -139,7 +135,7 @@ else
         //  Aquí verifica las credenciales del usuario
         if (userService.Login(user.Email, user.Password))
         {
-            isLoggedIn = true;
+            MemoryDatabase.isLoggedIn = true;
             NavigationManager.NavigateTo("/");
         }
 
