@@ -1,4 +1,6 @@
 using BusinessLogic;
+using Domain;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using WebUI.Data;
