@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using Domain.DataTypes;
-using Domain.Excepciones;
+using Domain.Exceptions;
 
 namespace Domain
 {
@@ -55,6 +55,8 @@ namespace Domain
                 _workSpace = value;
             } 
         }
+
+        public List<Transaction> TransactionList { get; set; } = new List<Transaction>();
 
     }
 }
