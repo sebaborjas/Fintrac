@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Domain;
+﻿using Domain;
 using Domain.DataTypes;
-using Domain.Excepciones;
+using Domain.Exceptions;
 
 namespace TestDomain
 {
-	[TestClass]
+    [TestClass]
 	public class TestPersonalAccount
 	{
 		private PersonalAccount account; 
@@ -34,19 +28,20 @@ namespace TestDomain
 		[TestMethod]
 		public void DefaultCurrencyUYU()
 		{
-			Assert.AreEqual(Currency.UYU, account.Currency);
+			Assert.AreEqual(CurrencyType.UYU, account.Currency);
 		}
 		[TestMethod]
 		public void ChangeCurrencyToUSD()
 		{
-			account.Currency = Currency.USD;
-			Assert.AreEqual(Currency.USD, account.Currency);
+			account.Currency = CurrencyType.USD;
+			Assert.AreEqual(CurrencyType.USD, account.Currency);
 		}
 
 		[TestMethod]
 		public void SetWorkSpace()
 		{
-			Object workSpace = new Object();
+			User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
 			account.WorkSpace = workSpace;
 			Assert.AreEqual(workSpace, account.WorkSpace);
 		}
@@ -102,5 +97,11 @@ namespace TestDomain
 			account.StartingAmount = amount;
 			Assert.AreEqual(amount, account.StartingAmount);
 		}
+
+		[TestMethod]
+        public void NotNullListOfTransactions()
+		{
+            Assert.IsNotNull(account.TransactionList);
+        }
 	}
 }

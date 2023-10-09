@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain;
 using Domain.DataTypes;
-using Domain.Excepciones;
+using Domain.Exceptions;
 
 namespace TestDomain
 {

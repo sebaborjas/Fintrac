@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Domain.DataTypes;
 using Domain.Exceptions;
+using TestDomain;
 
 namespace Domain
 {
@@ -8,7 +9,7 @@ namespace Domain
     {
         private string _name;
         private DateTime _creationDate = DateTime.Today;
-        private Object _workSpace;
+        private Workspace _workSpace;
         public string Name 
         {
             get
@@ -40,7 +41,7 @@ namespace Domain
         }
         public CurrencyType Currency { get; set; } = CurrencyType.UYU;
 
-        public Object WorkSpace 
+        public Workspace WorkSpace 
         {
             get
             {
