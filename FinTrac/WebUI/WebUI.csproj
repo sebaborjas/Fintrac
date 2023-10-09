@@ -11,4 +11,9 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Blazor.Bootstrap" Version="1.10.2" />
+    <PackageReference Include="BlazorToast" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>

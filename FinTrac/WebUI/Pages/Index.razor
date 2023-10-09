@@ -8,7 +8,13 @@
 
 @if (!MemoryDatabase.isLoggedIn)
 {
-    NavigationManager.NavigateTo("/login");
+    try{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch (Exception e)
+	{
+		Console.WriteLine(e);
+	}
 }
 @if (MemoryDatabase.isLoggedIn)
 {
