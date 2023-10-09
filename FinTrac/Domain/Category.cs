@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Domain.DataTypes;
-using Domain.Excepciones;
+using Domain.Exceptions;
+
 
 namespace Domain
 {
@@ -15,7 +16,7 @@ namespace Domain
 		private DateTime _creationDate;
 		private CategoryType _type;
 		private CategoryStatus _status;
-		
+
 		public string Name
 		{
 			get

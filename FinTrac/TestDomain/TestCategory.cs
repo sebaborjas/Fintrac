@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
-using Domain.Excepciones;
+using Domain.Exceptions;
+
 
 namespace TestDomain
 {
