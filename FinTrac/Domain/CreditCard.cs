@@ -1,4 +1,4 @@
-﻿using Domain.Excepciones;
+﻿using Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

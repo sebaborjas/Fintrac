@@ -9,8 +9,8 @@ namespace Domain
 {
     public abstract class Report
     {
-        private CurrencyType currency;
-        private Month month;
-        private Object workSpace;
+        public CurrencyType Currency { get; set; }
+        public Month Month { get; set; }
+        public Workspace WorkSpace { get; set; }
     }
 }

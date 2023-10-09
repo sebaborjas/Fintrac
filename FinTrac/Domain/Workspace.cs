@@ -2,7 +2,7 @@
 using Domain.Exceptions;
 using System.Xml.Linq;
 
-namespace TestDomain
+namespace Domain
 {
     public class Workspace
     {
