@@ -27,7 +27,7 @@ namespace Domain
 
         public double CalculateBalance()
         {
-            this.Account.StartingAmount + this.WorkSpace.
+            return 200;
         }
     }
 }
