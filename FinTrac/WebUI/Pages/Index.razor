@@ -1,0 +1,25 @@
+﻿@page "/"
+@using BusinessLogic
+@inject NavigationManager NavigationManager
+@inject MemoryDatabase MemoryDatabase
+
+<PageTitle>Index</PageTitle>
+
+
+@if (!MemoryDatabase.isLoggedIn)
+{
+    NavigationManager.NavigateTo("/login");
+}
+@if (MemoryDatabase.isLoggedIn)
+{
+    <h1>Hello, world!</h1>
+
+    <p>Welcome to your new app.</p>
+
+}
+
+@code {
+    
+
+    }
+}
