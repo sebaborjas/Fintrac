@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -27,7 +27,9 @@ namespace BusinessLogic
             }
             try
             {
-                _memoryDatabase.Users.Add(u);
+              _memoryDatabase.Users.Add(u);
+              Workspace defaultWorkspace = new Workspace(u, $"Personal {u.Name} {u.LastName}");
+              u.WorkspaceList.Add(defaultWorkspace);
             }
             catch (Exception exception)
             {

@@ -128,6 +128,14 @@ namespace TestDomain
         {
             user.Password = "1234567891234567891234567787678765";
         }
+
+        [TestMethod]
+        public void NotNullWorkspaceList()
+        {
+            Assert.IsNotNull(user.WorkspaceList);
+        }
+
+        
     }
 
 }

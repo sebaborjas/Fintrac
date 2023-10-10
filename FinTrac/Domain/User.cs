@@ -12,34 +12,36 @@ namespace Domain
     public class User
     {
         private string _name;
-		private string _lastName;
-		private string _email;
+        private string _lastName;
+        private string _email;
         private string _password;
-        public string Name {
+        public string Name
+        {
             get
             {
                 return _name;
             }
-            set 
+            set
             {
-                if (value == "") 
+                if (value == "")
                 {
                     throw new EmptyFieldException();
-                } else
+                }
+                else
                 {
                     _name = value;
                 }
-            } 
+            }
         }
-        public string LastName 
-        { 
+        public string LastName
+        {
             get
             {
                 return _lastName;
             }
             set
             {
-                if(value == "")
+                if (value == "")
                 {
                     throw new EmptyFieldException();
                 }
@@ -47,14 +49,15 @@ namespace Domain
             }
         }
         public string? Address { get; set; }
-        public string Email { 
-            get 
-            { 
-                return _email; 
-            } 
-            set 
+        public string Email
+        {
+            get
             {
-                if(value == "")
+                return _email;
+            }
+            set
+            {
+                if (value == "")
                 {
                     throw new EmptyFieldException();
                 }
@@ -62,15 +65,17 @@ namespace Domain
                 string pattern = @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$";
                 Regex regex = new(pattern, RegexOptions.IgnoreCase);
 
-                if(!regex.IsMatch(value))
+                if (!regex.IsMatch(value))
                 {
-					throw new ArgumentException("El email ingresado es invalido");
-				}
-				_email = value;
-                
-            } }
-        public string Password {
-            get 
+                    throw new ArgumentException("El email ingresado es invalido");
+                }
+                _email = value;
+
+            }
+        }
+        public string Password
+        {
+            get
             {
                 return _password;
             }
@@ -84,14 +89,17 @@ namespace Domain
                 {
                     throw new ArgumentException("La contraseña debe tener entre 10 y 20 caracteres");
                 }
-                    _password = value;
-            } 
+                _password = value;
+            }
         }
 
-		public override bool Equals(object? obj)
-		{
+        public List<Workspace> WorkspaceList { get; set; } = new List<Workspace>();
+
+
+        public override bool Equals(object? obj)
+        {
             User user = (User)obj;
-			return this.Email == user.Email;
-		}
-	}
+            return this.Email == user.Email;
+        }
+    }
 }
