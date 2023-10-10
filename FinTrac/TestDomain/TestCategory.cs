@@ -106,5 +106,21 @@ namespace TestDomain
             category.Type = Domain.DataTypes.CategoryType.Cost;
             Assert.AreEqual(Domain.DataTypes.CategoryType.Cost, category.Type);
         }
+
+        [TestMethod]
+        public void NotNullWorkspace()
+        {
+            User userAdmin = new User
+            {
+                Name = "Test",
+                LastName = "TestLastName",
+                Address = "",
+                Password = "1234123412",
+                Email = "test@test.com"
+            };
+            Workspace workspace = new Workspace(userAdmin, "Personal");
+            category.Workspace = workspace;
+            Assert.IsNotNull(category.Workspace);
+        }
     }
 }

@@ -69,6 +69,7 @@ namespace Domain
 				_status = value;
 			}
 		}
+		public Workspace Workspace { get; set; }
 
 
         public override bool Equals(object? obj)
