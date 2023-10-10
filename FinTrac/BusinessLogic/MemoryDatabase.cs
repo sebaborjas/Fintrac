@@ -16,7 +16,6 @@ namespace BusinessLogic
         public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
         public List<Account> Accounts { get; set; } = new List<Account>();
 
-        public List<Workspace> Workspaces { get; set; }
 
         public MemoryDatabase()
         {
