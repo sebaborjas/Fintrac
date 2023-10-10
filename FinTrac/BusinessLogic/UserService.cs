@@ -28,9 +28,10 @@ namespace BusinessLogic
             }
             try
             {
-              _memoryDatabase.Users.Add(u);
               Workspace defaultWorkspace = new Workspace(u, $"Personal {u.Name} {u.LastName}");
               u.WorkspaceList.Add(defaultWorkspace);
+              _memoryDatabase.Users.Add(u);
+                _memoryDatabase.Workspaces.Add(defaultWorkspace);
             }
             catch (Exception exception)
             {
