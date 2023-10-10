@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,19 +45,26 @@ namespace BusinessLogic
             return _memoryDatabase.Users.FirstOrDefault(x => x.Email == email);
         }
 
-        public void UpdateEmail(User user, string newEmail)
-        {
-            User alreadyExists = _memoryDatabase.Users.FirstOrDefault(x => x.Email == newEmail);
+		public User UpdateUser(String name, String email, String lastName, String address, String password)
+		{
+			User userToUpdate = _memoryDatabase.Users.FirstOrDefault(x => x.Email == email);
 
-            if (alreadyExists != null)
-            {
-                throw new UserAlreadyExistsException();
-            }
+			if (userToUpdate != null)
+			{
+				userToUpdate.Name = name;
+				userToUpdate.LastName = lastName;
+				userToUpdate.Address = address;
+				userToUpdate.Password = password;
+			}
+			else
+			{
+				throw new InvalidUserException();
+			}
 
-            this.Get(user.Email).Email = newEmail;
-        }
+			return userToUpdate;
+		}
 
-        public void DeleteUser(User user)
+		public void DeleteUser(User user)
         {
             _memoryDatabase.Users.Remove(user);
         }

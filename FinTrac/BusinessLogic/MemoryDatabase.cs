@@ -11,8 +11,9 @@ namespace BusinessLogic
     public class MemoryDatabase
     {
         public bool isLoggedIn { get; set; } = false;
-        public List<User> Users { get; set; } = new List<User>();
 
+        public List<User> Users { get; set; } = new List<User>();
+	      public User currentUser { get; set; }
         public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
         public List<Account> Accounts { get; set; } = new List<Account>();
 
