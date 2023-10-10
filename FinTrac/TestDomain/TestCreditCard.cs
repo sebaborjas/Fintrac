@@ -5,7 +5,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
-using Domain.Excepciones;
+using Domain.Exceptions;
 using Domain.DataTypes;
 
 namespace TestDomain
@@ -37,14 +37,14 @@ namespace TestDomain
         [TestMethod]
         public void DefaultCurrencyUYU()
         {
-            Assert.AreEqual(Currency.UYU, creditCard.Currency);
+            Assert.AreEqual(CurrencyType.UYU, creditCard.Currency);
         }
 
         [TestMethod]
         public void ChangeCurrencyToUSD()
         {
-            creditCard.Currency = Currency.USD;
-            Assert.AreEqual(Currency.USD, creditCard.Currency);
+            creditCard.Currency = CurrencyType.USD;
+            Assert.AreEqual(CurrencyType.USD, creditCard.Currency);
         }
 
         [TestMethod]

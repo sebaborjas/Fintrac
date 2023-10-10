@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using Domain.DataTypes;
-using Domain.Excepciones;
+using Domain.Exceptions;
 
 namespace Domain
 {

@@ -7,47 +7,51 @@ using System.Threading.Tasks;
 
 using Domain;
 using Domain.Exceptions;
+using TestDomain;
 
 namespace BusinessLogic
 {
-	public class UserService
-	{
-		private readonly MemoryDatabase _memoryDatabase;
+    public class UserService
+    {
+        private readonly MemoryDatabase _memoryDatabase;
 
-		public UserService(MemoryDatabase memoryDatabase)
-		{
-			this._memoryDatabase = memoryDatabase;
-		}	
+        public UserService(MemoryDatabase memoryDatabase)
+        {
+            this._memoryDatabase = memoryDatabase;
+        }
 
-		public void Add(User u)
-		{
-			if(_memoryDatabase.Users.Any(x => x.Email == u.Email))
-			{
-				throw new UserAlreadyExistsException();
-			}
-			_memoryDatabase.Users.Add(u);
-		}
+        public void Add(User u)
+        {
+            if (_memoryDatabase.Users.Any(x => x.Email == u.Email))
+            {
+                throw new UserAlreadyExistsException();
+            }
 
-		public User Get(string email)
-		{
-			return _memoryDatabase.Users.FirstOrDefault(x => x.Email == email);
-		}
+            Workspace defaultWorkspace = new Workspace(u, $"Personal {u.Name} {u.LastName}");
+            u.WorkspaceList.Add(defaultWorkspace);
+            _memoryDatabase.Users.Add(u);
+        }
 
-		public void UpdateEmail(User user, string newEmail)
-		{
-			User alreadyExists = _memoryDatabase.Users.FirstOrDefault(x => x.Email == newEmail);
+        public User Get(string email)
+        {
+            return _memoryDatabase.Users.FirstOrDefault(x => x.Email == email);
+        }
 
-			if(alreadyExists != null) 
-			{
-				throw new UserAlreadyExistsException();
-			}
+        public void UpdateEmail(User user, string newEmail)
+        {
+            User alreadyExists = _memoryDatabase.Users.FirstOrDefault(x => x.Email == newEmail);
 
-			this.Get(user.Email).Email = newEmail;
-		}
+            if (alreadyExists != null)
+            {
+                throw new UserAlreadyExistsException();
+            }
 
-		public void DeleteUser(User user)
-		{
-			_memoryDatabase.Users.Remove(user);
-		}
-	}
+            this.Get(user.Email).Email = newEmail;
+        }
+
+        public void DeleteUser(User user)
+        {
+            _memoryDatabase.Users.Remove(user);
+        }
+    }
 }
