@@ -7,29 +7,43 @@
 
 <div class="page">
 
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+	<div class="sidebar">
+		<NavMenu />
+	</div>
 
-    <main>
-        <div class="top-row px-4">
-            <NavLink class="nav-link" href="/profile">
-                <span class="oi oi-person" aria-hidden="true"></span> USER.NAME!
-            </NavLink>
-        </div>
+	<main>
+		@if (MemoryDatabase.isLoggedIn)
+		{
+			<div class="top-row px-4">
+				<NavLink class="nav-link" href="/profile" name="@name">
+					@MemoryDatabase.currentUser.Name
+				</NavLink>
+			</div>
+		}
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+		<article class="content px-4">
+			@Body
+		</article>
+	</main>
 </div>
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
 
 
 
 @code {
-    public void LogOut()
-    {
-        MemoryDatabase.isLoggedIn = false;
-    }
+	private String name;
+
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			name = MemoryDatabase.currentUser.Name;
+		}
+
+	}
+
+	public void LogOut()
+	{
+		MemoryDatabase.isLoggedIn = false;
+	}
 }
