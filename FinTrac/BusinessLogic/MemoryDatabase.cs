@@ -13,9 +13,12 @@ namespace BusinessLogic
         public bool isLoggedIn { get; set; } = false;
         public List<User> Users { get; set; }
 
+        public List<Workspace> Workspaces { get; set; }
+
         public MemoryDatabase()
         {
             Users = new List<User>();
+            Workspaces = new List<Workspace>();
             addUsers();
         }
      

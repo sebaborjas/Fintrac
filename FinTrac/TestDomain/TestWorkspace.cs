@@ -9,11 +9,14 @@ namespace TestDomain
     [TestClass]
     public class TestWorkspace
     {
+        
         public Workspace workspace;
+        private User admin;
+
         [TestInitialize]
         public void Setup()
         {
-            User admin = new User
+            admin = new User
             {
                 Name = "Test",
                 LastName = "LastName",
@@ -22,6 +25,21 @@ namespace TestDomain
                 Email = "test@test.com"
             };
             workspace = new Workspace(admin, "Test");
+        }
+        [TestMethod]
+        public void EqualsWorkspace()
+        {
+            Workspace otherWorkspace = workspace;
+
+            Assert.AreEqual(otherWorkspace, workspace);
+        }
+
+        [TestMethod]
+        public void NotEqualsWorkspace()
+        {
+            Workspace otherWorkspace = new Workspace(admin, "Test");
+
+            Assert.AreNotEqual(otherWorkspace, workspace);
         }
 
         [TestMethod]
