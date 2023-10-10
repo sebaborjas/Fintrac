@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Domain;
 using Domain.Exceptions;
 
-
 namespace TestDomain
 {
     [TestClass]
@@ -59,17 +58,18 @@ namespace TestDomain
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestCategoryCreationDateBeforeNow()
+        public void TestCategoryCreationDateBefore()
         {
-            category.CreationDate = DateTime.Now.AddDays(-1);
+            DateTime yesterday = DateTime.Today.AddDays(-1);
+            category.CreationDate = yesterday;
+            Assert.AreEqual(yesterday, category.CreationDate);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void TestCategoryCreationDateAfterNow()
+        public void TestCategoryCreationDateAfter()
         {
-            category.CreationDate = DateTime.Now.AddDays(1);
+            category.CreationDate = DateTime.Today.AddDays(1);
         }
 
         [TestMethod]

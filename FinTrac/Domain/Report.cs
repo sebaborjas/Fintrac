@@ -9,8 +9,23 @@ namespace Domain
 {
     public abstract class Report
     {
-        private CurrencyType currency;
-        private Month month;
-        private Object workSpace;
+        private Workspace _workSpace;
+        public CurrencyType Currency { get; set; }
+        public Month Month { get; set; }
+        public Workspace WorkSpace 
+        { 
+            get 
+            {
+                return this._workSpace;
+            } 
+            set 
+            { 
+                if (value == null) 
+                {
+                    throw new NullReferenceException("No se admite un workspace vacio"); 
+                } 
+                this._workSpace = value;
+            } 
+        }
     }
 }
