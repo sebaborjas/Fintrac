@@ -12,6 +12,7 @@ namespace Domain
         {
             Id++;
             Name = name;
+            UserAdmin = userAdmin; 
         }
 
         private string _name;

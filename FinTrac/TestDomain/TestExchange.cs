@@ -65,11 +65,7 @@ namespace TestDomain
                 Password = "1234123412",
                 Email = "test@test.com"
             };
-            Workspace workspace = new Workspace
-            {
-                Name = "Personal",
-                UserAdmin = userAdmin
-            };
+            Workspace workspace = new Workspace(userAdmin, "Personal");
             exchange.Workspace = workspace;
             Assert.IsNotNull(exchange.Workspace);
         }

@@ -103,7 +103,7 @@ namespace TestDomain
 		public void TestPersonalAccount()
 		{
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            Workspace workSpace = new Workspace (newUser, "Test");
             Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
             transaction.Account = account;
 			Assert.AreEqual(account, transaction.Account);
@@ -113,7 +113,7 @@ namespace TestDomain
         public void TestCreditCardAccount()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            Workspace workSpace = new Workspace (newUser, "Test");
             Account account = new CreditCard { 
 				BankName = "Test", 
 				AvailableCredit = 1 , 
