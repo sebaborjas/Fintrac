@@ -8,7 +8,8 @@
 
 @if (!MemoryDatabase.isLoggedIn)
 {
-    try{
+	try
+	{
 		NavigationManager.NavigateTo("/login");
 	}
 	catch (Exception e)
@@ -18,14 +19,10 @@
 }
 @if (MemoryDatabase.isLoggedIn)
 {
-    <h1>Hello, world!</h1>
+	<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
 
-    <p>Welcome to your new app.</p>
-
-}
-
-@code {
-    
-
-    }
+	<div class="row mt-4">
+		<div class="col-md-g">
+		</div>
+	</div>
 }
