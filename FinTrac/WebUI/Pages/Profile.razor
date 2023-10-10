@@ -115,11 +115,13 @@
 		try
 		{
 			_userService.UpdateUser(name, email, lastName, address, password);
+			ToastService.Notify(new(ToastType.Success, "Informacion actualizada con exito!"));
 			NavigationManager.NavigateTo("/");
 		}
-		catch
+		catch (Exception e)
 		{
-			
+
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
 		}
 	}
 }
