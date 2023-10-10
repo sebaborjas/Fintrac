@@ -13,7 +13,15 @@ namespace TestDomain
         [TestInitialize]
         public void Setup()
         {
-            workspace = new Workspace();
+            User admin = new User
+            {
+                Name = "Test",
+                LastName = "LastName",
+                Address = "",
+                Password = "1234567891",
+                Email = "test@test.com"
+            };
+            workspace = new Workspace(admin, "Test");
         }
 
         [TestMethod]

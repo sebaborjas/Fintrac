@@ -6,6 +6,14 @@ namespace Domain
 {
     public class Workspace
     {
+        public static int Id { get; private set; } = 1;
+
+        public Workspace(User userAdmin, string name)
+        {
+            Id++;
+            Name = name;
+        }
+
         private string _name;
         public string Name
         {
