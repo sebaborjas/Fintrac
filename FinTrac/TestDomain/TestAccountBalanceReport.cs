@@ -12,13 +12,14 @@ namespace TestDomain
     public class TestAccountBalanceReport
     {
         AccountBalanceReport accountBalanceReport;
+        Workspace workSpace;
 
         [TestInitialize]
         public void Setup()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
-            PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
+            workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
             workSpace.AccountList.Add(account);
 
             accountBalanceReport = new AccountBalanceReport { Account = account };
@@ -71,7 +72,6 @@ namespace TestDomain
                 Amount = ingresos,
                 Currency = CurrencyType.UYU,
                 Category = categoriaIngreso,
-
             };
 
             Transaction trasaccionCosto = new Transaction
@@ -80,14 +80,11 @@ namespace TestDomain
                 Amount = costos,
                 Currency = CurrencyType.UYU,
                 Category = categoriaCostos,
-
             };
 
             accountBalanceReport.Account.StartingAmount = montoInicial;
             accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
             accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
-
-
 
             Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
         }
@@ -100,11 +97,8 @@ namespace TestDomain
             int costos = 30;
             double DollarToday = 50;
             double DollarBefore = 47.4;
-
             double balance = montoInicial * DollarBefore + ingresos * DollarToday - costos * DollarBefore;
-
             accountBalanceReport.Currency = CurrencyType.USD;
-
             Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
             Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
 
@@ -114,7 +108,6 @@ namespace TestDomain
                 Amount = ingresos,
                 Currency = CurrencyType.USD,
                 Category = categoriaIngreso,
-
             };
 
             Transaction trasaccionCosto = new Transaction
@@ -129,14 +122,12 @@ namespace TestDomain
             Exchange exchangeToday = new Exchange { DollarValue = DollarToday, Date = DateTime.Today, Workspace = accountBalanceReport.WorkSpace };
             Exchange exchangeYesterday = new Exchange { DollarValue = DollarBefore, Date = DateTime.Today.AddDays(-5), Workspace = accountBalanceReport.WorkSpace };
 
-            accountBalanceReport.WorkSpace.ExchangeList.Add(exchangeToday);
-            accountBalanceReport.WorkSpace.ExchangeList.Add(exchangeYesterday);
+            workSpace.ExchangeList.Add(exchangeToday);
+            workSpace.ExchangeList.Add(exchangeYesterday);
 
             accountBalanceReport.Account.StartingAmount = montoInicial;
             accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
             accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
-
-
 
             Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
         }

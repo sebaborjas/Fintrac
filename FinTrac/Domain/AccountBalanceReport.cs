@@ -64,16 +64,13 @@ namespace Domain
                 }
                 
             }
-
-           
-
             return balance;
         }
 
         private Double GetDolarVallueOfDay(DateTime date)
         {
         
-            Exchange exchange = Account.WorkSpace.ExchangeList.Last(x => x.Date <= date);
+            Exchange exchange = Account.WorkSpace.ExchangeList.MaxBy(x => x.Date <= date);
 
             return exchange.DollarValue;
         }
