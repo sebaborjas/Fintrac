@@ -19,15 +19,15 @@ namespace BusinessLogic
             this._memoryDatabase = memoryDatabase;
         }
 
-        public void Add(Workspace w)
+        public void Add(User user, Workspace w)
         {
-            if (_memoryDatabase.Workspaces.Any(x => x.ID == w.ID))
+            if (user.WorkspaceList.Contains(w))
             {
                 throw new WorkspaceAlreadyExistsException();
             }
             try
             {
-                _memoryDatabase.Workspaces.Add(w);               
+                user.WorkspaceList.Add(w);               
             }
             catch (Exception exception)
             {
@@ -37,15 +37,13 @@ namespace BusinessLogic
 
         public Workspace Get(int ID)
         {
-            return _memoryDatabase.Workspaces.First(x => x.ID == ID);
+            return _memoryDatabase.Users.First(x => x.WorkspaceList.Any(x => x.ID == ID)).WorkspaceList.First(x => x.ID == ID);
         }
 
         public void UpdateName(Workspace workspace, string newName)
         {
-            _memoryDatabase.Workspaces.First(x => x.ID == workspace.ID).Name = newName;
             _memoryDatabase.Users.FindAll(x => x.WorkspaceList.Contains(workspace)).ForEach(x => x.WorkspaceList.Find(x => x.ID == workspace.ID).Name = newName);
             workspace.Name = newName;
-
         }
 
         public void DeleteWorkspace(Workspace workspace)
@@ -58,10 +56,9 @@ namespace BusinessLogic
             }
             else
             {
-                _memoryDatabase.Workspaces.Remove(workspace);
+                oldUserAdmin.WorkspaceList.Remove(workspace);
+                _memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
             }
-            oldUserAdmin.WorkspaceList.Remove(workspace);
-            _memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
         }
     }
 
