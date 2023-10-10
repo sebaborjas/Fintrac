@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,7 +10,6 @@ using Domain.Exceptions;
 
 namespace BusinessLogic
 {
-
     public class UserService
     {
         private readonly MemoryDatabase _memoryDatabase;
@@ -26,10 +25,17 @@ namespace BusinessLogic
             {
                 throw new UserAlreadyExistsException();
             }
+            try
+            {
+              _memoryDatabase.Users.Add(u);
+              Workspace defaultWorkspace = new Workspace(u, $"Personal {u.Name} {u.LastName}");
+              u.WorkspaceList.Add(defaultWorkspace);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
 
-            Workspace defaultWorkspace = new Workspace(u, $"Personal {u.Name} {u.LastName}");
-            u.WorkspaceList.Add(defaultWorkspace);
-            _memoryDatabase.Users.Add(u);
         }
 
         public User Get(string email)
@@ -53,6 +59,21 @@ namespace BusinessLogic
         {
             _memoryDatabase.Users.Remove(user);
         }
-    }
 
+        public bool Login(string email, string password)
+        {
+            User validUser = _memoryDatabase.Users.FirstOrDefault(x => x.Email == email && x.Password == password);
+
+            if (validUser != null)
+            {
+                return true;
+            }
+            else
+            {
+                throw new InvalidUserException();
+            }
+
+
+        }
+    }
 }
