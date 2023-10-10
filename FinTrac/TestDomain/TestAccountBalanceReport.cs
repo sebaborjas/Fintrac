@@ -18,7 +18,7 @@ namespace TestDomain
         public void Setup()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            workSpace = new Workspace(newUser, "Test");
             PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
             workSpace.AccountList.Add(account);
 
@@ -36,7 +36,7 @@ namespace TestDomain
         public void SetCorrectWorkspace()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
-            Workspace newWorkspace = new Workspace { Name = "Nuevo", UserAdmin = newUser };
+            Workspace newWorkspace = new Workspace(newUser, "Nuevo");
             accountBalanceReport.WorkSpace = newWorkspace;
         }
 
@@ -51,7 +51,7 @@ namespace TestDomain
         public void SetCorrectAccount()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
-            Workspace newWorkspace = new Workspace { Name = "Nuevo", UserAdmin = newUser };
+            Workspace newWorkspace = new Workspace (newUser, "Nuevo");
             PersonalAccount newAccount = new PersonalAccount { Name = "Nuevo", WorkSpace = newWorkspace, StartingAmount = 0, CreationDate = DateTime.Today.AddDays(-5) };
             accountBalanceReport.Account = newAccount;
         }
