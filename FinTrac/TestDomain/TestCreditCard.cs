@@ -48,11 +48,12 @@ namespace TestDomain
         }
 
         [TestMethod]
-        public void ValidWorkSapce()
+        public void SetWorkSpace()
         {
-            Object workspace = new object();
-            creditCard.WorkSpace = workspace;
-            Assert.AreEqual(workspace, creditCard.WorkSpace);
+            User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            creditCard.WorkSpace = workSpace;
+            Assert.AreEqual(workSpace, creditCard.WorkSpace);
         }
 
         [TestMethod]

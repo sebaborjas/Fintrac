@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Domain;
+﻿using Domain;
 using Domain.DataTypes;
 using Domain.Exceptions;
 
 namespace TestDomain
 {
-	[TestClass]
+    [TestClass]
 	public class TestPersonalAccount
 	{
 		private PersonalAccount account; 
@@ -46,7 +40,8 @@ namespace TestDomain
 		[TestMethod]
 		public void SetWorkSpace()
 		{
-			Object workSpace = new Object();
+			User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
 			account.WorkSpace = workSpace;
 			Assert.AreEqual(workSpace, account.WorkSpace);
 		}
@@ -102,5 +97,11 @@ namespace TestDomain
 			account.StartingAmount = amount;
 			Assert.AreEqual(amount, account.StartingAmount);
 		}
+
+		[TestMethod]
+        public void NotNullListOfTransactions()
+		{
+            Assert.IsNotNull(account.TransactionList);
+        }
 	}
 }

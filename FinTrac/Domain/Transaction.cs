@@ -18,8 +18,7 @@ namespace Domain
 		private double _amount;
 		private CurrencyType _currency;
 		private Category _category;
-		private Object _account;
-		private Object _workSpace;
+		private Account _account;
 
 		public string Title
 		{
@@ -93,12 +92,17 @@ namespace Domain
 				{
 					throw new ArgumentNullException("No se permiten categorias vacias");
 				}
+				if (value.Status == CategoryStatus.Inactive)
+				{
+                    throw new InactiveCategoryException();
+                }
+               
 				_category = value;
 			}	
 
 		}
 
-		public Object Account
+		public Account Account
 		{
 			get
 			{
@@ -111,22 +115,6 @@ namespace Domain
 					throw new ArgumentNullException("No se permiten cuentas vacias");
 				}
 				_account = value;
-			}
-		}
-
-		public Object WorkSpace
-		{
-			get
-			{
-				return _workSpace;
-			}
-			set
-			{
-				if (value == null)
-				{
-					throw new ArgumentNullException("No se permiten espacios de trabajo vacios");
-				}
-				_workSpace = value;
 			}
 		}
 	}

@@ -7,13 +7,12 @@ using System.Xml.Linq;
 using Domain.DataTypes;
 using Domain.Exceptions;
 
-
 namespace Domain
 {
 	public class Category
 	{
 		private string _name;
-		private DateTime _creationDate;
+		private DateTime _creationDate = DateTime.Today;
 		private CategoryType _type;
 		private CategoryStatus _status;
 
@@ -40,10 +39,6 @@ namespace Domain
 			}
 			set
 			{
-				if (value < DateTime.Today)
-				{
-					throw new ArgumentException();
-				}
 				if (value > DateTime.Today)
 				{
 					throw new ArgumentException();

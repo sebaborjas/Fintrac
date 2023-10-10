@@ -2,7 +2,7 @@
 using Domain.Exceptions;
 using System.Xml.Linq;
 
-namespace TestDomain
+namespace Domain
 {
     public class Workspace
     {
@@ -34,10 +34,10 @@ namespace TestDomain
             }
         }
         public User UserAdmin { get; set; }
-        public List<object> AccountList { get; } = new List<object>();
-        public List<object> ReportList { get; } = new List<object> { };
-        public List<object> ExchangeList { get; } = new List<object> { };
-        public List<object> CategoryList { get; } = new List<object>();
-        public List<object> GoalList { get; } = new List<object>();
+        public List<Account> AccountList { get; } = new List<Account>();
+        public List<Report> ReportList { get; } = new List<Report> { };
+        public List<Exchange> ExchangeList { get; } = new List<Exchange> { };
+        public List<Category> CategoryList { get; } = new List<Category>();
+        public List<Goal> GoalList { get; } = new List<Goal>();
     }
 }

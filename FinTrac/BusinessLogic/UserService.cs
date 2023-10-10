@@ -11,6 +11,7 @@ using TestDomain;
 
 namespace BusinessLogic
 {
+
     public class UserService
     {
         private readonly MemoryDatabase _memoryDatabase;
@@ -54,4 +55,5 @@ namespace BusinessLogic
             _memoryDatabase.Users.Remove(user);
         }
     }
+
 }

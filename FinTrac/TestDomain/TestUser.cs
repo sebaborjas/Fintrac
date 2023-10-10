@@ -13,26 +13,26 @@ namespace TestDomain
         [TestInitialize]
         public void Setup()
         {
-            user = new User { Email = "email@ort.uy"};
+            user = new User { Email = "email@ort.uy" };
         }
 
         [TestMethod]
-		public void EqualsUsers()
+        public void EqualsUsers()
         {
-            User otherUser = new User { Email = "email@ort.uy"};
+            User otherUser = new User { Email = "email@ort.uy" };
 
             Assert.AreEqual(user, otherUser);
         }
 
-		[TestMethod]
-		public void NotEqualsUsers()
-		{
-			User otherUser = new User { Email = "student@fing.edu" };
+        [TestMethod]
+        public void NotEqualsUsers()
+        {
+            User otherUser = new User { Email = "student@fing.edu" };
 
-			Assert.AreNotEqual(user, otherUser);
-		}
+            Assert.AreNotEqual(user, otherUser);
+        }
 
-		[TestMethod]
+        [TestMethod]
         public void ModifyName()
         {
             user.Name = "Test";
@@ -66,7 +66,7 @@ namespace TestDomain
         {
             string validEmail = "email@email.com";
 
-			user.Email = validEmail;
+            user.Email = validEmail;
             Assert.AreEqual(validEmail, user.Email);
         }
 
@@ -137,4 +137,5 @@ namespace TestDomain
 
         
     }
+
 }
