@@ -5,36 +5,66 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
+using Domain.Exceptions;
 
 namespace BusinessLogic
 {
     public class AccountService
     {
-        private readonly MemoryDatabase _memorryDatabase;
+        private readonly MemoryDatabase _memoryDatabase;
 
-        public AccountService(MemoryDatabase memorryDatabase)
+        public AccountService(MemoryDatabase memoryDatabase)
         {
-            _memorryDatabase = memorryDatabase;
+            _memoryDatabase = memoryDatabase;
         }
 
         public void Add(Account account)
         {
-            throw new NotImplementedException();
+            _memoryDatabase.Accounts.Add(account);
         }
 
         public Account Get(string name)
         {
-            throw new NotImplementedException();
+            Account acccount = _memoryDatabase.Accounts.Find(x => x.Name == name);
+
+            if (acccount == null)
+            {
+                throw new ElementNotFoundException("La cuenta no se encunetra en el sistema");
+            }
+            return acccount;
         }
 
         public void Modify(string name, Account accountModified)
         {
-            throw new NotImplementedException();
+            try 
+            {
+                Account account = Get(name);
+
+                Account acccount = _memoryDatabase.Accounts.Find(x => x.Name == accountModified.Name);
+                if (acccount != null)
+                {
+                    throw new AccountAlreadyExistsException();
+                }
+
+                account.Update(accountModified);
+                
+            }
+            catch(Exception exception) 
+            {
+                throw exception;
+            }
         }
 
         public void Delete(string name)
         {
-            throw new NotImplementedException();
+            try 
+            {
+                Account account = Get(name);
+                _memoryDatabase.Accounts.Remove(account);
+            } catch(Exception exception) 
+            {
+                throw exception;
+            }
         }
     }
 }

@@ -25,9 +25,11 @@ namespace TestBusinessLogic
             workspace = new Workspace(user, "Test");
 
             user.WorkspaceList.Add(workspace);
-            _database.Users.Add(user);
 
             _database = new MemoryDatabase();
+
+            _database.Users.Add(user);
+            
             _service = new AccountService(_database);
 
         }
@@ -43,7 +45,7 @@ namespace TestBusinessLogic
             };
             _service.Add(personalAccount);
 
-            Assert.AreEqual(personalAccount, workspace.AccountList.First(x => x.Name == personalAccount.Name));
+            Assert.AreEqual(personalAccount, _database.Accounts.First(x => x == personalAccount));
         }
 
         [TestMethod]
@@ -60,7 +62,7 @@ namespace TestBusinessLogic
             };
 
             _service.Add(creditCardAccount);
-            Assert.AreEqual(creditCardAccount, workspace.AccountList.First(x => x.Name == creditCardAccount.Name));
+            Assert.AreEqual(creditCardAccount, _database.Accounts.First(x => x == creditCardAccount));
         }
 
         [TestMethod]
@@ -103,7 +105,7 @@ namespace TestBusinessLogic
                 WorkSpace = workspace
             };
 
-            PersonalAccount personalAccountModified = new PersonalAccount
+            Account personalAccountModified = new PersonalAccount
             {
                 Name = personalAccount.Name,
                 StartingAmount = personalAccount.StartingAmount,
@@ -111,8 +113,7 @@ namespace TestBusinessLogic
                 WorkSpace = personalAccount.WorkSpace
             };
 
-
-            workspace.AccountList.Add(personalAccount);
+            _database.Accounts.Add(personalAccount);    
 
             String accountName = personalAccount.Name;
 
@@ -122,7 +123,9 @@ namespace TestBusinessLogic
 
             _service.Modify(accountName, personalAccountModified);
 
-            Assert.AreEqual(personalAccountModified, workspace.AccountList.First(x => x.Name == newName));
+            Account account = _database.Accounts.First(x => x.Name == newName);
+
+            Assert.AreEqual(personalAccountModified, account);
 
         }
 
@@ -156,14 +159,12 @@ namespace TestBusinessLogic
                 WorkSpace = secondPersonalAccount.WorkSpace
             };
 
-            workspace.AccountList.Add(firstPersonalAccount);
-            workspace.AccountList.Add(secondPersonalAccount);
+            _database.Accounts.Add(firstPersonalAccount);
+            _database.Accounts.Add(secondPersonalAccount);
 
             String nameToFind = secondPersonalAccount.Name;
 
             _service.Modify(nameToFind, accountModified);
-
-
 
         }
 
@@ -183,7 +184,7 @@ namespace TestBusinessLogic
 
             String nameToFind = creditCardAccount.Name;
 
-            workspace.AccountList.Add(creditCardAccount);
+            _database.Accounts.Add(creditCardAccount);
 
             String newName = "Credit Oca";
             int newLastDigits = 4321;
@@ -201,12 +202,13 @@ namespace TestBusinessLogic
 
             _service.Modify(nameToFind, creditCardAccountModified);
 
-            Account creditCard = workspace.AccountList.First(x => x.Name == newName);
+            Account creditCard = _database.Accounts.First(x => x.Name == newName);
 
             Assert.AreEqual(creditCardAccountModified, creditCard);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(AccountAlreadyExistsException))]
         public void ModifyCreditCardAlreadyExists() 
         {
             CreditCard creditCardAccount = new CreditCard
@@ -233,8 +235,8 @@ namespace TestBusinessLogic
 
             String nameToFind = secondCreditCardAccount.Name;
 
-            workspace.AccountList.Add(creditCardAccount);
-            workspace.AccountList.Add(secondCreditCardAccount);
+            _database.Accounts.Add(creditCardAccount);
+            _database.Accounts.Add(secondCreditCardAccount);
 
             String newName = "Credit Santander";
             int newLastDigits = 4321;
@@ -266,11 +268,11 @@ namespace TestBusinessLogic
 
             String nameToFind = personalAccount.Name;
 
-            workspace.AccountList.Add(personalAccount);
+            _database.Accounts.Add(personalAccount);
 
             _service.Delete(nameToFind);
 
-            Assert.IsNull(workspace.AccountList.First(x => x.Name == nameToFind));
+            Assert.IsNull(_database.Accounts.Find(x => x.Name == nameToFind));
         }
 
         [TestMethod]
@@ -289,11 +291,11 @@ namespace TestBusinessLogic
 
             String nameToFind = creditCardAccount.Name;
 
-            workspace.AccountList.Add(creditCardAccount);
+            _database.Accounts.Add(creditCardAccount);
 
             _service.Delete(nameToFind);
 
-            Assert.IsNull(workspace.AccountList.First(x => x.Name == nameToFind));
+            Assert.IsNull(_database.Accounts.Find(x => x.Name == nameToFind));
         }
     }
 }
