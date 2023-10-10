@@ -73,7 +73,7 @@ namespace TestDomain
 
 		[TestMethod]
 		[ExpectedException(typeof(Exception))]
-		public void TestAmountNegativo()
+		public void TestAmountNegative()
 		{
 			transaction.Amount = -100;
 		}
@@ -87,7 +87,7 @@ namespace TestDomain
 
 		[TestMethod]
 		[ExpectedException(typeof(Exception))]
-		public void TestCurrencyInvalida()
+		public void TestCurrencyInvalid()
 		{
 			transaction.Currency = (CurrencyType)3;
 		}
@@ -100,29 +100,33 @@ namespace TestDomain
 		}
 
 		[TestMethod]
-		public void TestAccount()
+		public void TestPersonalAccount()
 		{
-			Object account = new Object();
-			transaction.Account = account;
+            User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
+            transaction.Account = account;
 			Assert.AreEqual(account, transaction.Account);
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void TestWorkSpaceNull()
-		{
-			transaction.WorkSpace = null;
-		}
+        [TestMethod]
+        public void TestCreditCardAccount()
+        {
+            User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            Account account = new CreditCard { 
+				BankName = "Test", 
+				AvailableCredit = 1 , 
+				Name = "creditTest", 
+				LastDigits = 1234,
+				DeadLine = 27,
+				WorkSpace = workSpace,
+			};
+            transaction.Account = account;
+            Assert.AreEqual(account, transaction.Account);
+        }
 
-		[TestMethod]
-		public void TestWorkSpace()
-		{
-			Object workSpace = new Object();
-			transaction.WorkSpace = workSpace;
-			Assert.AreEqual(workSpace, transaction.WorkSpace);
-		}
-
-		[TestMethod]
+        [TestMethod]
 		public void TestCategoryActive()
 		{
 			category.Status = CategoryStatus.Active;
@@ -130,7 +134,9 @@ namespace TestDomain
 			Assert.AreEqual(CategoryStatus.Active, transaction.Category.Status);
 		}
 
-		[TestMethod] public void TestCategoryInactive()
+		[TestMethod]
+		[ExpectedException(typeof(InactiveCategoryException))]
+		public void TestCategoryInactive()
 		{
 			category.Status = CategoryStatus.Inactive;
 			transaction.Category = category;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
+using Domain.DataTypes;
 
 namespace TestDomain
 {
@@ -15,8 +16,12 @@ namespace TestDomain
         [TestInitialize]
         public void Setup()
         {
-            PersonalAccount a = new PersonalAccount{ StartingAmount = 0 };
-            accountBalanceReport = new AccountBalanceReport { Account = a };
+            User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace { Name = "Test", UserAdmin = newUser };
+            PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
+            workSpace.AccountList.Add(account);
+
+            accountBalanceReport = new AccountBalanceReport { Account = account };
         }
 
         [TestMethod]
@@ -46,17 +51,92 @@ namespace TestDomain
         {
             User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
             Workspace newWorkspace = new Workspace { Name = "Nuevo", UserAdmin = newUser };
-            PersonalAccount newAccount = new PersonalAccount { Name = "Nuevo", WorkSpace = newWorkspace, StartingAmount = 0 };
+            PersonalAccount newAccount = new PersonalAccount { Name = "Nuevo", WorkSpace = newWorkspace, StartingAmount = 0, CreationDate = DateTime.Today.AddDays(-5) };
             accountBalanceReport.Account = newAccount;
         }
 
         [TestMethod]
-        public void CorrectBalanceOperation()
+        public void CorrectBalanceOperationUYU()
         {
             int montoInicial = 500;
             int ingresos = 300;
             int costos = 600;
             int balance = montoInicial + ingresos - costos;
+
+            Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
+            Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
+
+            Transaction trasaccionIngreso = new Transaction { 
+                Title = "Transaction 1",
+                Amount = ingresos,
+                Currency = CurrencyType.UYU,
+                Category = categoriaIngreso,
+
+            };
+
+            Transaction trasaccionCosto = new Transaction
+            {
+                Title = "Transaction 2",
+                Amount = costos,
+                Currency = CurrencyType.UYU,
+                Category = categoriaCostos,
+
+            };
+
+            accountBalanceReport.Account.StartingAmount = montoInicial;
+            accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
+            accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
+
+
+
+            Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
+        }
+
+        [TestMethod]
+        public void CorrectBalanceOperationUSD()
+        {
+            int montoInicial = 100;
+            int ingresos = 50;
+            int costos = 30;
+            double DollarToday = 50;
+            double DollarBefore = 47.4;
+
+            double balance = montoInicial * DollarBefore + ingresos * DollarToday - costos * DollarBefore;
+
+            accountBalanceReport.Currency = CurrencyType.USD;
+
+            Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
+            Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
+
+            Transaction trasaccionIngreso = new Transaction
+            {
+                Title = "Transaction 1",
+                Amount = ingresos,
+                Currency = CurrencyType.USD,
+                Category = categoriaIngreso,
+
+            };
+
+            Transaction trasaccionCosto = new Transaction
+            {
+                Title = "Transaction 2",
+                Amount = costos,
+                Currency = CurrencyType.USD,
+                Category = categoriaCostos,
+                CreationDate = DateTime.Today.AddDays(-2)
+            };
+
+            Exchange exchangeToday = new Exchange { DollarValue = DollarToday, Date = DateTime.Today, Workspace = accountBalanceReport.WorkSpace };
+            Exchange exchangeYesterday = new Exchange { DollarValue = DollarBefore, Date = DateTime.Today.AddDays(-5), Workspace = accountBalanceReport.WorkSpace };
+
+            accountBalanceReport.WorkSpace.ExchangeList.Add(exchangeToday);
+            accountBalanceReport.WorkSpace.ExchangeList.Add(exchangeYesterday);
+
+            accountBalanceReport.Account.StartingAmount = montoInicial;
+            accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
+            accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
+
+
 
             Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
         }
