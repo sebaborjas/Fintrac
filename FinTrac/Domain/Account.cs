@@ -58,5 +58,21 @@ namespace Domain
 
         public List<Transaction> TransactionList { get; set; } = new List<Transaction>();
 
+        public abstract void Update(Account account);
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null)
+            {
+                return false;
+            }
+            if(obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            Account account = (Account)obj;
+            return account.Name == this.Name;
+        }       
+
     }
 }
