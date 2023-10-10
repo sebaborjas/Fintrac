@@ -49,5 +49,21 @@ namespace BusinessLogic
 		{
 			_memoryDatabase.Users.Remove(user);
 		}
+
+		public bool Login(string email, string password)
+		{
+			User validUser = _memoryDatabase.Users.FirstOrDefault(x => x.Email == email && x.Password == password);
+
+            if (validUser != null)
+            {
+				return true;
+			}
+			else
+			{
+				throw new InvalidUserException();
+			}
+			
+
+        }
 	}
 }

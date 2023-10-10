@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using Domain.DataTypes;
-using Domain.Excepciones;
+using Domain.Exceptions;
 
 namespace Domain
 {
@@ -8,7 +8,7 @@ namespace Domain
     {
         private string _name;
         private DateTime _creationDate = DateTime.Today;
-        private Object _workSpace;
+        private Workspace _workSpace;
         public string Name 
         {
             get
@@ -40,7 +40,7 @@ namespace Domain
         }
         public CurrencyType Currency { get; set; } = CurrencyType.UYU;
 
-        public Object WorkSpace 
+        public Workspace WorkSpace 
         {
             get
             {
@@ -55,6 +55,8 @@ namespace Domain
                 _workSpace = value;
             } 
         }
+
+        public List<Transaction> TransactionList { get; set; } = new List<Transaction>();
 
     }
 }
