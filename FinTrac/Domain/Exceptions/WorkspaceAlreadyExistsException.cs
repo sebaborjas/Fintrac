@@ -5,7 +5,7 @@ namespace Domain.Exceptions
     [Serializable]
     public class WorkspaceAlreadyExistsException : Exception
     {
-        public static string Message = "El email ya está en uso";
+        public static string Message = "El Workspace ya existe";
 
         public WorkspaceAlreadyExistsException() : this(Message)
         {
