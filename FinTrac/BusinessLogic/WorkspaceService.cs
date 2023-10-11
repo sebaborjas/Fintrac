@@ -29,7 +29,7 @@ namespace BusinessLogic
             try
             {
 
-                user.WorkspaceList.Add(w);               
+                user.WorkspaceList.Add(w);
 
             }
             catch (Exception exception)
@@ -66,7 +66,16 @@ namespace BusinessLogic
                 oldUserAdmin.WorkspaceList.Remove(workspace);
                 _memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
             }
+        }
 
+        public List<Transaction> ListAllTransactionsAllAcounts(Workspace workspace)
+        {
+            List<Transaction> transactionList = new List<Transaction>();
+            foreach (Account account in workspace.AccountList)
+            {
+                transactionList.AddRange(account.TransactionList);
+            }
+            return transactionList;
         }
     }
 
