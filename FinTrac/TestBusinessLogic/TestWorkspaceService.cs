@@ -50,7 +50,7 @@ namespace TestBusinessLogic
             var workspace = new Workspace(useradmin, "Test");
 
             _userService.Add(useradmin);
-            _service.Add(useradmin,workspace);
+            _service.Add(useradmin, workspace);
 
             Assert.AreEqual(workspace, _service.Get(workspace.ID));
         }
@@ -147,9 +147,9 @@ namespace TestBusinessLogic
 
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
-
-            int totalTransaction = _service.ListAllTransactionsAllAcounts(workspace).Count;
-            Assert.AreEqual(2, totalTransaction);
+            List<Transaction> expected = new List<Transaction> { transaction1, transaction2 };
+            List<Transaction> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
+            CollectionAssert.AreEqual(expected, transactionList);
 
         }
     }
