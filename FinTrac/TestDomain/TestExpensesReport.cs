@@ -22,13 +22,11 @@ namespace TestDomain
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             workSpace = new Workspace(newUser, "Test");
-            
+
+
             PersonalAccount account = new PersonalAccount { Name = "Cuenta personal", StartingAmount = 700, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-10) };
             PersonalAccount commerceAccount = new PersonalAccount { Name = "Cuenta comercio", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-8) };
 
-            workSpace.AccountList.Add(account);
-
-            expensesReport = new ExpensesReport { Workspace = workSpace };
 
             Category categoryCost = new Category { Name = "Egresos", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-10) };
             Category categoryIncome = new Category { Name = "Ingresos", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-7) };
@@ -38,7 +36,20 @@ namespace TestDomain
 
             Transaction thirdRransaction = new Transaction { Title = "Venta remera", Amount = 600, Currency = CurrencyType.UYU, Category = categoryIncome, Account = commerceAccount, CreationDate = DateTime.Today.AddDays(-2) };
 
-            transactionList = new List<Transaction> { firstTransaction, secondTransaction, thirdRransaction };
+            transactionList = new List<Transaction> { firstTransaction, secondTransaction };
+
+            
+
+            account.TransactionList.Add(firstTransaction);
+            account.TransactionList.Add(secondTransaction);
+            commerceAccount.TransactionList.Add(thirdRransaction);
+
+            workSpace.AccountList.Add(account);
+            workSpace.AccountList.Add(commerceAccount);
+
+            expensesReport = new ExpensesReport { WorkSpace = workSpace };
+
+
 
         }
 
@@ -46,7 +57,7 @@ namespace TestDomain
         [ExpectedException(typeof(NullReferenceException))]
         public void NotWorkspaceException()
         {
-            expensesReport.Workspace = null;
+            expensesReport.WorkSpace = null;
         }
 
         [TestMethod]
@@ -54,7 +65,7 @@ namespace TestDomain
         {
             User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
             Workspace newWorkspace = new Workspace(newUser, "Nuevo");
-            expensesReport.Workspace = newWorkspace;
+            expensesReport.WorkSpace = newWorkspace;
         }
 
         [TestMethod]
@@ -63,7 +74,7 @@ namespace TestDomain
             List<Transaction> transactionListsFromMethod = expensesReport.ListExpenses();
 
 
-            Assert.AreEqual(transactionList, transactionListsFromMethod);
+            CollectionAssert.AreEqual(transactionList, transactionListsFromMethod);
         }
 
         [TestMethod]
@@ -77,7 +88,7 @@ namespace TestDomain
             List<Transaction> transactionListEgresos = transactionList.Where(transaction => transaction.Category.Name == categoryName).ToList();
 
 
-            Assert.AreEqual(transactionListEgresos, transactionListsFromMethod);
+            CollectionAssert.AreEqual(transactionListEgresos, transactionListsFromMethod);
         }
 
         [TestMethod]
@@ -89,7 +100,7 @@ namespace TestDomain
             List<Transaction> transactionListsFromMethod = expensesReport.ListExpensesByCategory(categoryName);
 
 
-            Assert.IsNull(transactionListsFromMethod);
+            Assert.AreEqual(0,transactionListsFromMethod.Count);
         }
 
         [TestMethod]
@@ -105,7 +116,7 @@ namespace TestDomain
             List<Transaction> transactionListEgresos = transactionList.Where(transaction => transaction.CreationDate >= firstDate && transaction.CreationDate <= secondDate).ToList();
 
 
-            Assert.AreEqual(transactionListsFromMethod, transactionListEgresos);
+            CollectionAssert.AreEqual(transactionListsFromMethod, transactionListEgresos);
         }
 
         [TestMethod]
@@ -113,8 +124,8 @@ namespace TestDomain
         public void ShowExpensesFilteredByInvalidDate()
         {
 
-            DateTime firstDate = DateTime.Today.AddDays(-6);
-            DateTime secondDate = DateTime.Today.AddDays(-4);
+            DateTime firstDate = DateTime.Today.AddDays(-4);
+            DateTime secondDate = DateTime.Today.AddDays(-6);
 
 
             List<Transaction> transactionListsFromMethod = expensesReport.ListExpensesByDate(firstDate, secondDate);
@@ -131,7 +142,7 @@ namespace TestDomain
             List<Transaction> transactionsPersonalAccount = transactionList.Where(transaction => transaction.Account.Name == accountName).ToList();
 
 
-            Assert.AreEqual(transactionListsFromMethod, transactionsPersonalAccount);
+            CollectionAssert.AreEqual(transactionListsFromMethod, transactionsPersonalAccount);
         }
 
         [TestMethod]
@@ -143,7 +154,7 @@ namespace TestDomain
             List<Transaction> transactionListsFromMethod = expensesReport.ListExpensesByAccount(accountName);
 
 
-            Assert.IsNull(transactionListsFromMethod);
+            Assert.AreEqual(0,transactionListsFromMethod.Count);
         }
 
     }
