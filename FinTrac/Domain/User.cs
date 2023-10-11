@@ -96,6 +96,8 @@ namespace Domain
         public List<Workspace> WorkspaceList { get; set; } = new List<Workspace>();
 
 
+
+
         public override bool Equals(object? obj)
         {
             User user = (User)obj;

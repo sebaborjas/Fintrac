@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,15 +13,14 @@ namespace BusinessLogic
         public bool isLoggedIn { get; set; } = false;
 
         public List<User> Users { get; set; } = new List<User>();
-	      public User currentUser { get; set; }
-        public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
-        public List<Account> Accounts { get; set; } = new List<Account>();
+	    
+        public User currentUser { get; set; }
+
 
 
         public MemoryDatabase()
         {
             Users = new List<User>();
-            Workspaces = new List<Workspace>();
             addUsers();
         }
      
