@@ -32,22 +32,6 @@ namespace TestBusinessLogic
 			_service.Add(user);
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(UserAlreadyExistsException))]
-		public void UpdateEmailAlreadyExists() 
-		{
-			
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
-			_service.Add(user);
-
-			var userTwo = new User { Email = "second@test.com", Name = "Name", LastName = "LastName" };
-			_service.Add(userTwo);
-
-			string userEmail = user.Email;
-
-			_service.UpdateEmail(userTwo, userEmail);
-
-		}
 
 		[TestMethod]
 		public void GetUser()
@@ -66,7 +50,7 @@ namespace TestBusinessLogic
 			_service.Add(user);
 
 			_service.DeleteUser(user);
-			Assert.AreEqual(null, _service.Get(email));
+			Assert.IsNull(_service.Get(email));
 		}
 
 		[TestMethod]

@@ -127,6 +127,7 @@
 		{
 			userService.Login(email, password);
 			MemoryDatabase.isLoggedIn = true;
+			MemoryDatabase.currentUser = userService.Get(email);
 			NavigationManager.NavigateTo("/");
 		}
 		catch (Exception e)

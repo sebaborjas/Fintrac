@@ -6,15 +6,18 @@ namespace Domain
 {
     public class Workspace
     {
+        public int ID { get; set; }
         public static int Id { get; private set; } = 1;
 
         public Workspace(User userAdmin, string name)
         {
-            Id++;
+            ID = Id;
             Name = name;
-            UserAdmin = userAdmin; 
+            UserAdmin = userAdmin;
+            Id++;
         }
 
+        
         private string _name;
         public string Name
         {
@@ -40,5 +43,11 @@ namespace Domain
         public List<Exchange> ExchangeList { get; } = new List<Exchange> { };
         public List<Category> CategoryList { get; } = new List<Category>();
         public List<Goal> GoalList { get; } = new List<Goal>();
+
+        public override bool Equals(object? obj)
+        {
+            Workspace workspace = (Workspace)obj;
+            return this.ID == workspace.ID;
+        }
     }
 }

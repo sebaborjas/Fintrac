@@ -21,6 +21,22 @@ namespace TestDomain
         }
 
         [TestMethod]
+        public void EqualsExchanges()
+        {
+            Exchange otherExchange = new Exchange { Date = DateTime.Today };
+
+            Assert.AreEqual(exchange, otherExchange);
+        }
+
+        [TestMethod]
+        public void NotEqualsExchanges()
+        {
+            Exchange otherExchange = new Exchange { Date = DateTime.Today.AddDays(-1) };
+
+            Assert.AreNotEqual(exchange, otherExchange);
+        }
+
+        [TestMethod]
         public void NotNullDate()
         {
             Assert.AreEqual(DateTime.Today, exchange.Date);

@@ -24,5 +24,20 @@ namespace Domain
 				_startingAmount = value;
 			}
 		}
-	}
+
+		public override void Update(Account account)
+		{
+			
+			PersonalAccount personalAccount = account as PersonalAccount;
+
+			this.Name = personalAccount.Name;
+			this.CreationDate = personalAccount.CreationDate;
+			this.WorkSpace = personalAccount.WorkSpace;
+			this.Currency = personalAccount.Currency;
+			this.TransactionList = personalAccount.TransactionList;
+			this.StartingAmount = personalAccount.StartingAmount;
+		}
+
+
+    }
 }

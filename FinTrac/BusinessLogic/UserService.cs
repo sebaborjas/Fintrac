@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,9 +29,9 @@ namespace BusinessLogic
             }
             try
             {
-              _memoryDatabase.Users.Add(u);
               Workspace defaultWorkspace = new Workspace(u, $"Personal {u.Name} {u.LastName}");
               u.WorkspaceList.Add(defaultWorkspace);
+              _memoryDatabase.Users.Add(u);
             }
             catch (Exception exception)
             {
@@ -40,29 +42,38 @@ namespace BusinessLogic
 
         public User Get(string email)
         {
-            return _memoryDatabase.Users.FirstOrDefault(x => x.Email == email);
+            return _memoryDatabase.Users.Find(x => x.Email == email);
         }
 
-        public void UpdateEmail(User user, string newEmail)
-        {
-            User alreadyExists = _memoryDatabase.Users.FirstOrDefault(x => x.Email == newEmail);
+		public User UpdateUser(String name, String email, String lastName, String address, String password)
+		{
+			User userToUpdate = _memoryDatabase.Users.First(x => x.Email == email);
 
-            if (alreadyExists != null)
-            {
-                throw new UserAlreadyExistsException();
-            }
+			if (userToUpdate != null)
+			{
+				userToUpdate.Name = name;
+				userToUpdate.LastName = lastName;
+				userToUpdate.Address = address;
+				userToUpdate.Password = password;
+			}
 
-            this.Get(user.Email).Email = newEmail;
-        }
+			else
+			{
+				throw new InvalidUserException();
+			}
 
-        public void DeleteUser(User user)
+			return userToUpdate;
+		}
+
+
+		public void DeleteUser(User user)
         {
             _memoryDatabase.Users.Remove(user);
         }
 
         public bool Login(string email, string password)
         {
-            User validUser = _memoryDatabase.Users.FirstOrDefault(x => x.Email == email && x.Password == password);
+            User validUser = _memoryDatabase.Users.Find(x => x.Email == email && x.Password == password);
 
             if (validUser != null)
             {

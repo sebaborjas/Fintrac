@@ -71,6 +71,8 @@ namespace Domain
 		}
 		public Workspace Workspace { get; set; }
 
+		public Workspace Workspace { get; set; }
+
 
         public override bool Equals(object? obj)
         {

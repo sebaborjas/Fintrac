@@ -144,6 +144,7 @@
         {
             User user = new User{Name = name, LastName = lastName, Address = address, Email = email, Password = password};
             _userService.Add(user);
+            ToastService.Notify(new(ToastType.Success, "Usuario registrado con exito!"));
             NavigationManager.NavigateTo("/login");
         }
         catch (Exception e)
