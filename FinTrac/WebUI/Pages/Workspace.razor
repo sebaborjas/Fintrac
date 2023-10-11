@@ -1,0 +1,97 @@
+﻿@page "/workspace"
+@using BusinessLogic
+@using Domain
+@using System.Text.RegularExpressions
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (MemoryDatabase.isLoggedIn)
+{
+	
+<PageTitle>Workspace @workspace.Name</PageTitle>
+
+<div class="row">
+@foreach (var item in lista)
+{
+	<div class="col-sm-12 col-md-6 col-lg-4">
+		<Card Class="m-2" Style="width: auto;" id="@($"card-{item.Name}")">
+			<div class="image" Style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 100px;">
+				<span style="color:black">@(new MarkupString(item.Icon))</span>
+			</div>
+			<CardBody>
+				<CardTitle>@item.Name</CardTitle>
+				<div class="d-flex justify-content-end">
+					<NavLink class="btn btn-primary ml-auto" @onclick="() => HandleDetails(item.Name)">
+						Ver detalles
+					</NavLink>
+				</div>
+			</CardBody>
+		</Card>
+	</div>
+}
+</div>
+
+
+
+@code{
+	public class ListItem
+	{
+		public string Name { get; set; }
+		public string Icon { get; set; }
+	}
+
+	private User CurrentUser;
+	private Domain.Workspace workspace;
+	private List<Account> AccountList;
+	private List<Report> ReportList;
+	private List<Exchange> ExchangeList;
+	private List<Category> CategoryList;
+	private List<Goal> GoalList;
+	private List<User> GuestUsers;
+	private User UserAdmin;
+	private List<ListItem> lista = new List<ListItem>
+	{
+		new ListItem { Name = "GuestUsers", Icon = "<i class='fas fa-user'></i>" },
+		new ListItem { Name = "AccountList", Icon = "<i class='fas fa-chart-bar'></i>" },
+		new ListItem { Name = "ReportList", Icon = "<i class='fas fa-file-alt'></i>" },
+		new ListItem { Name = "ExchangeList", Icon = "<i class='fas fa-exchange-alt'></i>" },
+		new ListItem { Name = "CategoryList", Icon = "<i class='fas fa-th'></i>" },
+		new ListItem { Name = "GoalList", Icon = "<i class='fas fa-bullseye'></i>" }
+	};
+
+
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			CurrentUser = MemoryDatabase.currentUser;
+			workspace = MemoryDatabase.currentWorkspace;
+			AccountList = workspace.AccountList;
+			ReportList = workspace.ReportList;
+			ExchangeList = workspace.ExchangeList;
+			CategoryList = workspace.CategoryList;
+			GoalList = workspace.GoalList;
+
+
+		}
+
+	}
+	private void HandleDetails(String item)
+	{
+		//NavigationManager.NavigateTo("@($"/{item}")");
+	}
+
+}
+}
+else
+{
+	try
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch
+	{
+
+	}
+}
