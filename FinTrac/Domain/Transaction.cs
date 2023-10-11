@@ -71,16 +71,13 @@ namespace Domain
 			get => _currency;
 			set
 			{
-				if (value == CurrencyType.UYU || value == CurrencyType.USD)
+				if (value != CurrencyType.UYU && value != CurrencyType.USD)
 				{
-					_currency = value;
-				}
-				else
-				{
-					throw new Exception();
-				}
-				
-			}
+                    throw new Exception();
+                }
+                _currency = value;
+
+            }
 		}
 
 		public Category Category
@@ -113,6 +110,10 @@ namespace Domain
 				if (value == null)
 				{
 					throw new ArgumentNullException("No se permiten cuentas vacias");
+				}
+				if(value.Currency != Currency) 
+				{
+					throw new InvalidTransactionCurrencyException();
 				}
 				_account = value;
 			}

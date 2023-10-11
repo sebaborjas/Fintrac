@@ -149,5 +149,33 @@ namespace TestDomain
 			transaction.Category = category;
 			Assert.AreEqual(CategoryType.Cost, transaction.Category.Type);
 		}
-	}
+
+        [TestMethod]
+        public void TestTransactionCurrencyEqualsAccountCurrency()
+        {
+            User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace(newUser, "Test");
+            Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
+
+			transaction.Account = account;
+
+			transaction.Currency = CurrencyType.UYU;
+
+            Assert.AreEqual(account.Currency, transaction.Currency);
+        }
+
+        [TestMethod]
+		[ExpectedException(typeof(InvalidTransactionCurrencyException))]
+        public void TestTransactionCurrencyNotEqualsAccountCurrency()
+        {
+            User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workSpace = new Workspace(newUser, "Test");
+            Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
+
+            transaction.Currency = CurrencyType.USD;
+            transaction.Account = account;
+
+
+        }
+    }
 }
