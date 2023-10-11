@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
+using Domain.Exceptions;
 
 namespace BusinessLogic
 {
@@ -18,22 +19,58 @@ namespace BusinessLogic
 
         public void Add(Account account, Transaction transaction)
         {
-            throw new NotImplementedException();
+            if (account.TransactionList.Contains(transaction))
+            {
+                throw new TransactionAlreadyExistsException();
+            }
+            var user = _memoryDatabase.Users.FirstOrDefault(x => x.WorkspaceList.Contains(account.WorkSpace));
+            if (user != null)
+            {
+                var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
+                if (targetWorkspace != null)
+                {
+                    var exchange = targetWorkspace.ExchangeList.Find(x => x.Date <= transaction.CreationDate);
+                    if (exchange == null)
+                    {
+                        throw new ExchangeNotFoundException();
+                    }
+                }
+            }
+
+            try
+            {
+                account.TransactionList.Add(transaction);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
         public void Duplicate(Account account, Transaction transaction)
         {
-            throw new NotImplementedException();
+            Transaction duplicatedTransaction = new Transaction
+            {
+                Title = transaction.Title,
+                Amount = transaction.Amount,
+                CreationDate = DateTime.Today,
+                Currency = transaction.Currency,
+                Category = transaction.Category,
+                Account = transaction.Account
+            };
+            account.TransactionList.Add(duplicatedTransaction);
         }
 
-        public Transaction Get(Account account, string title)
+        public Transaction Get(Account account, int transactionID)
         {
-            throw new NotImplementedException();
+            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(account.WorkSpace)).WorkspaceList.Find(x => x.ID == account.WorkSpace.ID).AccountList.Find(x => x == account).TransactionList.Find(x => x.ID == transactionID);
         }
 
-        public Transaction Modify(string title, DateTime date, Transaction transaction)
+        public void Modify(Transaction transaction, string title, double amount)
         {
-            throw new NotImplementedException();
+            Transaction transactionToUpdate = Get(transaction.Account, transaction.ID);
+            transactionToUpdate.Amount = amount;
+            transactionToUpdate.Title = title;
         }
     }
 }
