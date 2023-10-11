@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,24 +14,29 @@ namespace TestBusinessLogic
     public class TestAccountService
     {
         private AccountService _service;
-        private MemoryDatabase _database;
-        private Workspace workspace;
+        private WorkspaceService _workspaceService;
+        private UserService _userService;
+
+        private Workspace _workspace;
+        private User _user;
+
 
         [TestInitialize]
         public void SetUp()
         {
-            
-            User user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
-            workspace = new Workspace(user, "Test");
-
-            user.WorkspaceList.Add(workspace);
-
-            _database = new MemoryDatabase();
-
-            _database.Users.Add(user);
-            
+            MemoryDatabase _database = new MemoryDatabase();
             _service = new AccountService(_database);
+            _workspaceService = new WorkspaceService(_database);
+            _userService = new UserService(_database);
 
+            _user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
+
+            _workspace = new Workspace(_user, "Test");
+
+            _userService.Add(_user);
+            _workspaceService.Add(_user, _workspace);
+
+       
         }
 
         [TestMethod]
@@ -41,11 +46,11 @@ namespace TestBusinessLogic
                 Name = "Test", 
                 StartingAmount = 1000, 
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace 
+                WorkSpace = _workspace 
             };
-            _service.Add(personalAccount);
+            _service.Add(personalAccount.WorkSpace, personalAccount);
 
-            Assert.AreEqual(personalAccount, _database.Accounts.First(x => x == personalAccount));
+            Assert.AreEqual(personalAccount, _service.Get(personalAccount.WorkSpace,personalAccount.Name));
         }
 
         [TestMethod]
@@ -58,11 +63,11 @@ namespace TestBusinessLogic
                 DeadLine = 26, 
                 Name = "Credit Santander", 
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
-            _service.Add(creditCardAccount);
-            Assert.AreEqual(creditCardAccount, _database.Accounts.First(x => x == creditCardAccount));
+            _service.Add(creditCardAccount.WorkSpace, creditCardAccount);
+            Assert.AreEqual(creditCardAccount, _service.Get(creditCardAccount.WorkSpace, creditCardAccount.Name));
         }
 
         [TestMethod]
@@ -70,7 +75,7 @@ namespace TestBusinessLogic
         {
             String name = "Credit Santander";
 
-            CreditCard creditCardAccount = new CreditCard
+            Account creditCardAccount = new CreditCard
             {
                 BankName = "Santander",
                 LastDigits = 1234,
@@ -78,20 +83,20 @@ namespace TestBusinessLogic
                 DeadLine = 26,
                 Name = name,
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
-            _service.Add(creditCardAccount);
-            Account account = _service.Get(name);
+            _service.Add(creditCardAccount.WorkSpace, creditCardAccount);
 
-            Assert.AreEqual(account, creditCardAccount);
+            Assert.AreEqual(creditCardAccount, _service.Get(creditCardAccount.WorkSpace, creditCardAccount.Name));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ElementNotFoundException))]
         public void GetAccountDoesntExists() 
         {
-            Account account = _service.Get("Santander");
+            Account account = _service.Get(_workspace ,"Santander");
+            Assert.IsNull(account);
+
         }
 
         [TestMethod]
@@ -102,7 +107,7 @@ namespace TestBusinessLogic
                 Name = "Test",
                 StartingAmount = 1000,
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             Account personalAccountModified = new PersonalAccount
@@ -113,7 +118,7 @@ namespace TestBusinessLogic
                 WorkSpace = personalAccount.WorkSpace
             };
 
-            _database.Accounts.Add(personalAccount);    
+            _service.Add(personalAccount.WorkSpace,personalAccount);    
 
             String accountName = personalAccount.Name;
 
@@ -123,7 +128,7 @@ namespace TestBusinessLogic
 
             _service.Modify(accountName, personalAccountModified);
 
-            Account account = _database.Accounts.First(x => x.Name == newName);
+            Account account = _service.Get(personalAccountModified.WorkSpace,newName);
 
             Assert.AreEqual(personalAccountModified, account);
 
@@ -138,7 +143,7 @@ namespace TestBusinessLogic
                 Name = "Test",
                 StartingAmount = 1000,
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             PersonalAccount secondPersonalAccount = new PersonalAccount
@@ -146,7 +151,7 @@ namespace TestBusinessLogic
                 Name = "Second Test",
                 StartingAmount = 1000,
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             String newName = "Test";
@@ -159,8 +164,8 @@ namespace TestBusinessLogic
                 WorkSpace = secondPersonalAccount.WorkSpace
             };
 
-            _database.Accounts.Add(firstPersonalAccount);
-            _database.Accounts.Add(secondPersonalAccount);
+            _service.Add( firstPersonalAccount.WorkSpace,firstPersonalAccount);
+            _service.Add(secondPersonalAccount.WorkSpace, secondPersonalAccount);
 
             String nameToFind = secondPersonalAccount.Name;
 
@@ -179,12 +184,12 @@ namespace TestBusinessLogic
                 DeadLine = 26,
                 Name = "Credit Santander",
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             String nameToFind = creditCardAccount.Name;
 
-            _database.Accounts.Add(creditCardAccount);
+            _service.Add(creditCardAccount.WorkSpace, creditCardAccount);
 
             String newName = "Credit Oca";
             int newLastDigits = 4321;
@@ -197,12 +202,12 @@ namespace TestBusinessLogic
                 DeadLine = 26,
                 Name = newName,
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             _service.Modify(nameToFind, creditCardAccountModified);
 
-            Account creditCard = _database.Accounts.First(x => x.Name == newName);
+            Account creditCard = _service.Get(creditCardAccount.WorkSpace, newName);
 
             Assert.AreEqual(creditCardAccountModified, creditCard);
         }
@@ -219,7 +224,7 @@ namespace TestBusinessLogic
                 DeadLine = 26,
                 Name = "Credit Santander",
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             CreditCard secondCreditCardAccount = new CreditCard
@@ -230,13 +235,13 @@ namespace TestBusinessLogic
                 DeadLine = 26,
                 Name = "Credit Brou",
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             String nameToFind = secondCreditCardAccount.Name;
 
-            _database.Accounts.Add(creditCardAccount);
-            _database.Accounts.Add(secondCreditCardAccount);
+            _service.Add(creditCardAccount.WorkSpace, creditCardAccount);
+            _service.Add(creditCardAccount.WorkSpace, secondCreditCardAccount);
 
             String newName = "Credit Santander";
             int newLastDigits = 4321;
@@ -249,7 +254,7 @@ namespace TestBusinessLogic
                 DeadLine = 26,
                 Name = newName,
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             _service.Modify(nameToFind, creditCardAccountModified);
@@ -263,16 +268,16 @@ namespace TestBusinessLogic
                 Name = "Test",
                 StartingAmount = 1000,
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             String nameToFind = personalAccount.Name;
 
-            _database.Accounts.Add(personalAccount);
+            _service.Add(personalAccount.WorkSpace, personalAccount);
 
-            _service.Delete(nameToFind);
+            _service.Delete(personalAccount.WorkSpace, nameToFind);
 
-            Assert.IsNull(_database.Accounts.Find(x => x.Name == nameToFind));
+            Assert.IsNull(_service.Get(personalAccount.WorkSpace, nameToFind));
         }
 
         [TestMethod]
@@ -286,16 +291,16 @@ namespace TestBusinessLogic
                 DeadLine = 26,
                 Name = "Test",
                 Currency = CurrencyType.UYU,
-                WorkSpace = workspace
+                WorkSpace = _workspace
             };
 
             String nameToFind = creditCardAccount.Name;
 
-            _database.Accounts.Add(creditCardAccount);
+            _service.Add(creditCardAccount.WorkSpace, creditCardAccount);
 
-            _service.Delete(nameToFind);
+            _service.Delete(creditCardAccount.WorkSpace, nameToFind);
 
-            Assert.IsNull(_database.Accounts.Find(x => x.Name == nameToFind));
+            Assert.IsNull(_service.Get(creditCardAccount.WorkSpace, nameToFind));
         }
     }
 }
