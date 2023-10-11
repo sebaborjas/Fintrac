@@ -12,7 +12,7 @@ namespace Domain.Exceptions
 
         }
 
-        private CategoryHasTransactionsException(string? message) : base(message)
+        public  CategoryHasTransactionsException(string? message) : base(message)
         {
 
         }

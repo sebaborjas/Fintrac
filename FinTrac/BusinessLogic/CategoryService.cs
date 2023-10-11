@@ -68,7 +68,7 @@ namespace BusinessLogic
             }
         }
 
-        public void Update(Workspace workspace,string categoryToUpdate, Category updatedCategory) 
+        public void Update(Workspace workspace, string categoryToUpdate, Category updatedCategory)
         {
             try
             {
@@ -77,7 +77,6 @@ namespace BusinessLogic
                 {
                     throw new CategoryAlreadyExistsException();
                 }
-
                 var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
                 if (user != null)
                 {
@@ -87,18 +86,23 @@ namespace BusinessLogic
                         var accountWithTransactions = targetWorkspace.AccountList.Find(x => x.TransactionList.Count > 0);
                         if (accountWithTransactions != null)
                         {
-                            var transaction = accountWithTransactions.TransactionList.Find(x => x.Category == category);
+                            var transaction = accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate));
                             if (transaction != null)
                             {
-                                throw new CategoryHasTransactionsException();
+                                if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
+                                {
+                                    throw new CategoryHasTransactionsException("No se puede cambiar el tipo ni el estado a una categoría que tiene transacciones");
+                                }
+                                accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate)).Category = updatedCategory;
                             }
                         }
                     }
+                    targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
                 }
 
-                category.Update(updatedCategory);
             }
-            catch(Exception exception)
+
+            catch (Exception exception)
             {
                 throw exception;
             }

@@ -92,20 +92,87 @@ namespace TestBusinessLogic
         }
 
         [TestMethod]
-        public void UpdateCategory()
+        public void UpdateCategoryNoTransactions()
         {
             _service.Add(_category.Workspace, _category);
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),
-                Name = "Test",
+                Name = "Hola",
                 Workspace = _workspace,
                 Type = CategoryType.Income,
+                Status = CategoryStatus.Inactive
+            };
+            _service.Update(_category.Workspace, _category.Name, categoryModified);
+            Assert.AreEqual(categoryModified, _service.Get(_category.Workspace, categoryModified.Name));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CategoryHasTransactionsException))]
+        public void UpdateCategoryStatusTransactionInWorkspace()
+        {
+            _service.Add(_category.Workspace, _category);
+            Account personalAccount = new PersonalAccount
+            {
+                Name = "Test",
+                StartingAmount = 1000,
+                Currency = CurrencyType.UYU,
+                WorkSpace = _workspace
+            };
+            Transaction transaction = new Transaction
+            {
+                Title = "Test",
+                CreationDate = DateTime.Today,
+                Amount = 100,
+                Currency = CurrencyType.UYU,
+                Category = _category,
+                Account = personalAccount,
+            };
+            personalAccount.TransactionList.Add(transaction);
+            _workspace.AccountList.Add(personalAccount);
+            Category categoryModified = new Category
+            {
+                CreationDate = DateTime.Today.AddDays(-5),
+                Name = "Hola",
+                Workspace = _workspace,
+                Type = CategoryType.Income,
+                Status = CategoryStatus.Inactive
+            };
+            _service.Update(_category.Workspace, _category.Name, categoryModified);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CategoryHasTransactionsException))]
+        public void UpdateCategoryTypeTransactionInWorkspace()
+        {
+            _service.Add(_category.Workspace, _category);
+            Account personalAccount = new PersonalAccount
+            {
+                Name = "Test",
+                StartingAmount = 1000,
+                Currency = CurrencyType.UYU,
+                WorkSpace = _workspace
+            };
+            Transaction transaction = new Transaction
+            {
+                Title = "Test",
+                CreationDate = DateTime.Today,
+                Amount = 100,
+                Currency = CurrencyType.UYU,
+                Category = _category,
+                Account = personalAccount,
+            };
+            personalAccount.TransactionList.Add(transaction);
+            _workspace.AccountList.Add(personalAccount);
+            Category categoryModified = new Category
+            {
+                CreationDate = DateTime.Today.AddDays(-5),
+                Name = "Hola",
+                Workspace = _workspace,
+                Type = CategoryType.Cost,
                 Status = CategoryStatus.Active
             };
-            categoryModified.Name = "Modified";
-            _service.Update(_category.Workspace, categoryModified);
-            Assert.AreEqual(categoryModified, _service.Get(_category.Workspace, categoryModified.Name));
+            _service.Update(_category.Workspace, _category.Name, categoryModified);
         }
     }
 }
