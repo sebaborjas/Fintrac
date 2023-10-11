@@ -1,4 +1,4 @@
-﻿using Domain;
+using Domain;
 using BusinessLogic;
 using Domain.Exceptions;
 
@@ -23,6 +23,7 @@ namespace TestBusinessLogic
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             var workspace = new Workspace(useradmin, "Test");
+
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
             Assert.AreEqual(workspace, useradmin.WorkspaceList.First(x => x == workspace));
@@ -34,9 +35,11 @@ namespace TestBusinessLogic
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             var workspace = new Workspace(useradmin, "Test");
+
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
             _service.Add(useradmin, workspace);
+
         }
 
         [TestMethod]
@@ -44,8 +47,10 @@ namespace TestBusinessLogic
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             var workspace = new Workspace(useradmin, "Test");
+
             _userService.Add(useradmin);
             _service.Add(useradmin,workspace);
+
             Assert.AreEqual(workspace, _service.Get(workspace.ID));
         }
 
@@ -55,6 +60,7 @@ namespace TestBusinessLogic
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             var workspace = new Workspace(useradmin, "Test");
             _service.Add(useradmin, workspace);
+
             _service.UpdateName(workspace, "Nuevo Workspace");
             Assert.AreEqual("Nuevo Workspace", workspace.Name);
         }
@@ -66,10 +72,12 @@ namespace TestBusinessLogic
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             User otherUser = new User { Name = "Other", LastName = "Test", Email = "test@a.com", Password = "12345678909" };
             var workspace = new Workspace(useradmin, "Test");
+
             _userService.Add(useradmin);
             _userService.Add(otherUser);
             _service.Add(useradmin, workspace);
             _service.Add(otherUser, workspace);
+
             _service.DeleteWorkspace(workspace);
 
             Assert.AreEqual(workspace.UserAdmin, otherUser);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,6 +56,7 @@ namespace BusinessLogic
 				userToUpdate.Address = address;
 				userToUpdate.Password = password;
 			}
+
 			else
 			{
 				throw new InvalidUserException();
@@ -62,6 +64,7 @@ namespace BusinessLogic
 
 			return userToUpdate;
 		}
+
 
 		public void DeleteUser(User user)
         {

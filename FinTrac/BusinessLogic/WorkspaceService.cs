@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -19,6 +19,7 @@ namespace BusinessLogic
             this._memoryDatabase = memoryDatabase;
         }
 
+
         public void Add(User user, Workspace w)
         {
             if (user.WorkspaceList.Contains(w))
@@ -27,7 +28,9 @@ namespace BusinessLogic
             }
             try
             {
+
                 user.WorkspaceList.Add(w);               
+
             }
             catch (Exception exception)
             {
@@ -37,13 +40,17 @@ namespace BusinessLogic
 
         public Workspace Get(int ID)
         {
+
             return _memoryDatabase.Users.First(x => x.WorkspaceList.Any(x => x.ID == ID)).WorkspaceList.First(x => x.ID == ID);
+
         }
 
         public void UpdateName(Workspace workspace, string newName)
         {
+
             _memoryDatabase.Users.FindAll(x => x.WorkspaceList.Contains(workspace)).ForEach(x => x.WorkspaceList.Find(x => x.ID == workspace.ID).Name = newName);
             workspace.Name = newName;
+
         }
 
         public void DeleteWorkspace(Workspace workspace)
@@ -59,6 +66,7 @@ namespace BusinessLogic
                 oldUserAdmin.WorkspaceList.Remove(workspace);
                 _memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
             }
+
         }
     }
 
