@@ -50,6 +50,14 @@ namespace TestBusinessLogic
         }
 
         [TestMethod]
+        [ExpectedException(typeof(CategoryAlreadyExistsException))]
+        public void AddDuplicateCategory()
+        {
+            _service.Add(_category.Workspace, _category);
+            _service.Add(_category.Workspace, _category);            
+        }
+
+        [TestMethod]
         public void GetCategory()
         {
             _service.Add(_category.Workspace, _category);
