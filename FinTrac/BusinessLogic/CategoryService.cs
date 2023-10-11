@@ -67,5 +67,41 @@ namespace BusinessLogic
                 throw exception;
             }
         }
+
+        public void Update(Workspace workspace,string categoryToUpdate, Category updatedCategory) 
+        {
+            try
+            {
+                Category category = Get(workspace, updatedCategory.Name);
+                if (category != null)
+                {
+                    throw new CategoryAlreadyExistsException();
+                }
+
+                var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
+                if (user != null)
+                {
+                    var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
+                    if (targetWorkspace != null)
+                    {
+                        var accountWithTransactions = targetWorkspace.AccountList.Find(x => x.TransactionList.Count > 0);
+                        if (accountWithTransactions != null)
+                        {
+                            var transaction = accountWithTransactions.TransactionList.Find(x => x.Category == category);
+                            if (transaction != null)
+                            {
+                                throw new CategoryHasTransactionsException();
+                            }
+                        }
+                    }
+                }
+
+                category.Update(updatedCategory);
+            }
+            catch(Exception exception)
+            {
+                throw exception;
+            }
+        }
     }
 }

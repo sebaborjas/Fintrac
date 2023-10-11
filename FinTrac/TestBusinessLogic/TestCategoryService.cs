@@ -90,6 +90,23 @@ namespace TestBusinessLogic
             _workspace.AccountList.Add(personalAccount);
             _service.Delete(_category.Workspace, _category);
         }
+
+        [TestMethod]
+        public void UpdateCategory()
+        {
+            _service.Add(_category.Workspace, _category);
+            Category categoryModified = new Category
+            {
+                CreationDate = DateTime.Today.AddDays(-5),
+                Name = "Test",
+                Workspace = _workspace,
+                Type = CategoryType.Income,
+                Status = CategoryStatus.Active
+            };
+            categoryModified.Name = "Modified";
+            _service.Update(_category.Workspace, categoryModified);
+            Assert.AreEqual(categoryModified, _service.Get(_category.Workspace, categoryModified.Name));
+        }
     }
 }
 
