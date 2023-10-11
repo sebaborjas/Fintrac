@@ -45,5 +45,12 @@ namespace Domain
         }
 
         public Workspace Workspace { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            Exchange exchange = (Exchange)obj;
+            return this.Date == exchange.Date;
+        }
+
     }
 }
