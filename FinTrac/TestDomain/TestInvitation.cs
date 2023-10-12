@@ -30,7 +30,6 @@ namespace TestDomain
                 Workspace = workspace,
                 UserToInvite = userToInvite
             };
-
             Assert.AreEqual(invitation, invitation);
         }
 

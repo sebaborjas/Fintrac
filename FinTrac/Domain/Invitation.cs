@@ -31,6 +31,7 @@ namespace Domain
                     throw new InviteDifferentUserException();
                 }
                 _admin = value;
+
             }
         }
 
