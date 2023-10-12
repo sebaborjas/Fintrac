@@ -1,0 +1,79 @@
+﻿@page "/"
+@using BusinessLogic
+@using Domain
+@inject NavigationManager NavigationManager
+@inject MemoryDatabase MemoryDatabase
+
+@if(MemoryDatabase.isLoggedIn){
+<PageTitle>Home</PageTitle>
+
+
+@if (!MemoryDatabase.isLoggedIn)
+{
+	try
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch (Exception e)
+	{
+		Console.WriteLine(e);
+	}
+}
+@if (MemoryDatabase.isLoggedIn)
+{
+	<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
+	<div class="row">
+		@foreach (var workspace in workspaces)
+		{
+			<div class="col-sm-12 col-md-6 col-lg-4">
+				<Card Class="m-2" Style="width: auto;" id="@($"card-{workspace.ID}")">
+					<div class="image" Style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 150px;">
+						<i class="fas fa-dollar-sign" style="font-size: 3em; color: black;"></i>
+					</div>
+					<CardBody>
+						<CardTitle>@workspace.Name</CardTitle>
+						<div class="d-flex justify-content-end">
+							<NavLink class="btn btn-primary ml-auto" onclick="@(() => HandleCardClick(workspace))">
+								Ir al workspace
+							</NavLink>
+						</div>
+					</CardBody>
+				</Card>
+			</div>
+		}
+	</div>
+
+
+}
+@code {
+	private User user;
+	private List<Domain.Workspace> workspaces;
+
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			user = MemoryDatabase.currentUser;
+			workspaces = MemoryDatabase.currentUser.WorkspaceList;
+		}
+	}
+
+	private void HandleCardClick(Domain.Workspace workspace)
+	{
+		MemoryDatabase.currentWorkspace = workspace;
+		NavigationManager.NavigateTo("/workspace");
+
+	}
+}
+}else
+{
+	try
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch
+	{
+		
+	}
+}
+

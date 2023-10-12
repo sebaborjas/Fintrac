@@ -1,0 +1,307 @@
+﻿@page "/workspace/TransactionListAccount"
+@using System.Text.Json
+@using Domain
+@using Domain.DataTypes
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+
+@if (MemoryDatabase.isLoggedIn)
+{
+    <PageTitle>Lista de transacciones para la cuenta @currentAccount.Name</PageTitle>
+
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>Lista de transacciones para la cuenta @currentAccount.Name</h3>
+            <button class="btn btn-primary" @onclick="() => ShowAddTransactionModal()">Agregar una transacción</button>
+        </div>
+
+        @if (transactionList.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Moneda</th>
+                        <th>Cuenta</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var transaction in transactionList)
+                    {
+                        <tr>
+                            <td>@transaction.Title</td>
+                            <td>@transaction.CreationDate.ToShortDateString()</td>
+                            <td>@transaction.Amount</td>
+                            <td>@transaction.Currency</td>
+                            <td>@transaction.Account.Name</td>
+                            <td>@transaction.Category.Name</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="() => ShowEditTransactionModal(transaction)">Editar</button>
+                                <button class="btn btn-secondary" @onclick="() => DuplicateTransaction(transaction)">Duplicar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No hay transacciones registradas</p>
+        }
+    </div>
+    @if (showAddTransactionModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar una transacción</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideAddTransactionModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="title">Título</label>
+                            <input type="text" class="form-control" id="title" @bind="newTransaction.Title" />
+                        </div>
+                        <div class="form-group">
+                            <label for="creationDate">Fecha de Creación</label>
+                            <input type="date" class="form-control" id="creationDate" @bind="newTransaction.CreationDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Monto</label>
+                            <input type="number" class="form-control" id="amount" @bind="newTransaction.Amount" step="0.01" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Moneda</label>
+                            <select class="form-control" id="currency" @bind="newTransaction.Currency">
+                                <option value="" disabled selected>Seleccionar</option>
+                                @foreach (var value in Enum.GetValues(typeof(CurrencyType)))
+                                {
+                                    <option value="@value">@value</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Categoría</label>
+                            <select class="form-control" id="category" @bind="selectedCategoryName">
+                                @if (categories.Any())
+                                {
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.Name">@category.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="" disabled selected>No hay opción disponible</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="account">Cuenta</label>
+                            <input type="text" class="form-control" id="account" value="@currentAccount.Name" readonly />
+                        </div>
+
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => HideAddTransactionModal()">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @onclick="AddTransaction">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (showEditTransactionModal)
+    {
+            <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Editar una transacción</h5>
+                            <button type="button" class="close" aria-label="Close" @onclick="() => HideEditTransactionModal()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="title">Título</label>
+                            <input type="text" class="form-control" id="title" @bind="titleEditTrasaction" />
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">Monto</label>
+                            <input type="number" class="form-control" id="amount" @bind="amountEditTrasaction" step="0.01" min="0"  />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="() => HideEditTransactionModal()">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @onclick="() => EditTransaction(titleEditTrasaction, amountEditTrasaction)">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+}
+
+@code {
+    private User CurrentUser;
+    private Domain.Workspace workspace;
+    private Domain.Account account;
+    private TransactionService _transactionService;
+    private WorkspaceService _workspaceService;
+    private AccountService _accountService;
+    private CategoryService _categoryService;
+    private List<Transaction> transactionList;
+    private bool showEditTransactionModal = false;
+    private bool showAddTransactionModal = false;
+    private Transaction newTransaction;
+    private Transaction selectedTransaction;
+    private Transaction editedTransaction;
+    private List<Domain.Category> categories;
+    private string selectedCategoryName;
+    private Account currentAccount;
+    private Category selectedCategory;
+    private double amountEditTrasaction;
+    private string titleEditTrasaction;
+    private Transaction duplicatedTransaction;
+
+    private List<User> GuestUsers;
+    protected override void OnInitialized()
+    {
+        if (MemoryDatabase.isLoggedIn)
+        {
+            CurrentUser = MemoryDatabase.currentUser;
+            currentAccount = MemoryDatabase.currentAccount;
+
+            workspace = MemoryDatabase.currentWorkspace;
+            _workspaceService = new WorkspaceService(MemoryDatabase);
+            _transactionService = new TransactionService(MemoryDatabase);
+
+            _categoryService = new CategoryService(MemoryDatabase);
+            newTransaction = new Transaction();
+            categories = workspace.CategoryList;
+            transactionList = currentAccount.TransactionList;
+        }
+    }
+
+
+    private void ShowEditTransactionModal(Transaction transaction)
+    {
+        showEditTransactionModal = true;
+        editedTransaction = transaction;
+        titleEditTrasaction = transaction.Title;
+        amountEditTrasaction = transaction.Amount;
+    }
+
+    private void HideEditTransactionModal()
+    {
+        showEditTransactionModal = false;
+    }
+    private void EditTransaction(string titleEditTrasaction, double amountEditTrasaction)
+    {
+        try
+        {
+            _transactionService.Modify(editedTransaction, titleEditTrasaction, amountEditTrasaction);
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Success,
+                    Message = "Transaccion editada con éxito"
+                });
+            HideEditTransactionModal();
+            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+        }
+        catch (Exception e)
+        {
+            HideEditTransactionModal();
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Message = $"Error: {e.Message}"
+                });
+        }
+    }
+
+    private void DuplicateTransaction(Transaction transaction)
+    {
+        try
+        {
+            duplicatedTransaction = new Transaction
+                {
+                    Title = transaction.Title,
+                    CreationDate = DateTime.Today,
+                    Amount = transaction.Amount,
+                    Currency = transaction.Currency,
+                    Category = transaction.Category,
+                    Account = transaction.Account
+                };
+            _transactionService.Add(transaction.Account, duplicatedTransaction);
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Success,
+                    Message = "Transaccion duplicada con éxito"
+                });
+            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Message = $"Error: {e.Message}"
+                });
+        }
+    }
+
+    private void ShowAddTransactionModal()
+    {
+        showAddTransactionModal = true;
+    }
+    private void HideAddTransactionModal()
+    {
+        showAddTransactionModal = false;
+    }
+
+
+    private void AddTransaction()
+    {
+        try
+        {
+            selectedCategory = _categoryService.Get(workspace, selectedCategoryName);
+            newTransaction.Category = selectedCategory;
+            newTransaction.Account = currentAccount;
+            _transactionService.Add(currentAccount, newTransaction);
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Success,
+                    Message = "Cuenta agregada con éxito"
+                });
+                HideAddTransactionModal();
+            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+        }
+        catch (Exception e)
+        {
+            HideAddTransactionModal();
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Message = $"Error: {e.Message}"
+                });
+        }
+        newTransaction = new Transaction();
+    }
+
+}
+
