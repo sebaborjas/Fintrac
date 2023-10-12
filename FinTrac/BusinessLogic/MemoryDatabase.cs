@@ -10,16 +10,13 @@ namespace BusinessLogic
 
 		public User currentUser { get; set; }
 		public Workspace currentWorkspace { get; set; }
-
-
+		public Account currentAccount { get; set; }
 
 		public MemoryDatabase()
 		{
 			Users = new List<User>();
 			addUsers();
 		}
-
-
 
 		public void addUsers()
 		{

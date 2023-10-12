@@ -81,8 +81,10 @@
                             <label for="categoryType">Tipo</label>
                             <select class="form-control" id="categoryType" @bind="categoryType">
                                 <option value="" disabled selected>Seleccionar</option>
-                                <option value="Income">Ingreso</option>
-                                <option value="Cost">Costo</option>
+                                @foreach (var value in Enum.GetValues(typeof(CategoryType)))
+                                {
+                                    <option value="@value">@value</option>
+                                }
                             </select>
                         </div>
                         <div class="modal-footer">
