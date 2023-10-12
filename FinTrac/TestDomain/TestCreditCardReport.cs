@@ -14,6 +14,7 @@ namespace TestDomain
         private CreditCardReport creditCardReport;
         private Workspace workSpace;
         private List<Transaction> transactionList;
+        CreditCard account;
 
         [TestInitialize]
         public void SetUp()
@@ -22,7 +23,7 @@ namespace TestDomain
             workSpace = new Workspace(newUser, "Test");
 
 
-            CreditCard account = new CreditCard { Name = "Cuenta personal", CreationDate = DateTime.Today.AddDays(-60), WorkSpace = workSpace, BankName = "Santander", LastDigits = 1234, AvailableCredit = 300, DeadLine = 20 };
+            account = new CreditCard { Name = "Cuenta personal", CreationDate = DateTime.Today.AddDays(-60), WorkSpace = workSpace, BankName = "Santander", LastDigits = 1234, AvailableCredit = 300, DeadLine = 20 };
             
 
 
@@ -53,7 +54,7 @@ namespace TestDomain
         [TestMethod]
         public void ShowCostsOfMonth() 
         {
-            List<Transaction> costsOfMonth = creditCardReport.CalculateCreditCardReport();
+            List<Transaction> costsOfMonth = creditCardReport.CalculateCreditCardReport(account);
 
             CollectionAssert.AreEqual(costsOfMonth, transactionList);
         }
