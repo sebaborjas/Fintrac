@@ -231,7 +231,38 @@
 							<input type="date" class="form-control" id="creationDate" value="@modifiedAccount.CreationDate.ToString("yyyy-MM-dd")" @oninput="e => modifiedAccount.CreationDate = DateTime.Parse(e.Value.ToString())" max="@DateTime.Now.Date.ToString("yyyy-MM-dd")" />
 						</div>
 
-						<!-- Otros campos de edición según el tipo de cuenta -->
+						@if (modifiedAccount is CreditCard creditCard)
+						{
+							<div class="form-group">
+								<label for="availableCredit">Crédito Disponible</label>
+								<input type="number" class="form-control" id="availableCredit" value="@creditCard.AvailableCredit" @oninput="e => creditCard.AvailableCredit = Convert.ToDouble(e.Value)" />
+							</div>
+
+							<div class="form-group">
+								<label for="bankName">Banco Emisor</label>
+								<input type="text" class="form-control" id="bankName" value="@creditCard.BankName" @oninput="e => creditCard.BankName = e.Value.ToString()" />
+							</div>
+
+							<div class="form-group">
+								<label for="lastDigits">Últimos 4 dígitos</label>
+								<input type="number" class="form-control" id="lastDigits" value="@creditCard.LastDigits" @oninput="e => creditCard.LastDigits = Convert.ToInt32(e.Value)" />
+							</div>
+
+							<div class="form-group">
+								<label for="deadline">Fecha de Cierre</label>
+								<input type="number" class="form-control" id="deadline" value="@creditCard.DeadLine" @oninput="e => creditCard.DeadLine = Convert.ToInt32(e.Value)" />
+							</div>
+
+						}
+
+						@if (modifiedAccount is PersonalAccount personalAccount)
+						{
+							<div class="form-group">
+								<label for="startingAmount">Monto Inicial</label>
+								<input type="text" class="form-control" id="startingAmount" value="@personalAccount.StartingAmount" @oninput="e => personalAccount.StartingAmount = Convert.ToDouble(e.Value)" />
+							</div>
+						}
+
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary" @onclick="SaveChanges">Guardar Cambios</button>
@@ -314,7 +345,6 @@
 		HideEditAccountModal();
 		HideSelectedAccountModal();
 	}
-
 
 	private void DeleteAccount()
 	{
@@ -402,8 +432,9 @@
 			{
 				return;
 			}
-
+			newAccount = new AccountModel();
 			NavigationManager.NavigateTo("/workspace/AccountList");
+
 		}
 		catch (Exception e)
 		{
