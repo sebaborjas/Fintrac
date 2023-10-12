@@ -21,6 +21,10 @@ namespace BusinessLogic
 
         public void Add(Workspace workspace, Exchange exchange)
         {
+            if (exchange.DollarValue <= 0)
+            {
+                throw new ArgumentException(("El valor del dolar debe ser mayor a 0"));
+            }
             if (workspace.ExchangeList.Contains(exchange))
             {
                 throw new ExchangeAlreadyExistsException();
@@ -75,6 +79,10 @@ namespace BusinessLogic
         {
             try
             {
+                if(newDollarValue <= 0)
+                {
+                       throw new ArgumentException(("El valor del dolar debe ser mayor a 0"));
+                }
                 Exchange exchangeToUpdate = Get(workspace, exchange.Date);
                 if (exchangeToUpdate == null)
                 {
@@ -87,7 +95,6 @@ namespace BusinessLogic
             {
                 throw exception;
             }
-
         }
     }
 }

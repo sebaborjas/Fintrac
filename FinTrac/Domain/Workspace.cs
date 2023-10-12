@@ -17,7 +17,7 @@ namespace Domain
             Id++;
         }
 
-        
+
         private string _name;
         public string Name
         {
@@ -39,8 +39,8 @@ namespace Domain
         }
         public User UserAdmin { get; set; }
         public List<Account> AccountList { get; } = new List<Account>();
-        public List<Report> ReportList { get; } = new List<Report> { };
-        public List<Exchange> ExchangeList { get; } = new List<Exchange> { };
+        public List<Report> ReportList { get; } = new List<Report>();
+        public List<Exchange> ExchangeList { get; } = new List<Exchange>();
         public List<Category> CategoryList { get; } = new List<Category>();
         public List<Goal> GoalList { get; } = new List<Goal>();
 
