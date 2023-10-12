@@ -95,8 +95,7 @@ namespace Domain
 
         public List<Workspace> WorkspaceList { get; set; } = new List<Workspace>();
 
-
-
+        public List<Invitation> RecievedInvitations { get; set; } = new List<Invitation>(); 
 
         public override bool Equals(object? obj)
         {

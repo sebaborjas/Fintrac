@@ -11,19 +11,26 @@ namespace Domain
 {
     public class Invitation
     {
+        public Invitation()
+        {
+            ID = nextId;
+            nextId++;
+        }
+        private static int nextId = 1;
+        public int ID { get; private set; }
         private User _userToInvite;
         private User _admin;
         public Workspace Workspace { get; set; }
         public User Admin
         {
-            get => _userToInvite;
+            get => _admin;
             set
             {
                 if (value == UserToInvite)
                 {
                     throw new InviteDifferentUserException();
                 }
-                _userToInvite = value;
+                _admin = value;
             }
         }
 
@@ -47,7 +54,7 @@ namespace Domain
         public override bool Equals(object? obj)
         {
             Invitation invitation = (Invitation)obj;
-            return invitation.UserToInvite == UserToInvite && invitation.Admin == Admin && invitation.Workspace == Workspace; ;
+            return invitation.ID == this.ID ;
         }
     }
 }
