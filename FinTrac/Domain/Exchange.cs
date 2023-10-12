@@ -35,7 +35,7 @@ namespace Domain
             {
                 if (value <= 0)
                 {
-                    throw new Exception();
+                    throw new ArgumentException("El valor del dolar debe ser mayor a 0");
                 }
                 else
                 {

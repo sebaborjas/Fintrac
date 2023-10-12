@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -13,7 +14,7 @@ namespace Domain
     public class CreditCard : Account
     {
         private string _bankName;
-        private int _lastDigits;
+        private string _lastDigits;
         private double _availableCredit;
         private int _deadLine;
         public string BankName
@@ -32,7 +33,7 @@ namespace Domain
             }
         }
 
-        public int LastDigits
+        public string LastDigits
         {
             get
             {
@@ -40,7 +41,14 @@ namespace Domain
             }
             set
             {
-                if (value.ToString().Length != 4)
+                string pattern = @"^\d{4}$";
+                Regex regex = new(pattern, RegexOptions.IgnoreCase);
+
+                if (!regex.IsMatch(value))
+                {
+                    throw new ArgumentException("Ingrese los últimos 4 dígitos");
+                }
+                if (value.Length != 4)
                 {
                     throw new ArgumentException("Ingrese los últimos 4 números");
                 }

@@ -58,7 +58,7 @@ namespace TestBusinessLogic
         {
             CreditCard creditCardAccount = new CreditCard {
                 BankName = "Santander", 
-                LastDigits = 1234, 
+                LastDigits = "1234", 
                 AvailableCredit = 10000,
                 DeadLine = 26, 
                 Name = "Credit Santander", 
@@ -78,7 +78,7 @@ namespace TestBusinessLogic
             Account creditCardAccount = new CreditCard
             {
                 BankName = "Santander",
-                LastDigits = 1234,
+                LastDigits = "1234",
                 AvailableCredit = 10000,
                 DeadLine = 26,
                 Name = name,
@@ -179,7 +179,7 @@ namespace TestBusinessLogic
             CreditCard creditCardAccount = new CreditCard
             {
                 BankName = "Santander",
-                LastDigits = 1234,
+                LastDigits = "1234",
                 AvailableCredit = 10000,
                 DeadLine = 26,
                 Name = "Credit Santander",
@@ -192,7 +192,7 @@ namespace TestBusinessLogic
             _service.Add(creditCardAccount.WorkSpace, creditCardAccount);
 
             String newName = "Credit Oca";
-            int newLastDigits = 4321;
+            string newLastDigits = "4321";
 
             CreditCard creditCardAccountModified = new CreditCard
             {
@@ -219,7 +219,7 @@ namespace TestBusinessLogic
             CreditCard creditCardAccount = new CreditCard
             {
                 BankName = "Santander",
-                LastDigits = 1234,
+                LastDigits = "1234",
                 AvailableCredit = 10000,
                 DeadLine = 26,
                 Name = "Credit Santander",
@@ -230,7 +230,7 @@ namespace TestBusinessLogic
             CreditCard secondCreditCardAccount = new CreditCard
             {
                 BankName = "Santander",
-                LastDigits = 1234,
+                LastDigits = "1234",
                 AvailableCredit = 10000,
                 DeadLine = 26,
                 Name = "Credit Brou",
@@ -244,7 +244,7 @@ namespace TestBusinessLogic
             _service.Add(creditCardAccount.WorkSpace, secondCreditCardAccount);
 
             String newName = "Credit Santander";
-            int newLastDigits = 4321;
+            string newLastDigits = "4321";
 
             CreditCard creditCardAccountModified = new CreditCard
             {
@@ -286,7 +286,7 @@ namespace TestBusinessLogic
             CreditCard creditCardAccount = new CreditCard
             {
                 BankName = "Santander",
-                LastDigits = 1234,
+                LastDigits = "1234",
                 AvailableCredit = 10000,
                 DeadLine = 26,
                 Name = "Test",

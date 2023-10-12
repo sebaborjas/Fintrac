@@ -135,7 +135,7 @@ namespace TestDomain
                 BankName = "Test",
                 AvailableCredit = 1,
                 Name = "creditTest",
-                LastDigits = 1234,
+                LastDigits = "1234",
                 DeadLine = 27,
                 WorkSpace = workSpace,
             };
