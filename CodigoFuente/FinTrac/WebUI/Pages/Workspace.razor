@@ -1,0 +1,91 @@
+@page "/workspace"
+@using BusinessLogic
+@using Domain
+@using System.Text.RegularExpressions
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (MemoryDatabase.isLoggedIn)
+{
+
+	<PageTitle>Workspace @workspace.Name</PageTitle>
+	<h3>Workspace @workspace.Name</h3>
+	<FontAwesomeIcon Icon="fa-dollar-sign" />
+	<p>Usuarios invitados: @(GuestUsers != null ? GuestUsers.Count : 0)</p>
+
+	<div class="row">
+		@foreach (var item in lista)
+		{
+			<div class="col-12">
+				<Card Class="m-2 list-group-item" Style="width: auto;" id="@($"card-{item.Key}")">
+					<CardBody>
+						<div class="d-flex justify-content-between align-items-center">
+							<div>
+								<span style="color:black">
+									<i class="oi oi-@(item.Icon)" aria-hidden="true" style="display: inline-block;"></i>
+								</span>
+								@item.Name
+							</div>
+							<NavLink @onclick="() => HandleDetails(item.Key)">
+								Ver detalles <i class="oi oi-arrow-right"></i>
+							</NavLink>
+						</div>
+					</CardBody>
+				</Card>
+			</div>
+		}
+	</div>
+
+	@code {
+	public class ListItem
+	{
+		public string Key { get; set; }
+		public string Name { get; set; }
+		public string Icon { get; set; }
+	}
+
+	private User CurrentUser;
+	private Domain.Workspace workspace;
+
+	private List<User> GuestUsers;
+	private User UserAdmin;
+	private List<ListItem> lista = new List<ListItem>
+	{
+		new ListItem { Key = "GuestUsers", Name ="Usuarios Invitados", Icon = "person" },
+		new ListItem { Key = "AccountList", Name = "Cuentas Asociadas", Icon = "credit-card" },
+		new ListItem { Key = "TransactionList", Name = "Transacciones", Icon = "dollar" },
+		new ListItem { Key = "ReportList", Name = "Reportes", Icon = "document" },
+		new ListItem { Key = "ExchangeList", Name = "Lista de Tipos de Cambio", Icon = "loop" },
+		new ListItem { Key = "CategoryList", Name = "Categorias", Icon = "list" },
+		new ListItem { Key = "GoalList", Name ="Objetivos", Icon = "target" }
+	};
+
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			CurrentUser = MemoryDatabase.currentUser;
+			workspace = MemoryDatabase.currentWorkspace;
+		}
+	}
+
+	private void HandleDetails(String key)
+	{
+
+		NavigationManager.NavigateTo($"/workspace/{key}");
+	}
+
+}
+}
+else
+{
+	try
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch
+	{
+
+	}
+}
