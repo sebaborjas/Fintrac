@@ -23,7 +23,7 @@ namespace TestDomain
             workSpace = new Workspace(newUser, "Test");
 
 
-            account = new CreditCard { Name = "Cuenta personal", CreationDate = DateTime.Today.AddDays(-60), WorkSpace = workSpace, BankName = "Santander", LastDigits = 1234, AvailableCredit = 300, DeadLine = 20 };
+            account = new CreditCard { Name = "Cuenta personal", CreationDate = DateTime.Today.AddDays(-60), WorkSpace = workSpace, BankName = "Santander", LastDigits = "1234", AvailableCredit = 300, DeadLine = 20 };
             
 
 
