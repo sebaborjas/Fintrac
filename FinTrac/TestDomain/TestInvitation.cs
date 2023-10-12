@@ -24,26 +24,19 @@ namespace TestDomain
         [TestMethod]
         public void EqualsInvitations()
         {
-            Invitation invitation1 = new Invitation
+            Invitation invitation = new Invitation
             {
                 Admin = admin,
                 Workspace = workspace,
                 UserToInvite = userToInvite
             };
-            Invitation invitation2 = new Invitation
-            {
-                Admin = admin,
-                Workspace = workspace,
-                UserToInvite = userToInvite
-            };
-
-            Assert.AreEqual(invitation1, invitation2);
+            Assert.AreEqual(invitation, invitation);
         }
 
         [TestMethod]
         public void NotEqualsInvitations()
         {
-            Invitation invitation1 = new Invitation
+            Invitation invitation = new Invitation
             {
                 Admin = admin,
                 Workspace = workspace,
@@ -57,7 +50,7 @@ namespace TestDomain
                 UserToInvite = userToInvite2
             };
 
-            Assert.AreNotEqual(invitation1, invitation2);
+            Assert.AreNotEqual(invitation, invitation2);
         }
 
         [TestMethod]

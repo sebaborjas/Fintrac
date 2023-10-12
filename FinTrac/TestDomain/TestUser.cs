@@ -135,6 +135,12 @@ namespace TestDomain
             Assert.IsNotNull(user.WorkspaceList);
         }
 
+        [TestMethod]
+        public void NotNullInvitationsList()
+        {
+            Assert.IsNotNull(user.RecievedInvitations);
+        }
+
         
     }
 
