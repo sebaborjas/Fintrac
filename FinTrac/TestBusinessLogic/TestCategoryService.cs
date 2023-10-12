@@ -106,7 +106,7 @@ namespace TestBusinessLogic
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),
-                Name = "Hola",
+                Name = "Test",
                 Workspace = _workspace,
                 Type = CategoryType.Income,
                 Status = CategoryStatus.Inactive
@@ -141,7 +141,7 @@ namespace TestBusinessLogic
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),
-                Name = "Hola",
+                Name = "Test",
                 Workspace = _workspace,
                 Type = CategoryType.Income,
                 Status = CategoryStatus.Inactive
@@ -175,7 +175,7 @@ namespace TestBusinessLogic
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),
-                Name = "Hola",
+                Name = "Test",
                 Workspace = _workspace,
                 Type = CategoryType.Cost,
                 Status = CategoryStatus.Active

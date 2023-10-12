@@ -1,0 +1,215 @@
+﻿@page "/workspace/ExchangeList"
+@using System.Text.Json
+@using Domain
+@using Domain.DataTypes
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (MemoryDatabase.isLoggedIn)
+{
+    <PageTitle>Lista de cambios </PageTitle>
+    @if (exchangeList.Any())
+    {
+
+
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Tipos de cambio</h3>
+                <button class="btn btn-primary" @onclick="() => ShowAddExchangeModal()">Agregar un tipo de cambio</button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Valor del dolar</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exchange in exchangeList)
+                    {
+                        <tr>
+                            <td>@exchange.Date.ToShortDateString()</td>
+                            <td>@exchange.DollarValue</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="() => ShowEditExchangeModal(exchange)">Editar</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteExchange(exchange)">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Tipos de cambio</h3>
+                <button class="btn btn-primary" @onclick="() => ShowAddExchangeModal()">Agregar un tipo de cambio</button>
+            </div>
+            <p>No hay tipos de cambio registrados</p>
+        </div>
+    }
+    @if (showAddExchangeModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar un tipo de cambio</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideAddExchangeModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="creationDate">Fecha de Creación</label>
+                            <input type="date" class="form-control" id="creationDate" @bind="initialDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="form-group">
+                            <label for="availableCredit">Valor del Dolar</label>
+                            <input type="number" class="form-control" id="dollarValue" @bind="dollarValue" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="() => HideAddExchangeModal()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" @onclick="AddExchange">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (showEditExchangeModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Valor del Dólar</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideEditExchangeModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="dollarValue">Valor del Dolar</label>
+                            <input type="number" class="form-control" id="dollarValue" @bind="editedDollarValue" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => HideEditExchangeModal()">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @onclick="() =>SaveExchangeValue(editedDollarValue)">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+    @code {
+    private User CurrentUser;
+    private Domain.Workspace workspace;
+    private ExchangeService _exchangeService;
+    private List<Exchange> exchangeList;
+    private bool showAddExchangeModal = false;
+    private Exchange newExchange;
+    private Exchange selectedExchange;
+
+    private DateTime initialDate = DateTime.Today;
+    private double dollarValue = 0;
+
+    private bool showEditExchangeModal = false;
+    private double editedDollarValue = 0;
+
+    private void HideEditExchangeModal()
+    {
+        showEditExchangeModal = false;
+    }
+    private void ShowEditExchangeModal(Exchange exchange)
+    {
+        selectedExchange = exchange;
+        showEditExchangeModal = true;
+    }
+
+    private void SaveExchangeValue(double editedDollarValue)
+    {
+        try
+        {
+            _exchangeService.Update(workspace, selectedExchange, editedDollarValue);
+            exchangeList = workspace.ExchangeList;
+            HideEditExchangeModal();
+            ToastService.Notify(new(ToastType.Success, "Tipo de cambio modificado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/ExchangeList");
+
+    }
+
+    private void ShowAddExchangeModal()
+    {
+        showAddExchangeModal = true;
+    }
+
+    private void HideAddExchangeModal()
+    {
+        showAddExchangeModal = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        if (MemoryDatabase.isLoggedIn)
+        {
+            CurrentUser = MemoryDatabase.currentUser;
+            workspace = MemoryDatabase.currentWorkspace;
+            exchangeList = workspace.ExchangeList;
+            _exchangeService = new ExchangeService(MemoryDatabase);
+            newExchange = new Exchange();
+        }
+
+    }
+
+    private void AddExchange()
+    {
+        try
+        {
+            HideAddExchangeModal();
+            Exchange newExchange = new Exchange { Date = initialDate, DollarValue = dollarValue };
+            _exchangeService.Add(workspace, newExchange);
+            exchangeList = workspace.ExchangeList;
+            ToastService.Notify(new(ToastType.Success, "Tipo de cambio agregado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/ExchangeList");
+    }
+
+    private void DeleteExchange(Exchange exchange)
+    {
+        try
+        {
+            HideEditExchangeModal();
+            _exchangeService.Delete(workspace, exchange);
+            exchangeList = workspace.ExchangeList;
+            ToastService.Notify(new(ToastType.Success, "Tipo de cambio eliminado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/ExchangeList");
+    }
+}
+}
+else
+{
+    NavigationManager.NavigateTo("/login");
+}

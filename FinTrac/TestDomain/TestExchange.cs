@@ -64,7 +64,7 @@ namespace TestDomain
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(ArgumentException))]
         public void TestDollarValueNegativo()
         {
             exchange.DollarValue = -100;
