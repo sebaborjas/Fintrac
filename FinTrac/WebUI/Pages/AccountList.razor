@@ -331,17 +331,17 @@
 		{
 			ToastService.Notify(new(ToastType.Danger, "No se puede eliminar una cuenta con transacciones asociadas"));
 		}
-		
+
 	}
 
 	protected override void OnInitialized()
 	{
 		if (MemoryDatabase.isLoggedIn)
 		{
-		CurrentUser = MemoryDatabase.currentUser;
-		workspace = MemoryDatabase.currentWorkspace;
-		accountList = workspace.AccountList;
-		_accountService = new AccountService(MemoryDatabase);
+			CurrentUser = MemoryDatabase.currentUser;
+			workspace = MemoryDatabase.currentWorkspace;
+			accountList = workspace.AccountList;
+			_accountService = new AccountService(MemoryDatabase);
 		}
 	}
 
@@ -364,50 +364,50 @@
 
 		try
 		{
-		if (newAccount.Type == "CreditCard")
-		{
-			Account creditCard = new CreditCard
-				{
-					Name = newAccount.Name,
-					Currency = newAccount.Currency,
-					CreationDate = newAccount.CreationDate,
-					LastDigits = newAccount.LastDigits,
-					BankName = newAccount.BankName,
-					DeadLine = newAccount.Deadline,
-					AvailableCredit = newAccount.AvailableCredit,
-					WorkSpace = workspace
-				};
+			if (newAccount.Type == "CreditCard")
+			{
+				Account creditCard = new CreditCard
+					{
+						Name = newAccount.Name,
+						Currency = newAccount.Currency,
+						CreationDate = newAccount.CreationDate,
+						LastDigits = newAccount.LastDigits,
+						BankName = newAccount.BankName,
+						DeadLine = newAccount.Deadline,
+						AvailableCredit = newAccount.AvailableCredit,
+						WorkSpace = workspace
+					};
 
-			_accountService.Add(workspace, creditCard);
-			accountList = workspace.AccountList;
-			ToastService.Notify(new(ToastType.Success, "Tarjeta de Credito agregada con exito!"));
-		}
-		else if (newAccount.Type == "PersonalAccount")
-		{
-			Account personalAccount = new PersonalAccount
-				{
-					Name = newAccount.Name,
-					Currency = newAccount.Currency,
-					CreationDate = newAccount.CreationDate,
-					StartingAmount = newAccount.StartingAmount,
-					WorkSpace = workspace
-				};
+				_accountService.Add(workspace, creditCard);
+				accountList = workspace.AccountList;
+				ToastService.Notify(new(ToastType.Success, "Tarjeta de Credito agregada con exito!"));
+			}
+			else if (newAccount.Type == "PersonalAccount")
+			{
+				Account personalAccount = new PersonalAccount
+					{
+						Name = newAccount.Name,
+						Currency = newAccount.Currency,
+						CreationDate = newAccount.CreationDate,
+						StartingAmount = newAccount.StartingAmount,
+						WorkSpace = workspace
+					};
 
 
-			_accountService.Add(workspace, personalAccount);
-			accountList = workspace.AccountList;
-			ToastService.Notify(new(ToastType.Success, "Cuenta Personal agregada con exito!"));
-		}
-		else
-		{
-			return;
-		}
+				_accountService.Add(workspace, personalAccount);
+				accountList = workspace.AccountList;
+				ToastService.Notify(new(ToastType.Success, "Cuenta Personal agregada con exito!"));
+			}
+			else
+			{
+				return;
+			}
 
-		NavigationManager.NavigateTo("/workspace/AccountList");
+			NavigationManager.NavigateTo("/workspace/AccountList");
 		}
 		catch (Exception e)
 		{
-		ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
 		}
 	}
 
