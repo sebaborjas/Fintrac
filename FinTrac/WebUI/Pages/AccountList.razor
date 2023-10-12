@@ -245,7 +245,7 @@
 
 							<div class="form-group">
 								<label for="lastDigits">Últimos 4 dígitos</label>
-								<input type="number" class="form-control" id="lastDigits" value="@creditCard.LastDigits" />
+								<input type="text" class="form-control" id="lastDigits" value="@creditCard.LastDigits" />
 							</div>
 
 							<div class="form-group">
@@ -337,13 +337,28 @@
 		showEditAccountModal = true;
 	}
 
-	private void SaveChanges()
+	private async Task SaveChanges()
 	{
-		_accountService.Modify(selectedAccount.Name, modifiedAccount);
-		accountList = workspace.AccountList;
-		ToastService.Notify(new(ToastType.Success, "Datos de la cuenta actualizados con éxito"));
-		HideEditAccountModal();
-		HideSelectedAccountModal();
+		try
+		{
+			_accountService.Modify(selectedAccount.Name, modifiedAccount);
+			accountList = workspace.AccountList;
+			ToastService.Notify(new ToastMessage
+				{
+					Type = ToastType.Success,
+					Message = "Datos de la cuenta actualizados con éxito"
+				});
+			HideEditAccountModal();
+			HideSelectedAccountModal();
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new ToastMessage
+				{
+					Type = ToastType.Danger,
+					Message = $"Error: {e.Message}"
+				});
+		}
 	}
 
 	private void DeleteAccount()
