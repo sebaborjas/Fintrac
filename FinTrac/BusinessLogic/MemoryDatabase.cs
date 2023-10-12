@@ -16,27 +16,8 @@ namespace BusinessLogic
 		public MemoryDatabase()
 		{
 			Users = new List<User>();
-			addUsers();
 		}
 
-
-
-		public void addUsers()
-		{
-			User otro = new User
-			{
-				Name = "Emiliano",
-				LastName = "Marotta",
-				Email = "etest@test.com",
-				Password = "1234123412",
-				Address = "123"
-			};
-			Workspace defaultWorkspace = new Workspace(otro, $"Personal {otro.Name} {otro.LastName}");
-			otro.WorkspaceList.Add(defaultWorkspace);
-			Workspace workspace = new Workspace(otro, "Marotinia Finanzas");
-			otro.WorkspaceList.Add(workspace);
-			Users.Add(otro);
-		}
 	}
 
 }
