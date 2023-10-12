@@ -69,14 +69,6 @@
 							<label for="creationDate">Fecha de Creación</label>
 							<input type="date" class="form-control" id="creationDate" @bind="newAccount.CreationDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
 						</div>
-						@* <div class="form-group">
-							<label for="currency">Moneda</label>
-							<select class="form-control" id="currency" @bind="newAccount.Currency">
-								<option value="" disabled selected>Seleccionar</option>
-								<option value="UYU">UYU</option>
-								<option value="USD">USD</option>
-							</select>
-						</div> *@
 						<div class="form-group">
 							<label for="currency">Moneda</label>
 							<select class="form-control" id="currency" @bind="newAccount.Currency">
@@ -87,7 +79,6 @@
 								}
 							</select>
 						</div>
-
 						<div class="form-group">
 							<label for="workspace">Workspace</label>
 							<input type="text" class="form-control" id="workspace" value="@workspace.Name" disabled />
@@ -312,7 +303,6 @@
 		public double StartingAmount { get; set; }
 	}
 	private AccountModel newAccount = new AccountModel();
-	private CategoryType categoryType;
 
 	private void ShowEditAccountModal(Account account)
 	{
