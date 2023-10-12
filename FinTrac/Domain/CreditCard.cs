@@ -91,12 +91,20 @@ namespace Domain
         public override void Update(Account account)
         {
             CreditCard creditCard = account as CreditCard;
+            string pattern = @"^\d{4}$";
+            Regex regex = new(pattern, RegexOptions.IgnoreCase);
 
+            if (!regex.IsMatch(creditCard.LastDigits))
+            {
+                throw new ArgumentException("Ingrese los últimos 4 dígitos");
+            }
+            if (creditCard.LastDigits.Length != 4)
+            {
+                throw new ArgumentException("Ingrese los últimos 4 números");
+            }
+            this.LastDigits = creditCard.LastDigits;
             this.Name = creditCard.Name;
             this.CreationDate = creditCard.CreationDate;
-            this.WorkSpace = creditCard.WorkSpace;
-            this.Currency = creditCard.Currency;
-            this.TransactionList = creditCard.TransactionList;
             this.BankName = creditCard.BankName;
             this.LastDigits = creditCard.LastDigits;
             this.AvailableCredit = creditCard.AvailableCredit;

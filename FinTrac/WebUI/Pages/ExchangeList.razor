@@ -11,47 +11,47 @@
     <PageTitle>Lista de cambios </PageTitle>
     @if (exchangeList.Any())
     {
-        
-   
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h3>Tipos de cambio</h3>
-            <button class="btn btn-primary" @onclick="() => ShowAddExchangeModal()">Agregar un tipo de cambio</button>
-        </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Valor del dolar</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var exchange in exchangeList)
-                {
+
+
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Tipos de cambio</h3>
+                <button class="btn btn-primary" @onclick="() => ShowAddExchangeModal()">Agregar un tipo de cambio</button>
+            </div>
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@exchange.Date.ToShortDateString()</td>
-                        <td>@exchange.DollarValue</td>
-                        <td>
-                            <button class="btn btn-primary" @onclick="() => ShowEditExchangeModal(exchange)">Editar</button>
-                                <button class="btn btn-danger" @onclick="() => DeleteExchange(exchange)">Eliminar</button>
-                        </td>
+                        <th>Fecha</th>
+                        <th>Valor del dolar</th>
+                        <th>Acciones</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var exchange in exchangeList)
+                    {
+                        <tr>
+                            <td>@exchange.Date.ToShortDateString()</td>
+                            <td>@exchange.DollarValue</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="() => ShowEditExchangeModal(exchange)">Editar</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteExchange(exchange)">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
         </div>
     }
     else
     {
         <div class="col-12">
-			<div class="d-flex justify-content-between align-items-center">
-				<h3>Tipos de cambio</h3>
-				<button class="btn btn-primary" @onclick="() => ShowAddExchangeModal()">Agregar un tipo de cambio</button>
-			</div>
-			<p>No hay tipos de cambio registrados</p>
-		</div>
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Tipos de cambio</h3>
+                <button class="btn btn-primary" @onclick="() => ShowAddExchangeModal()">Agregar un tipo de cambio</button>
+            </div>
+            <p>No hay tipos de cambio registrados</p>
+        </div>
     }
     @if (showAddExchangeModal)
     {
@@ -117,6 +117,7 @@
     private List<Exchange> exchangeList;
     private bool showAddExchangeModal = false;
     private Exchange newExchange;
+    private Exchange selectedExchange;
 
     private DateTime initialDate = DateTime.Today;
     private double dollarValue = 0;
@@ -130,18 +131,24 @@
     }
     private void ShowEditExchangeModal(Exchange exchange)
     {
-        editedDollarValue = exchange.DollarValue;
+        selectedExchange = exchange;
         showEditExchangeModal = true;
     }
 
     private void SaveExchangeValue(double editedDollarValue)
     {
-        // MANDAR EXCHANGE ORIGINAL
-
-        _exchangeService.Update(workspace, newExchange, editedDollarValue);
-        exchangeList = workspace.ExchangeList;
-        HideEditExchangeModal();
-        ToastService.Notify(new(ToastType.Success, "Tipo de cambio agregado con exito!"));
+        try
+        {
+            _exchangeService.Update(workspace, selectedExchange, editedDollarValue);
+            exchangeList = workspace.ExchangeList;
+            HideEditExchangeModal();
+            ToastService.Notify(new(ToastType.Success, "Tipo de cambio modificado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/ExchangeList");
 
     }
 
