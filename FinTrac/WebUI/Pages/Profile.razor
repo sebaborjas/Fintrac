@@ -4,6 +4,7 @@
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
+@if(MemoryDatabase.isLoggedIn){ 
 <PageTitle>Profile</PageTitle>
 
 <h1>Perfil</h1>
@@ -95,8 +96,7 @@
 	private String password;
 
 	private UserService _userService;
-
-	protected override void OnInitialized()
+protected override void OnInitialized()
 	{
 		if (MemoryDatabase.isLoggedIn)
 		{
@@ -109,7 +109,7 @@
 		}
 
 	}
-
+	
 	public void UpdateUser()
 	{
 		try
@@ -123,5 +123,17 @@
 
 			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
 		}
+	}
+}
+}
+else
+{
+	try
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch
+	{
+
 	}
 }

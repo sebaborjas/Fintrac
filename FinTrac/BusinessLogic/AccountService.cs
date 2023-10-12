@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -18,29 +18,35 @@ namespace BusinessLogic
             _memoryDatabase = memoryDatabase;
         }
 
-        public void Add(Account account)
+        public void Add(Workspace workspace, Account account)
         {
-            _memoryDatabase.Accounts.Add(account);
+            if (workspace.AccountList.Contains(account))
+            {
+                throw new AccountAlreadyExistsException();
+            }
+            try
+            {
+                workspace.AccountList.Add(account);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
-        public Account Get(string name)
+        public Account Get(Workspace workspace, string name)
         {
-            Account acccount = _memoryDatabase.Accounts.Find(x => x.Name == name);
-
-            if (acccount == null)
-            {
-                throw new ElementNotFoundException("La cuenta no se encunetra en el sistema");
-            }
-            return acccount;
+            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.Find(x => x.ID == workspace.ID).AccountList.Find(x => x.Name == name);
+            
         }
 
         public void Modify(string name, Account accountModified)
         {
             try 
             {
-                Account account = Get(name);
+                Account account = Get(accountModified.WorkSpace, name);
 
-                Account acccount = _memoryDatabase.Accounts.Find(x => x.Name == accountModified.Name);
+                Account acccount = Get(accountModified.WorkSpace, accountModified.Name);
                 if (acccount != null)
                 {
                     throw new AccountAlreadyExistsException();
@@ -55,12 +61,12 @@ namespace BusinessLogic
             }
         }
 
-        public void Delete(string name)
+        public void Delete(Workspace workspace, string name)
         {
             try 
             {
-                Account account = Get(name);
-                _memoryDatabase.Accounts.Remove(account);
+                Account account = Get(workspace, name);
+                _memoryDatabase.Users.First(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.First(x => x.ID == workspace.ID).AccountList.Remove(account);
             } catch(Exception exception) 
             {
                 throw exception;
