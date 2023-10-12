@@ -73,8 +73,10 @@
 							<label for="currency">Moneda</label>
 							<select class="form-control" id="currency" @bind="newAccount.Currency">
 								<option value="" disabled selected>Seleccionar</option>
-								<option value="UYU">UYU</option>
-								<option value="USD">USD</option>
+								@foreach (var value in Enum.GetValues(typeof(CurrencyType)))
+								{
+									<option value="@value">@value</option>
+								}
 							</select>
 						</div>
 						<div class="form-group">
@@ -194,7 +196,7 @@
 						}
 						<div class="row mb-2 mx-0">
 							<div class="col-2"><i class="oi oi-dollar"></i></div>
-							<NavLink class="col-10 nav-link" href="/transaction">
+							<NavLink class="col-10 nav-link" href="/workspace/TransactionListAccount">
 								<p>Transacciones <i class="oi oi-arrow-right"></i></p>
 							</NavLink>
 
@@ -470,12 +472,14 @@
 	private void HideSelectedAccountModal()
 	{
 		showSelectedAccountModal = false;
+		MemoryDatabase.currentAccount = null;
 	}
 
 	private void ShowSelectedAccountModal(Account account)
 	{
 		selectedAccount = account;
 		showSelectedAccountModal = true;
+		MemoryDatabase.currentAccount = account;
 	}
 	private void HideEditAccountModal()
 	{
