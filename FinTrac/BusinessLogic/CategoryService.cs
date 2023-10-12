@@ -72,34 +72,39 @@ namespace BusinessLogic
         {
             try
             {
-                Category category = Get(workspace, updatedCategory.Name);
-                if (category != null)
+                if (categoryToUpdate != updatedCategory.Name)
                 {
-                    throw new CategoryAlreadyExistsException();
-                }
-                var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
-                if (user != null)
-                {
-                    var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
-                    if (targetWorkspace != null)
+                    Category category = Get(workspace, updatedCategory.Name);
+                    if (category != null)
                     {
-                        var accountWithTransactions = targetWorkspace.AccountList.Find(x => x.TransactionList.Count > 0);
-                        if (accountWithTransactions != null)
+                        throw new CategoryAlreadyExistsException();
+                    }
+                }
+                else
+                {
+                    var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
+                    if (user != null)
+                    {
+                        var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
+                        if (targetWorkspace != null)
                         {
-                            var transaction = accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate));
-                            if (transaction != null)
+                            var accountWithTransactions = targetWorkspace.AccountList.Find(x => x.TransactionList.Count > 0);
+                            if (accountWithTransactions != null)
                             {
-                                if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
+                                var transaction = accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate));
+                                if (transaction != null)
                                 {
-                                    throw new CategoryHasTransactionsException("No se puede cambiar el tipo ni el estado a una categoría que tiene transacciones");
+                                    if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
+                                    {
+                                        throw new CategoryHasTransactionsException("No se puede cambiar el tipo ni el estado a una categoría que tiene transacciones");
+                                    }
+                                    accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate)).Category = updatedCategory;
                                 }
-                                accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate)).Category = updatedCategory;
                             }
                         }
+                        targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
                     }
-                    targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
                 }
-
             }
 
             catch (Exception exception)
