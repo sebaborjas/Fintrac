@@ -8,6 +8,10 @@ namespace Domain
 {
     public class CreditCardReport : Report
     {
+        public List<Transaction> CalculateCreditCardReport()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }
