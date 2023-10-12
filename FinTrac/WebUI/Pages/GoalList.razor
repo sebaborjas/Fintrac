@@ -1,0 +1,243 @@
+﻿@page "/workspace/GoalList"
+@using System.Text.Json
+@using Domain
+@using Domain.DataTypes
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (MemoryDatabase.isLoggedIn)
+{
+    <PageTitle>Lista de objetivos </PageTitle>
+    @if (goalList.Any())
+    {
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Lista de objetivos</h3>
+                <button class="btn btn-primary" @onclick="() => ShowAddGoalModal()">Agregar un objetivo</button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Maximo a gastar</th>
+                        <th>Categorias</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var goal in goalList)
+                    {
+                        <tr>
+                            <td>@goal.Title</td>
+                            <td>@goal.MaxAmount</td>
+                            <td>@goal.Categories</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="() => ShowEditGoalModal(goal)">Editar</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteGoal(goal)">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Lista de objetivos</h3>
+                <button class="btn btn-primary" @onclick="() => ShowAddGoalModal()">Agregar un objetivo</button>
+            </div>
+            <p>No hay objetivos registrados</p>
+        </div>
+    }
+    @if (showAddGoalModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar un objetivo</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideAddGoalModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="goalTitle">Nombre del Objetivo</label>
+                            <input type="text" class="form-control" id="goalTitle" @bind="goalTitle" />
+                        </div>
+                        <div class="form-group">
+                            <label for="maxamount">Tope del objetivo</label>
+                            <input type="number" class="form-control" id="maxamount" @bind="goalMaxAmount" />
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Categoría</label>
+                            <select class="form-control" multiple>
+                                @if (workpaceCategoryList.Any())
+                                {
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    @foreach (var category in workpaceCategoryList)
+                                    {
+                                        <option value="@category.Name">@category.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="" disabled selected>No hay opción disponible</option>
+                                }
+                            </select>
+                          
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="() => HideAddGoalModal()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" @onclick="AddGoal">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (showEditGoalModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar objetivo</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideEditGoalModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="dollarValue">Valor del Dolar</label>
+                            <input type="number" class="form-control" id="dollarValue" @bind="editedDollarValue" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => HideEditGoalModal()">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @onclick="() =>SaveGoalValue()">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+    @code {
+    private User CurrentUser;
+    private Domain.Workspace workspace;
+    private GoalService _goalService;
+    private CategoryService _categoryService;
+    private List<Goal> goalList;
+    private List<Domain.Category> workpaceCategoryList;
+    private List<Category> categoryList;
+    private List<Category> selectedCategories;
+    private bool showAddGoalModal = false;
+    private Goal newGoal;
+    private Goal selectedGoal;
+
+    private string goalTitle;
+    private double goalMaxAmount;
+
+    private bool showEditGoalModal = false;
+    private double editedDollarValue = 0;
+
+    private void HideEditGoalModal()
+    {
+        showEditGoalModal = false;
+    }
+    private void ShowEditGoalModal(Goal goal)
+    {
+        selectedGoal = goal;
+        showEditGoalModal = true;
+    }
+
+    private void SaveGoalValue()
+    {
+        try
+        {
+            _goalService.Update(selectedGoal, newGoal);
+            goalList = workspace.GoalList;
+            HideEditGoalModal();
+            ToastService.Notify(new(ToastType.Success, "Objetivo modificado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/ObjetivoList");
+
+    }
+
+    private void ShowAddGoalModal()
+    {
+        showAddGoalModal = true;
+    }
+
+    private void HideAddGoalModal()
+    {
+        showAddGoalModal = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        if (MemoryDatabase.isLoggedIn)
+        {
+            selectedCategories = new List<Category>();
+            CurrentUser = MemoryDatabase.currentUser;
+            workspace = MemoryDatabase.currentWorkspace;
+            goalList = workspace.GoalList;
+            workpaceCategoryList = workspace.CategoryList.Where(x=> x.Type == CategoryType.Cost).ToList();
+            _goalService = new GoalService(MemoryDatabase);
+            newGoal = new Goal();
+        }
+
+    }
+
+
+
+    private void AddGoal()
+    {
+        try
+        {
+            Console.WriteLine(selectedCategories.Count);
+            HideAddGoalModal();
+            Goal newGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
+            _goalService.Add(workspace, newGoal);
+            goalList = workspace.GoalList;
+            ToastService.Notify(new(ToastType.Success, "Objetivo agregado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/GoalList");
+    }
+
+    private void DeleteGoal(Goal goal)
+    {
+        try
+        {
+            HideEditGoalModal();
+            _goalService.Delete(workspace, goal);
+            goalList = workspace.GoalList;
+            ToastService.Notify(new(ToastType.Success, "Objetivo eliminado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/GoalList");
+    }
+}
+}
+else
+{
+    NavigationManager.NavigateTo("/login");
+}
