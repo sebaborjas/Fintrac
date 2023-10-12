@@ -103,7 +103,7 @@ namespace TestBusinessLogic
             Account creditCardAccount = new CreditCard
             {
                 BankName = "Santander",
-                LastDigits = 1234,
+                LastDigits = "1234",
                 AvailableCredit = 10000,
                 DeadLine = 26,
                 Name = "Credit Santander",

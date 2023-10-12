@@ -81,21 +81,21 @@ namespace TestDomain
         [ExpectedException(typeof(ArgumentException))]
         public void LastDigitsLengthThree()
         {
-            creditCard.LastDigits = 123;
+            creditCard.LastDigits = "123";
         }
 
         [TestMethod]
         public void ValidLastDigits()
         {
-            creditCard.LastDigits = 1234;
-            Assert.AreEqual(1234, creditCard.LastDigits);
+            creditCard.LastDigits = "1234";
+            Assert.AreEqual("1234", creditCard.LastDigits);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void LastDigitsLengthFive()
         {
-            creditCard.LastDigits = 12345;
+            creditCard.LastDigits = "12345";
         }
 
         [TestMethod]
