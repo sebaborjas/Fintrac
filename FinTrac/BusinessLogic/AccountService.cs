@@ -40,19 +40,19 @@ namespace BusinessLogic
             
         }
 
-        public void Modify(string name, Account accountModified)
+        public void Modify(string oldName, Account accountModified)
         {
             try 
             {
-                Account account = Get(accountModified.WorkSpace, name);
+                Account oldAccount = Get(accountModified.WorkSpace, oldName);
 
-                Account acccount = Get(accountModified.WorkSpace, accountModified.Name);
-                if (acccount != null)
+                Account newAccountAlreadyExists = Get(accountModified.WorkSpace, accountModified.Name);
+                if (oldName != accountModified.Name && newAccountAlreadyExists != null)
                 {
                     throw new AccountAlreadyExistsException();
                 }
 
-                account.Update(accountModified);
+				oldAccount.Update(accountModified);
                 
             }
             catch(Exception exception) 
