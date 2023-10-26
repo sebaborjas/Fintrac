@@ -1,53 +1,94 @@
 ﻿@page "/"
 @using BusinessLogic
-@using Domain
+@using Domain;
 @inject NavigationManager NavigationManager
+@inject ToastService ToastService
 @inject MemoryDatabase MemoryDatabase
 
-@if(MemoryDatabase.isLoggedIn){
-<PageTitle>Home</PageTitle>
-
-
-@if (!MemoryDatabase.isLoggedIn)
-{
-	try
-	{
-		NavigationManager.NavigateTo("/login");
-	}
-	catch (Exception e)
-	{
-		Console.WriteLine(e);
-	}
-}
 @if (MemoryDatabase.isLoggedIn)
 {
-	<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
-	<div class="row">
-		@foreach (var workspace in workspaces)
+	<PageTitle>Home</PageTitle>
+
+
+	@if (!MemoryDatabase.isLoggedIn)
+	{
+		try
 		{
-			<div class="col-sm-12 col-md-6 col-lg-4">
-				<Card Class="m-2" Style="width: auto;" id="@($"card-{workspace.ID}")">
-					<div class="image" Style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 150px;">
-						<i class="fas fa-dollar-sign" style="font-size: 3em; color: black;"></i>
-					</div>
-					<CardBody>
-						<CardTitle>@workspace.Name</CardTitle>
-						<div class="d-flex justify-content-end">
-							<NavLink class="btn btn-primary ml-auto" onclick="@(() => HandleCardClick(workspace))">
-								Ir al workspace
-							</NavLink>
+			NavigationManager.NavigateTo("/login");
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+		}
+	}
+	@if (MemoryDatabase.isLoggedIn)
+	{
+		<div class="col-12">
+			<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
+			<div class="d-flex justify-content-between align-items-center">
+				<div class="ms-auto">
+					<button class="btn btn-primary" @onclick="() => ShowAddWorkspaceModal()">Agregar un Workspace</button>
+				</div>
+			</div>
+		</div>
+
+
+
+
+		<div class="row">
+			@foreach (var workspace in workspaces)
+			{
+				<div class="col-sm-12 col-md-6 col-lg-4">
+					<Card Class="m-2" Style="width: auto;" id="@($"card-{workspace.ID}")">
+						<div class="image" Style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 150px;">
+							<i class="fas fa-dollar-sign" style="font-size: 3em; color: black;"></i>
 						</div>
-					</CardBody>
-				</Card>
+						<CardBody>
+							<CardTitle>@workspace.Name</CardTitle>
+							<div class="d-flex justify-content-end">
+								<NavLink class="btn btn-primary ml-auto" onclick="@(() => HandleCardClick(workspace))">
+									Ir al workspace
+								</NavLink>
+							</div>
+						</CardBody>
+					</Card>
+				</div>
+			}
+		</div>
+
+		@if (showAddWorkspaceModal)
+		{
+			<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Agregar un nuevo Workspace</h5>
+							<button type="button" class="close" aria-label="Close" @onclick="() => HideAddWorkspaceModal()">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="workspaceName">Nombre del Workspace</label>
+								<input type="text" class="form-control" id="workspaceName" @bind="nameWorkspace" />
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" @onclick="() => HideAddWorkspaceModal()">Cancelar</button>
+								<button type="button" class="btn btn-primary" @onclick="AddWorkspace">Guardar</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		}
-	</div>
-
-
-}
-@code {
+	}
+	@code {
 	private User user;
+	private bool showAddWorkspaceModal = false;
 	private List<Domain.Workspace> workspaces;
+	private string nameWorkspace = "";
+	private WorkspaceService _workspaceService;
+	private Domain.Workspace newWorkspace;
 
 	protected override void OnInitialized()
 	{
@@ -55,6 +96,7 @@
 		{
 			user = MemoryDatabase.currentUser;
 			workspaces = MemoryDatabase.currentUser.WorkspaceList;
+			_workspaceService = new WorkspaceService(MemoryDatabase);
 		}
 	}
 
@@ -64,8 +106,46 @@
 		NavigationManager.NavigateTo("/workspace");
 
 	}
+
+	private void ShowAddWorkspaceModal()
+	{
+		showAddWorkspaceModal = true;
+	}
+
+	private void HideAddWorkspaceModal()
+	{
+		showAddWorkspaceModal = false;
+	}
+
+	private void AddWorkspace()
+	{
+		try
+		{
+			if (nameWorkspace != "")
+			{
+				User currentUser = user;
+				newWorkspace = new Domain.Workspace(user, nameWorkspace);
+				currentUser.WorkspaceList.Add(newWorkspace);
+				workspaces = MemoryDatabase.currentUser.WorkspaceList;
+
+				ToastService.Notify(new(ToastType.Success, "Workspace agregado correctamente."));
+				HideAddWorkspaceModal();
+			}else
+			{
+				ToastService.Notify(new(ToastType.Danger, "El nombre no puede estar vacio"));
+			}
+
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+		NavigationManager.NavigateTo("/");
+	}
+
 }
-}else
+}
+else
 {
 	try
 	{
@@ -73,7 +153,7 @@
 	}
 	catch
 	{
-		
+
 	}
 }
 
