@@ -15,14 +15,19 @@
 		<h3>Workspace @workspace.Name</h3>
 		<FontAwesomeIcon Icon="fa-dollar-sign" />
 		<p>Usuarios invitados: @(GuestUsers != null ? GuestUsers.Count : 0)</p>
-		<div class="d-flex justify-content-between align-items-center">
+		<div class="d-flex justify-content-between align-items-center m-1">
 			<div class="ms-auto">
 				<button class="btn btn-primary" @onclick="() => ShowEditWorkspaceModal()">Editar Workspace</button>
 			</div>
 		</div>
+		<div class="d-flex justify-content-between align-items-center m-1">
+			<div class="ms-auto">
+				<button class="btn btn-danger" @onclick="() => ShowDeleteWorkspaceModal()">Eliminar Workspace</button>
+			</div>
+		</div>
 	</div>
 
-	<div class="row">
+	<div class="row  mb-5">
 		@foreach (var item in lista)
 		{
 			<div class="col-12">
@@ -70,9 +75,33 @@
 			</div>
 		</div>
 	}
-}
+	@if (showDeleteWorkspaceModal)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Confirmar Eliminación</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="() => HideDeleteWorkspaceModal()">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						¿Estás seguro de que deseas eliminar este Workspace?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => HideDeleteWorkspaceModal()">Cancelar</button>
+						<button type="button" class="btn btn-danger" @onclick="() => DeleteWorkspace()">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-@code {
+	}
+
+
+
+	@code {
 	public class ListItem
 	{
 		public string Key { get; set; }
@@ -83,6 +112,7 @@
 	private User CurrentUser;
 	private Domain.Workspace workspace;
 	private bool showEditWorkspaceModal = false;
+	private bool showDeleteWorkspaceModal = false;
 	private string nameWorkspace;
 	private List<User> GuestUsers;
 	private User UserAdmin;
@@ -133,6 +163,33 @@
 
 			ToastService.Notify(new(ToastType.Success, "Workspace editado correctamente."));
 			HideEditWorkspaceModal();
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+		NavigationManager.NavigateTo("/");
+	}
+
+	private void ShowDeleteWorkspaceModal()
+	{
+		showDeleteWorkspaceModal = true;
+	}
+
+	private void HideDeleteWorkspaceModal()
+	{
+		showDeleteWorkspaceModal = false;
+	}
+
+	private void DeleteWorkspace()
+	{
+		try
+		{
+			_workspaceService.DeleteWorkspace(workspace);
+			ToastService.Notify(new(ToastType.Success, "Workspace eliminado correctamente."));
+			HideDeleteWorkspaceModal();
+			NavigationManager.NavigateTo("/");
+
 		}
 		catch (Exception e)
 		{
