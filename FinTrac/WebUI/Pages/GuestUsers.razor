@@ -1,0 +1,117 @@
+@page "/workspace/GuestUsers"
+@using System.Text.Json
+@using Domain
+@using Domain.DataTypes;
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (MemoryDatabase.isLoggedIn)
+{
+
+	<PageTitle>Administrar Usuarios</PageTitle>
+
+	<div class="d-flex justify-content-between align-items-center">
+		<h3>Usuarios agregados</h3>
+		<button class="btn btn-primary" @onclick="() => ShowInviteUserModal()">Invitar usuario</button>
+	</div>
+
+	@if (guestUsers.Any())
+	{
+		
+	}
+	else
+	{
+		<p>No hay usuarios invitados.</p>
+
+	}
+	@if (showInviteUserModal)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+				
+					<div class="modal-header">
+						<h5 class="modal-title">Enviar Invitacion para el Workspace</h5>
+						<button type="button" class="close" aria-label="Close" @onclick="() => HideInviteUserModal()">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="workspaceName">Email del usuario a invitar</label>
+							<input type="text" class="form-control" id="workspaceName" @bind="emailuserToInvite" />
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="() => HideInviteUserModal()">Cancelar</button>
+							<button type="button" class="btn btn-primary" @onclick="() => inviteUser()">Guardar</button>
+						</div>
+					</div>-->
+				</div>
+			</div>
+		</div>
+	}
+
+	@code {
+	private User CurrentUser;
+	private Domain.Workspace workspace;
+	private List<User> guestUsers;
+	private InvitationService _invitationService;
+	private UserService _userService;
+	private bool showInviteUserModal = false;
+	private string emailuserToInvite;
+	private User userToInvite;
+
+	private void DeleteAccount()
+	{
+
+	}
+
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			CurrentUser = MemoryDatabase.currentUser;
+			workspace = MemoryDatabase.currentWorkspace;
+			_invitationService = new InvitationService(MemoryDatabase);
+			_userService = new UserService(MemoryDatabase);
+			//guestUsers = 
+		}
+	}
+
+	private void ShowInviteUserModal()
+	{
+		showInviteUserModal = true;
+	}
+
+	private void HideInviteUserModal()
+	{
+		showInviteUserModal = false;
+	}
+
+	private void inviteUser()
+	{
+		try
+		{
+			userToInvite = _userService.Get(emailuserToInvite);
+			Invitation invitation = new Invitation
+				{
+					Admin = CurrentUser,
+					Workspace = workspace,
+					UserToInvite = userToInvite
+				};
+			_invitationService.Add(invitation);
+
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+
+	}
+}
+}
+else
+{
+	NavigationManager.NavigateTo("/login");
+}
