@@ -10,9 +10,17 @@
 {
 
 	<PageTitle>Workspace @workspace.Name</PageTitle>
-	<h3>Workspace @workspace.Name</h3>
-	<FontAwesomeIcon Icon="fa-dollar-sign" />
-	<p>Usuarios invitados: @(GuestUsers != null ? GuestUsers.Count : 0)</p>
+
+	<div class="col-12">
+		<h3>Workspace @workspace.Name</h3>
+		<FontAwesomeIcon Icon="fa-dollar-sign" />
+		<p>Usuarios invitados: @(GuestUsers != null ? GuestUsers.Count : 0)</p>
+		<div class="d-flex justify-content-between align-items-center">
+			<div class="ms-auto">
+				<button class="btn btn-primary" @onclick="() => ShowEditWorkspaceModal()">Editar Workspace</button>
+			</div>
+		</div>
+	</div>
 
 	<div class="row">
 		@foreach (var item in lista)
@@ -37,7 +45,34 @@
 		}
 	</div>
 
-	@code {
+	@if (showEditWorkspaceModal)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Editar nombre del Workspace</h5>
+						<button type="button" class="close" aria-label="Close" @onclick="() => HideEditWorkspaceModal()">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="workspaceName">Nombre del Workspace</label>
+							<input type="text" class="form-control" id="workspaceName" @bind="nameWorkspace" />
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="() => HideEditWorkspaceModal()">Cancelar</button>
+							<button type="button" class="btn btn-primary" @onclick="EditWorkspace">Guardar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+@code {
 	public class ListItem
 	{
 		public string Key { get; set; }
@@ -47,9 +82,11 @@
 
 	private User CurrentUser;
 	private Domain.Workspace workspace;
-
+	private bool showEditWorkspaceModal = false;
+	private string nameWorkspace;
 	private List<User> GuestUsers;
 	private User UserAdmin;
+	private WorkspaceService _workspaceService;
 	private List<ListItem> lista = new List<ListItem>
 	{
 		new ListItem { Key = "GuestUsers", Name ="Usuarios Invitados", Icon = "person" },
@@ -67,6 +104,8 @@
 		{
 			CurrentUser = MemoryDatabase.currentUser;
 			workspace = MemoryDatabase.currentWorkspace;
+			nameWorkspace = workspace.Name;
+			_workspaceService = new WorkspaceService(MemoryDatabase);
 		}
 	}
 
@@ -75,7 +114,32 @@
 
 		NavigationManager.NavigateTo($"/workspace/{key}");
 	}
+	private void ShowEditWorkspaceModal()
+	{
+		showEditWorkspaceModal = true;
+	}
 
+	private void HideEditWorkspaceModal()
+	{
+		showEditWorkspaceModal = false;
+	}
+
+	private void EditWorkspace()
+	{
+		try
+		{
+			User currentUser = CurrentUser;
+			_workspaceService.UpdateName(workspace, nameWorkspace);
+
+			ToastService.Notify(new(ToastType.Success, "Workspace editado correctamente."));
+			HideEditWorkspaceModal();
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+		NavigationManager.NavigateTo("/");
+	}
 }
 }
 else
