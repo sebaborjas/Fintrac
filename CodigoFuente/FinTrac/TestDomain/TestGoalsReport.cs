@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Transactions;
 using Domain;
+using Domain.DataTypes;
 using Domain.Exceptions;
 
 namespace TestDomain
@@ -9,18 +9,52 @@ namespace TestDomain
 	[TestClass]
 	public class TestGoalsReport
 	{
-		GoalsReport goalsReport;
+		private GoalsReport goalsReport;
+		private Workspace workSpace;
+		private List<Transaction> transactionList;
+		private Account account;
+		private Goal goal;
 
 		[TestInitialize]
 		public void SetUp()
 		{
-			goalsReport = new GoalsReport();
+			User user = new User { Email = "test@test.com", Name = "Test" , LastName = "Test", Password = "1234567890"};
+			
+			workSpace = new Workspace (user, "TestWorkspace");
+
+			user.WorkspaceList.Add (workSpace);
+
+			
+
+			account = new PersonalAccount { Name = "TestPersonalAccount", Currency = CurrencyType.UYU, WorkSpace = workSpace, StartingAmount = 20000 };
+
+			Category category = new Category {Name = "Cosas personales", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = workSpace };
+			
+			transactionList = new List<Transaction>();
+
+			Transaction firstTransaction = new Transaction { Title = "Gasto 1", Amount = 2000, Account = account, Category = category, Currency = CurrencyType.UYU};
+			Transaction secondTransaction = new Transaction { Title = "Gasto 2", Amount = 5000, Account = account, Category = category, Currency = CurrencyType.UYU };
+			Transaction thirdTransaction = new Transaction { Title = "Gasto 3", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
+
+			transactionList.Add(firstTransaction);
+			transactionList.Add(secondTransaction);
+			transactionList.Add(thirdTransaction);
+
+			account.TransactionList = transactionList;
+
+			workSpace.AccountList.Add (account);
+
+			goal = new Goal { Title = "Ahorro", MaxAmount = 10000, Workspace = workSpace };
+			goal.Categories.Add(category);
+
+
+			goalsReport = new GoalsReport { Currency = CurrencyType.UYU, WorkSpace = workSpace };
 		}
 		
 		[TestMethod]
 		public void CorrectDefinedAmount()
 		{
-			double amount = 15000;
+			double amount = 4000;
 			goalsReport.DefinedAmount = amount;
 
 			Assert.AreEqual(amount, goalsReport.DefinedAmount);
@@ -61,6 +95,8 @@ namespace TestDomain
 
 			goalsReport.DefinedAmount = definedAmount;
 			goalsReport.AmountSpent = amountSpent;
+			
+			goalsReport.CalculateReport();
 
 			Assert.IsTrue(goalsReport.GoalAchieved);
 		}
@@ -74,6 +110,8 @@ namespace TestDomain
 			goalsReport.DefinedAmount = definedAmount;
 			goalsReport.AmountSpent = amountSpent;
 
+			goalsReport.CalculateReport();
+
 			Assert.IsFalse(goalsReport.GoalAchieved);
 		}
 
@@ -85,6 +123,8 @@ namespace TestDomain
 
 			goalsReport.DefinedAmount = definedAmount;
 			goalsReport.AmountSpent = amountSpent;
+
+			goalsReport.CalculateReport();
 
 			Assert.IsTrue(goalsReport.GoalAchieved);
 		}
