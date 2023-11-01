@@ -164,6 +164,7 @@
 		{
 			User currentUser = CurrentUser;
 			_workspaceService.UpdateName(workspace, nameWorkspace);
+
 			ToastService.Notify(new(ToastType.Success, "Workspace editado correctamente."));
 			HideEditWorkspaceModal();
 		}

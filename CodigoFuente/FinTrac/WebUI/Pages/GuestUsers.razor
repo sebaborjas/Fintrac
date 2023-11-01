@@ -18,7 +18,7 @@
 
 	@if (guestUsers.Any())
 	{
-		
+		<p>No hay usuarios invitados</p>
 	}
 	else
 	{
@@ -46,21 +46,22 @@
 							<button type="button" class="btn btn-secondary" @onclick="() => HideInviteUserModal()">Cancelar</button>
 							<button type="button" class="btn btn-primary" @onclick="() => inviteUser()">Guardar</button>
 						</div>
-					</div>-->
+					</div>
 				</div>
 			</div>
 		</div>
 	}
 
 	@code {
-	private User CurrentUser;
-	private Domain.Workspace workspace;
-	private List<User> guestUsers;
-	private InvitationService _invitationService;
 	private UserService _userService;
+	private WorkspaceService _workspaceService;
+	private InvitationService _invitationService;
+	private User CurrentUser;
+	private User userToInvite;
+	private List<User> guestUsers;
+	private Domain.Workspace workspace;
 	private bool showInviteUserModal = false;
 	private string emailuserToInvite;
-	private User userToInvite;
 
 	private void DeleteAccount()
 	{
@@ -75,7 +76,8 @@
 			workspace = MemoryDatabase.currentWorkspace;
 			_invitationService = new InvitationService(MemoryDatabase);
 			_userService = new UserService(MemoryDatabase);
-			//guestUsers = 
+			_workspaceService = new WorkspaceService(MemoryDatabase);
+			guestUsers = _workspaceService.ListGuestUsers(workspace);
 		}
 	}
 
@@ -94,6 +96,10 @@
 		try
 		{
 			userToInvite = _userService.Get(emailuserToInvite);
+			if (userToInvite != null)
+			{
+				
+			}
 			Invitation invitation = new Invitation
 				{
 					Admin = CurrentUser,
@@ -101,6 +107,9 @@
 					UserToInvite = userToInvite
 				};
 			_invitationService.Add(invitation);
+			ToastService.Notify(new(ToastType.Success, "Invitación enviada con éxito!"));
+			HideInviteUserModal();
+			emailuserToInvite = "";
 
 		}
 		catch (Exception e)
