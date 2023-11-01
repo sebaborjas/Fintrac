@@ -14,7 +14,7 @@
 	<div class="col-12">
 		<h3>Workspace @workspace.Name</h3>
 		<FontAwesomeIcon Icon="fa-dollar-sign" />
-		<p>Usuarios invitados: @(GuestUsers != null ? GuestUsers.Count : 0)</p>
+		<p>Usuarios en el Workspace: @(guestUsers != null ? guestUsers.Count : 0)</p>
 		<div class="d-flex justify-content-between align-items-center m-1">
 			<div class="ms-auto">
 				<button class="btn btn-primary" @onclick="() => ShowEditWorkspaceModal()">Editar Workspace</button>
@@ -102,6 +102,15 @@
 
 
 	@code {
+	private WorkspaceService _workspaceService;
+	private User UserAdmin;
+	private User CurrentUser;
+	private List<User> guestUsers;
+	private Domain.Workspace workspace;
+	private bool showEditWorkspaceModal = false;
+	private bool showDeleteWorkspaceModal = false;
+	private string nameWorkspace;
+	
 	public class ListItem
 	{
 		public string Key { get; set; }
@@ -109,14 +118,7 @@
 		public string Icon { get; set; }
 	}
 
-	private User CurrentUser;
-	private Domain.Workspace workspace;
-	private bool showEditWorkspaceModal = false;
-	private bool showDeleteWorkspaceModal = false;
-	private string nameWorkspace;
-	private List<User> GuestUsers;
-	private User UserAdmin;
-	private WorkspaceService _workspaceService;
+
 	private List<ListItem> lista = new List<ListItem>
 	{
 		new ListItem { Key = "GuestUsers", Name ="Usuarios Invitados", Icon = "person" },
@@ -128,6 +130,7 @@
 		new ListItem { Key = "GoalList", Name ="Objetivos", Icon = "target" }
 	};
 
+
 	protected override void OnInitialized()
 	{
 		if (MemoryDatabase.isLoggedIn)
@@ -136,6 +139,7 @@
 			workspace = MemoryDatabase.currentWorkspace;
 			nameWorkspace = workspace.Name;
 			_workspaceService = new WorkspaceService(MemoryDatabase);
+			guestUsers = _workspaceService.ListGuestUsers(workspace);
 		}
 	}
 
@@ -160,7 +164,6 @@
 		{
 			User currentUser = CurrentUser;
 			_workspaceService.UpdateName(workspace, nameWorkspace);
-
 			ToastService.Notify(new(ToastType.Success, "Workspace editado correctamente."));
 			HideEditWorkspaceModal();
 		}
