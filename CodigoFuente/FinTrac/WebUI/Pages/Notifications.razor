@@ -14,17 +14,89 @@
 	<div class="col-12">
 		<h3>Notificaciones</h3>
 		<FontAwesomeIcon Icon="fa-dollar-sign" />
-		<p>Notificaciones pendientes : 0</p>
 
 	</div>
 
-	<div class="row  mb-5">
+	@if (recievedInvitations.Any())
+	{
+		<div>
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Nombre</th>
+						<th scope="col">Email</th>
+						<th scope="col">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var invitation in recievedInvitations)
+					{
+						<tr>
+							<td>@invitation.Admin.Name</td>
+							<td>@invitation.Admin.Email</td>
+							<td>
+								<button class="btn btn-success" @onclick="() => AcceptInvitation(invitation)">Aceptar</button>
+								<button class="btn btn-danger" @onclick="() => DeclineInvitation(invitation)">Rechazar</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+	else
+	{
+		<p>No hay notificaciones pendientes.</p>
 
-	</div>
+	}
 
 
-	@code {}
+	@code {
+	private InvitationService _invitationService;
+	private User CurrentUser;
+	List<Invitation> recievedInvitations;
 
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			CurrentUser = MemoryDatabase.currentUser;
+			_invitationService = new InvitationService(MemoryDatabase);
+			recievedInvitations = CurrentUser.RecievedInvitations;
+		}
+	}
+
+	void AcceptInvitation(Invitation invitationAccepted)
+	{
+		try
+		{
+			_invitationService.AcceptInvitation(invitationAccepted.ID);
+			NavigationManager.NavigateTo("/");
+			ToastService.Notify(new(ToastType.Success, "Invitación aceptada con éxito!"));
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+
+	}
+
+	void DeclineInvitation(Invitation invitationDeclined)
+	{
+		try
+		{
+			_invitationService.Delete(invitationDeclined.ID);
+			NavigationManager.NavigateTo("/");
+			ToastService.Notify(new(ToastType.Success, "Invitación rechazada con éxito!"));
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+
+	}
+
+	}
 }
 else
 {
