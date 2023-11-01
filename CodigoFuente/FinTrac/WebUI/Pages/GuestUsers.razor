@@ -98,18 +98,23 @@
 			userToInvite = _userService.Get(emailuserToInvite);
 			if (userToInvite != null)
 			{
-				
+				Invitation invitation = new Invitation
+					{
+						Admin = CurrentUser,
+						Workspace = workspace,
+						UserToInvite = userToInvite
+					};
+				_invitationService.Add(invitation);
+				ToastService.Notify(new(ToastType.Success, "Invitación enviada con éxito!"));
+				HideInviteUserModal();
+				emailuserToInvite = "";
 			}
-			Invitation invitation = new Invitation
-				{
-					Admin = CurrentUser,
-					Workspace = workspace,
-					UserToInvite = userToInvite
-				};
-			_invitationService.Add(invitation);
-			ToastService.Notify(new(ToastType.Success, "Invitación enviada con éxito!"));
-			HideInviteUserModal();
-			emailuserToInvite = "";
+			else
+			{
+				HideInviteUserModal();
+				ToastService.Notify(new(ToastType.Danger, $"Error: Usuario no encontrado!"));
+			}
+
 
 		}
 		catch (Exception e)
