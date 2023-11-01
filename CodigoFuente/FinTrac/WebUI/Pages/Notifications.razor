@@ -1,0 +1,39 @@
+@page "/notifications"
+@using BusinessLogic
+@using Domain
+@using System.Text.RegularExpressions
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (MemoryDatabase.isLoggedIn)
+{
+
+	<PageTitle>Notificaciones</PageTitle>
+
+	<div class="col-12">
+		<h3>Notificaciones</h3>
+		<FontAwesomeIcon Icon="fa-dollar-sign" />
+		<p>Notificaciones pendientes : 0</p>
+
+	</div>
+
+	<div class="row  mb-5">
+
+	</div>
+
+
+	@code {}
+
+}
+else
+{
+	try
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+	catch
+	{
+
+	}
+}
