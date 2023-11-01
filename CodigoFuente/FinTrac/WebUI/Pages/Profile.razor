@@ -4,58 +4,63 @@
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if(MemoryDatabase.isLoggedIn){ 
-<PageTitle>Profile</PageTitle>
+@if (MemoryDatabase.isLoggedIn)
+{
+	<PageTitle>Profile</PageTitle>
 
-<h1>Perfil</h1>
+	<h1>Perfil</h1>
 
-<div class="profile-header">
-	<img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" width="10%" />
-	<div class="profile-info">
-		<h2>@MemoryDatabase.currentUser.Name @MemoryDatabase.currentUser.LastName</h2>
-		<p>@MemoryDatabase.currentUser.Email</p>
+
+	<div class="container profile-container">
+		<div class="row">
+			<div class="col-md-3">
+				<img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="profile-image" alt="Profile Image" />
+			</div>
+			<div class="col-md-9">
+				<div class="profile-info">
+					<h2>@MemoryDatabase.currentUser.Name @MemoryDatabase.currentUser.LastName</h2>
+					<p>@MemoryDatabase.currentUser.Email</p>
+				</div>
+				<div class="profile-details">
+					<h3>Información del perfil</h3>
+					<form @onsubmit="UpdateUser">
+						<div class="form-group">
+							<label for="name">Nombre</label>
+							<input type="text" class="form-control" id="name" @bind="name" />
+						</div>
+						<div class="form-group">
+							<label for="last-name">Apellido</label>
+							<input type="text" class="form-control" id="last-name" @bind="lastName" />
+						</div>
+						<div class="form-group">
+							<label for="address">Direccion</label>
+							<input type="text" class="form-control" id="address" @bind="address" />
+						</div>
+						<div class="form-group">
+							<label for="password">Contraseña</label>
+							<input type="password" class="form-control" id="password" @bind="password" />
+						</div>
+						<button type="submit" class="btn btn-primary">Guardar detalles</button>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
-</div>
-<div class="profile-details">
 
-	<h3>Información del perfil</h3>
+	<style>
+		.profile-container {
+			margin-top: 1rem;
+			margin-bottom: 1rem;
+			background-color: #fff;
+			padding: 1rem;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
 
-	<form @onsubmit="UpdateUser">
-		<div class="profile-field">
-			<label for="name">Nombre</label><br />
-			<input type="text" id="name" @bind-value="name" />
-		</div>
-
-		<div class="profile-field">
-			<label for="last-name">Apellido</label><br />
-			<input type="text" id="last-name" @bind-value="lastName" />
-		</div>
-
-		<div class="profile-field">
-			<label for="address">Direccion</label><br />
-			<input type="text" id="address" @bind-value="address" />
-		</div>
-
-		<div class="profile-field">
-			<label for="password">Contraseña</label><br />
-			<input type="password" id="password" @bind-value="password" />
-		</div>
-
-		<button type="submit" class="btn btn-primary">Guardar detalles</button>
-	</form>
-</div>
-
-<style>
-	.profile-header {
-		background-color: #fff;
-		margin-top: 1rem;
-		margin-bottom: 1rem;
-	}
-
-	.profile-info {
-		margin-bottom: 1rem;
-		margin-top: 1rem;
-	}
+		.profile-image {
+			width: 100%;
+			border-radius: 50%;
+		}
 
 		.profile-info h2 {
 			font-size: 1.5rem;
@@ -66,51 +71,48 @@
 			font-size: 1rem;
 		}
 
-	.profile-details {
-		margin-top: 1rem;
-		margin-bottom: 1rem;
-	}
-
-	.profile-field {
-		margin-bottom: 1rem;
-	}
-
-		.profile-field label {
-			font-weight: bold;
+		.profile-details {
+			margin-top: 1rem;
+			margin-bottom: 1rem;
 		}
 
-		.profile-field input {
-			width: 50%;
+		.form-group {
+			margin-bottom: 1rem;
 		}
 
-	.btn {
-		width: 50%;
-	}
-</style>
+			.form-group label {
+				font-weight: bold;
+			}
+	</style>
 
-@code {
+
+	@code {
 	private String name;
 	private String email;
 	private String lastName;
 	private String address;
 	private String password;
+	private User currentUser;
+
 
 	private UserService _userService;
+
 	protected override void OnInitialized()
 	{
 		if (MemoryDatabase.isLoggedIn)
 		{
-			name = MemoryDatabase.currentUser.Name;
-			email = MemoryDatabase.currentUser.Email;
-			lastName = MemoryDatabase.currentUser.LastName;
-			address = MemoryDatabase.currentUser.Address;
-			password = MemoryDatabase.currentUser.Password;
+			currentUser = MemoryDatabase.currentUser;
+			name = currentUser.Name;
+			email = currentUser.Email;
+			lastName = currentUser.LastName;
+			address = currentUser.Address;
+			password = currentUser.Password;
 			_userService = new UserService(MemoryDatabase);
 		}
 
 	}
-	
-	public void UpdateUser()
+
+	private void UpdateUser()
 	{
 		try
 		{
@@ -124,7 +126,7 @@
 			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
 		}
 	}
-}
+	}
 }
 else
 {
