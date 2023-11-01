@@ -29,9 +29,14 @@
 			</div>
 			<div class="nav-item px-3">
 				<NavLink class="nav-link" href="/notifications">
-					<span class="oi oi-cog" aria-hidden="true"></span> Notificaciones
+					<span class="oi oi-bell" aria-hidden="true"></span> Notificaciones
+					@if (pendingNotifications.Count > 0)
+					{
+						<span class="badge badge-pill badge-danger">@pendingNotifications.Count</span>
+					}
 				</NavLink>
 			</div>
+
 			<div class="nav-item px-3">
 				<NavLink class="nav-link" href="/login" @onclick="LogOut">
 					<span class="oi oi-account-logout" aria-hidden="true"></span> Cerrar Sesión
@@ -45,6 +50,20 @@
 	private bool collapseNavMenu = true;
 
 	private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private InvitationService _invitationService;
+	private User CurrentUser;
+	List<Invitation> pendingNotifications;
+
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			CurrentUser = MemoryDatabase.currentUser;
+			_invitationService = new InvitationService(MemoryDatabase);
+			pendingNotifications = CurrentUser.RecievedInvitations;
+		}
+	}
 
 	private void ToggleNavMenu()
 	{
