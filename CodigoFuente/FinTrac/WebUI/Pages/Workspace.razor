@@ -20,11 +20,13 @@
 				<button class="btn btn-primary" @onclick="() => ShowEditWorkspaceModal()">Editar Workspace</button>
 			</div>
 		</div>
+
 		<div class="d-flex justify-content-between align-items-center m-1">
 			<div class="ms-auto">
-				<button class="btn btn-danger" @onclick="() => ShowDeleteWorkspaceModal()">Eliminar Workspace</button>
+				<button class="btn btn-danger" @onclick="() => ShowDeleteWorkspaceModal()">Abandonar Workspace</button>
 			</div>
 		</div>
+
 	</div>
 
 	<div class="row  mb-5">
@@ -110,7 +112,7 @@
 	private bool showEditWorkspaceModal = false;
 	private bool showDeleteWorkspaceModal = false;
 	private string nameWorkspace;
-	
+
 	public class ListItem
 	{
 		public string Key { get; set; }
@@ -189,10 +191,22 @@
 	{
 		try
 		{
-			_workspaceService.DeleteWorkspace(workspace);
-			ToastService.Notify(new(ToastType.Success, "Workspace eliminado correctamente."));
-			HideDeleteWorkspaceModal();
-			NavigationManager.NavigateTo("/");
+			if (CurrentUser == workspace.UserAdmin)
+			{
+				_workspaceService.DeleteWorkspace(workspace);
+				ToastService.Notify(new(ToastType.Success, "Workspace eliminado correctamente."));
+				HideDeleteWorkspaceModal();
+				NavigationManager.NavigateTo("/");
+
+			}
+			else
+			{
+				// Agregar metodo en UserService para eliminar un usuario que no es el admin de un workspace
+				ToastService.Notify(new(ToastType.Success, "Workspace eliminado correctamente."));
+				HideDeleteWorkspaceModal();
+				NavigationManager.NavigateTo("/");
+			}
+
 
 		}
 		catch (Exception e)
