@@ -89,7 +89,7 @@
 						</button>
 					</div>
 					<div class="modal-body">
-						¿Estás seguro de que deseas eliminar este Workspace?
+						¿Estás seguro de que deseas abandonar este Workspace?
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => HideDeleteWorkspaceModal()">Cancelar</button>
@@ -105,6 +105,7 @@
 
 	@code {
 	private WorkspaceService _workspaceService;
+	private UserService _userService;
 	private User UserAdmin;
 	private User CurrentUser;
 	private List<User> guestUsers;
@@ -141,6 +142,7 @@
 			workspace = MemoryDatabase.currentWorkspace;
 			nameWorkspace = workspace.Name;
 			_workspaceService = new WorkspaceService(MemoryDatabase);
+			_userService = new UserService(MemoryDatabase);
 			guestUsers = _workspaceService.ListGuestUsers(workspace);
 		}
 	}
@@ -194,19 +196,14 @@
 			if (CurrentUser == workspace.UserAdmin)
 			{
 				_workspaceService.DeleteWorkspace(workspace);
-				ToastService.Notify(new(ToastType.Success, "Workspace eliminado correctamente."));
-				HideDeleteWorkspaceModal();
-				NavigationManager.NavigateTo("/");
-
 			}
 			else
 			{
-				// Agregar metodo en UserService para eliminar un usuario que no es el admin de un workspace
-				ToastService.Notify(new(ToastType.Success, "Workspace eliminado correctamente."));
-				HideDeleteWorkspaceModal();
-				NavigationManager.NavigateTo("/");
+				_userService.LeaveWorkspace(CurrentUser, workspace);
 			}
-
+			ToastService.Notify(new(ToastType.Success, "Workspace abandonado correctamente."));
+			HideDeleteWorkspaceModal();
+			NavigationManager.NavigateTo("/");
 
 		}
 		catch (Exception e)
