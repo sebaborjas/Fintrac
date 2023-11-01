@@ -34,7 +34,7 @@
 							<td>@user.Name</td>
 							<td>@user.Email</td>
 							<td>
-								@if (CurrentUser == user && CurrentUser == workspace.UserAdmin)
+								@if (CurrentUser == workspace.UserAdmin)
 								{
 									<button class="btn btn-danger" @onclick="() => DeleteUser(user)">Eliminar</button>
 								}
@@ -93,14 +93,7 @@
 	{
 		try
 		{
-			if (CurrentUser == workspace.UserAdmin)
-			{
-
-			}
-			else
-			{
-				
-			}
+			// Agregar metodo en UserService para eliminar un usuario que no es el admin de un workspace
 			ToastService.Notify(new(ToastType.Success, "Usuario eliminado con éxito!"));
 		}
 		catch (Exception e)
