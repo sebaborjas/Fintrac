@@ -16,10 +16,14 @@
 		</NavLink>
 	</div>
 
-	<div class="d-flex justify-content-between align-items-center">
-		<h3>Usuarios agregados</h3>
-		<button class="btn btn-primary" @onclick="() => ShowInviteUserModal()">Invitar usuario</button>
-	</div>
+	@if (CurrentUser == workspace.UserAdmin )
+	{
+		<div class="d-flex justify-content-between align-items-center">
+			<h3>Usuarios agregados</h3>
+			<button class="btn btn-primary" @onclick="() => ShowInviteUserModal()">Invitar usuario</button>
+		</div>
+	}
+	
 
 	@if (guestUsers.Any())
 	{
