@@ -57,8 +57,8 @@ namespace BusinessLogic
 			else
 			{
 				oldUserAdmin.WorkspaceList.Remove(workspace);
-				_memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
 			}
+			_memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
 		}
 
 		public List<Transaction> ListAllTransactionsAllAcounts(Workspace workspace)
