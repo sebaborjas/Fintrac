@@ -1,0 +1,61 @@
+﻿@page "/workspace/ReportList"
+@using System.Text.Json
+@using Domain
+@using Domain.DataTypes
+@inject MemoryDatabase MemoryDatabase
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (MemoryDatabase.isLoggedIn)
+{
+	<PageTitle>Reportes</PageTitle>
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/workspace">
+			<span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+		</NavLink>
+	</div>
+	<h3>Reportes</h3>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Seleccione el reporte que desea generar:</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td> <button class="btn btn-primary btn-block">Reporte de Objetivos de Gastos</button></td>
+			</tr>
+			<tr>
+				<td> <button class="btn btn-primary btn-block">Reporte de Gastos por Categoría</button></td>
+			</tr>
+			<tr>
+				<td><button class="btn btn-primary btn-block">Listado de Gastos</button></td>
+			</tr>
+			<tr>
+				<td><button class="btn btn-primary btn-block">Reporte de Gastos por Tarjeta</button></td>
+			</tr>
+			<tr>
+				<td> <button class="btn btn-primary btn-block">Balance de Cuentas</button></td>
+			</tr>
+		</tbody>
+	</table>
+
+	@code {
+	private User CurrentUser;
+	private Domain.Workspace workspace;
+
+	protected override void OnInitialized()
+	{
+		if (MemoryDatabase.isLoggedIn)
+		{
+			CurrentUser = MemoryDatabase.currentUser;
+			workspace = MemoryDatabase.currentWorkspace;
+		}
+	}
+}
+}
+else
+{
+	NavigationManager.NavigateTo("/login");
+}
