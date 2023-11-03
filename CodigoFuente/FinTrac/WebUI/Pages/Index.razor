@@ -125,17 +125,16 @@
 				workspaces = MemoryDatabase.currentUser.WorkspaceList;
 
 				ToastService.Notify(new(ToastType.Success, "Workspace agregado correctamente."));
-				HideAddWorkspaceModal();
 			}else
 			{
 				ToastService.Notify(new(ToastType.Danger, "El nombre no puede estar vacio"));
 			}
-
 		}
 		catch (Exception e)
 		{
 			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
 		}
+		HideAddWorkspaceModal();
 		NavigationManager.NavigateTo("/");
 	}
 

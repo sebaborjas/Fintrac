@@ -182,13 +182,13 @@
         {
             _categoryService.Update(workspace, selectedCategory.Name, updatedCategory);
             categoryList = workspace.CategoryList;
-            HideEditCategoryModal();
             ToastService.Notify(new(ToastType.Success, "Categoría modificada con exito!"));
         }
         catch (Exception e)
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideEditCategoryModal();
         NavigationManager.NavigateTo("/workspace/CategoryList");
 
     }
@@ -220,7 +220,6 @@
     {
         try
         {
-            HideAddCategoryModal();
             Category newCategory = new Category { CreationDate = initialDate, Name = categoryName, Type = categoryType, Status = categoryStatus };
             _categoryService.Add(workspace, newCategory);
             categoryList = workspace.CategoryList;
@@ -230,6 +229,7 @@
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideAddCategoryModal();
         NavigationManager.NavigateTo("/workspace/CategoryList");
     }
 
@@ -237,7 +237,6 @@
     {
         try
         {
-            HideEditCategoryModal();
             _categoryService.Delete(workspace, category);
             categoryList = workspace.CategoryList;
             ToastService.Notify(new(ToastType.Success, "Categoría eliminada con exito!"));
@@ -246,6 +245,7 @@
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideEditCategoryModal();
         NavigationManager.NavigateTo("/workspace/CategoryList");
     }
 }

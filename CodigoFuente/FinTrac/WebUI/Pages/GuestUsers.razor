@@ -150,21 +150,19 @@
 					};
 				_invitationService.Add(invitation);
 				ToastService.Notify(new(ToastType.Success, "Invitación enviada con éxito!"));
-				HideInviteUserModal();
 				emailuserToInvite = "";
+				NavigationManager.NavigateTo("/workspace");
 			}
 			else
 			{
-				HideInviteUserModal();
 				ToastService.Notify(new(ToastType.Danger, $"Error: Usuario no encontrado!"));
 			}
-
-
 		}
 		catch (Exception e)
 		{
 			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
 		}
+		HideInviteUserModal();
 
 	}
 }

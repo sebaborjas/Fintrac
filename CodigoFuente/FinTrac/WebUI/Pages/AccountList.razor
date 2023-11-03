@@ -355,8 +355,6 @@
 					Type = ToastType.Success,
 					Message = "Datos de la cuenta actualizados con éxito"
 				});
-			HideEditAccountModal();
-			HideSelectedAccountModal();
 		}
 		catch (Exception e)
 		{
@@ -366,6 +364,8 @@
 					Message = $"Error: {e.Message}"
 				});
 		}
+		HideEditAccountModal();
+		HideSelectedAccountModal();
 	}
 
 	private void DeleteAccount()
@@ -375,14 +375,14 @@
 		{
 			_accountService.Delete(workspace, selectedAccount.Name);
 			accountList = workspace.AccountList;
-			HideEditAccountModal();
-			HideAddAccountModal();
-			HideSelectedAccountModal();
 		}
 		else
 		{
 			ToastService.Notify(new(ToastType.Danger, "No se puede eliminar una cuenta con transacciones asociadas"));
 		}
+		HideEditAccountModal();
+		HideAddAccountModal();
+		HideSelectedAccountModal();
 
 	}
 

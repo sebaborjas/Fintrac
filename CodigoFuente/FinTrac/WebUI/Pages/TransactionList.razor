@@ -236,18 +236,17 @@
                     Type = ToastType.Success,
                     Message = "Transaccion editada con éxito"
                 });
-            HideEditTransactionModal();
             transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
-            HideEditTransactionModal();
             ToastService.Notify(new ToastMessage
                 {
                     Type = ToastType.Danger,
                     Message = $"Error: {e.Message}"
                 });
         }
+        HideEditTransactionModal();
     }
 
     private void DuplicateTransaction(Transaction transaction)
@@ -306,18 +305,17 @@
                     Type = ToastType.Success,
                     Message = "Cuenta agregada con éxito"
                 });
-                HideAddTransactionModal();
             transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
-            HideAddTransactionModal();
             ToastService.Notify(new ToastMessage
                 {
                     Type = ToastType.Danger,
                     Message = $"Error: {e.Message}"
                 });
         }
+        HideAddTransactionModal();
         newTransaction = new Transaction();
     }
 

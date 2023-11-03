@@ -171,13 +171,13 @@
         {
             _goalService.Update(selectedGoal, newGoal);
             goalList = workspace.GoalList;
-            HideEditGoalModal();
             ToastService.Notify(new(ToastType.Success, "Objetivo modificado con exito!"));
         }
         catch (Exception e)
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideEditGoalModal();
         NavigationManager.NavigateTo("/workspace/ObjetivoList");
 
     }
@@ -214,7 +214,6 @@
         try
         {
             Console.WriteLine(selectedCategories.Count);
-            HideAddGoalModal();
             Goal newGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
             _goalService.Add(workspace, newGoal);
             goalList = workspace.GoalList;
@@ -224,6 +223,7 @@
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideAddGoalModal();
         NavigationManager.NavigateTo("/workspace/GoalList");
     }
 
@@ -231,7 +231,6 @@
     {
         try
         {
-            HideEditGoalModal();
             _goalService.Delete(workspace, goal);
             goalList = workspace.GoalList;
             ToastService.Notify(new(ToastType.Success, "Objetivo eliminado con exito!"));
@@ -240,6 +239,7 @@
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideEditGoalModal();
         NavigationManager.NavigateTo("/workspace/GoalList");
     }
 }
