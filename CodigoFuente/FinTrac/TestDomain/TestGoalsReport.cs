@@ -88,7 +88,5 @@ namespace TestDomain
             Assert.IsFalse(goalsReport.GoalAchieved);
             Assert.AreEqual(expectedAmount, goalsReport.AmountSpent);
         }
-
-
     }
 }
