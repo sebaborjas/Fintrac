@@ -6,7 +6,18 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-	internal class CategoryReport
+	public class CategoryReport : Report
 	{
+		public Category Category { get; set; }
+
+		public double AmountSpent { get; set; } = 0;
+
+		public string PercentageAboutTotal { get; set; } = "0";
+
+		public string CalculateReport() 
+		{
+			return "";
+		}
+
 	}
 }
