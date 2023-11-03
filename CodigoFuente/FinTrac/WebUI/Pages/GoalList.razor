@@ -31,7 +31,15 @@
                         <tr>
                             <td>@goal.Title</td>
                             <td>@goal.MaxAmount</td>
-                            <td>@goal.Categories</td>
+                            <td>
+                                 
+                                @foreach (Category category in @goal.Categories)
+                                {
+                                    
+                                        <span>@category.Name </span>
+                                }
+                            </td>
+                            
                             <td>
                                 <button class="btn btn-primary" @onclick="() => ShowEditGoalModal(goal)">Editar</button>
                                 <button class="btn btn-danger" @onclick="() => DeleteGoal(goal)">Eliminar</button>
@@ -51,7 +59,7 @@
                 <button class="btn btn-primary" @onclick="() => ShowAddGoalModal()">Agregar un objetivo</button>
             </div>
             <p>No hay objetivos registrados</p>
-        </div>
+        </div>  
     }
     @if (showAddGoalModal)
     {
@@ -73,28 +81,22 @@
                             <label for="maxamount">Tope del objetivo</label>
                             <input type="number" class="form-control" id="maxamount" @bind="goalMaxAmount" />
                         </div>
-                        <div class="form-group">
-                            <label for="category">Categoría</label>
-                            <select class="form-control" multiple>
-                                @if (workpaceCategoryList.Any())
+                            <div>
+                                <h3>Categorias</h3>
+                                @foreach (var category in workpaceCategoryList)
                                 {
-                                    <option value="" disabled selected>Seleccionar</option>
-                                    @foreach (var category in workpaceCategoryList)
-                                    {
-                                        <option value="@category.Name">@category.Name</option>
-                                    }
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="@category.Name" id="flexCheckDefault" @onchange=" eventArgs =>{CheckBoxClicked(category ,eventArgs.Value);}">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            @category.Name
+                                        </label>
+                                    </div>
+                                
                                 }
-                                else
-                                {
-                                    <option value="" disabled selected>No hay opción disponible</option>
-                                }
-                            </select>
-                          
-                        </div>
-
+                            </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @onclick="() => HideAddGoalModal()">Cancelar</button>
-                            <button type="button" class="btn btn-primary" @onclick="AddGoal">Guardar</button>
+                            <button type="button" class="btn btn-primary" @onclick="AddGoal">Agregar</button>
                         </div>
                     </div>
                 </div>
@@ -114,13 +116,30 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="dollarValue">Valor del Dolar</label>
-                            <input type="number" class="form-control" id="dollarValue" @bind="editedDollarValue" />
+                            <label for="goalTitle">Nombre del Objetivo</label>
+                            <input type="text" class="form-control" id="goalTitle" @bind="goalTitle" />
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="() => HideEditGoalModal()">Cancelar</button>
-                        <button type="button" class="btn btn-primary" @onclick="() =>SaveGoalValue()">Guardar</button>
+                        <div class="form-group">
+                            <label for="maxamount">Tope del objetivo</label>
+                            <input type="number" class="form-control" id="maxamount" @bind="goalMaxAmount" />
+                        </div>
+                        <div>
+                            <h3>Categorias</h3>
+                            @foreach (var category in workpaceCategoryList)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="@category.Name" id="flexCheckDefault" @onchange=" eventArgs =>{CheckBoxClicked(category ,eventArgs.Value);}" checked="@IsChecked(category, goalTitle)" >
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        @category.Name
+                                    </label>
+                                </div>
+
+                            }
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="() => HideAddGoalModal()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" @onclick="() => EditGoal()">Editar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,6 +162,8 @@
     private Goal selectedGoal;
 
     private string goalTitle;
+    private string goalOldTitle;
+
     private double goalMaxAmount;
 
     private bool showEditGoalModal = false;
@@ -154,8 +175,26 @@
     }
     private void ShowEditGoalModal(Goal goal)
     {
+        goalOldTitle = goal.Title;
         selectedGoal = goal;
         showEditGoalModal = true;
+    }
+
+    public bool IsChecked(Category category, string goalTitle)
+    {
+        bool check = false;
+        Goal goalSelected = FindGoal(goalTitle);
+        if (goalSelected.Categories.Contains(category))
+        {    
+            check = true;
+        }
+        return check;
+    }
+
+    private Goal FindGoal(string goalTitle)
+    {
+        Goal goalFinded = goalList.Find(x => x.Title.Equals(goalTitle));
+        return goalFinded;
     }
 
     private void SaveGoalValue()
@@ -200,7 +239,23 @@
 
     }
 
-
+    private void CheckBoxClicked(Category category, object checkedValue)
+    {
+        if ((bool)checkedValue)
+        {
+            if (!selectedCategories.Contains(category))
+            {
+                selectedCategories.Add(category);
+            }
+        }
+        else
+        {
+            if (selectedCategories.Contains(category))
+            {
+                selectedCategories.Remove(category);
+            }
+        }
+    }
 
     private void AddGoal()
     {
@@ -212,6 +267,22 @@
             _goalService.Add(workspace, newGoal);
             goalList = workspace.GoalList;
             ToastService.Notify(new(ToastType.Success, "Objetivo agregado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        NavigationManager.NavigateTo("/workspace/GoalList");
+    }
+
+    private void EditGoal()
+    {
+        try
+        {
+            Goal updatedGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
+            Goal oldGoal = FindGoal(goalOldTitle);
+            _goalService.Update(oldGoal, updatedGoal);
+            HideEditGoalModal();
         }
         catch (Exception e)
         {
