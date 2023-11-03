@@ -24,26 +24,137 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td> <button class="btn btn-primary btn-block">Reporte de Objetivos de Gastos</button></td>
+				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateReportObjectivesExpenses()">Reporte de Objetivos de Gastos</button></td>
 			</tr>
 			<tr>
-				<td> <button class="btn btn-primary btn-block">Reporte de Gastos por Categoría</button></td>
+				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateReportCategoryExpenses()">Reporte de Gastos por Categoría</button></td>
 			</tr>
 			<tr>
-				<td><button class="btn btn-primary btn-block">Listado de Gastos</button></td>
+				<td><button class="btn btn-primary btn-block" @onclick="() => ShowExpenseListModal()">Listado de Gastos</button></td>
 			</tr>
 			<tr>
-				<td><button class="btn btn-primary btn-block">Reporte de Gastos por Tarjeta</button></td>
+				<td><button class="btn btn-primary btn-block" @onclick="() => GenerateReportCardExpenses()">Reporte de Gastos por Tarjeta</button></td>
 			</tr>
 			<tr>
-				<td> <button class="btn btn-primary btn-block">Balance de Cuentas</button></td>
+				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateAccountBalance()">Balance de Cuentas</button></td>
 			</tr>
 		</tbody>
 	</table>
+	@if (showExpenseList)
+	{
+		@if (expenses != null && expenses.Any())
+		{
+			<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Listado de Gastos</h5>
+							<button type="button" class="close" @onclick="HideExpenseListModal">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-md-3">
+									<label for="categoryFilter">Categoría:</label>
+									<select class="form-control" id="categoryFilter" @bind="selectedCategory">
+										<option value="">Todas</option>
+										@foreach (var category in categories)
+										{
+											<option value="@category.Name">@category.Name</option>
+										}
+									</select>
+								</div>
+								<div class="col-md-3">
+									<label for="accountFilter">Cuenta:</label>
+									<select class="form-control" id="accountFilter" @bind="selectedAccount">
+										<option value="">Todas</option>
+										@foreach (var account in accounts)
+										{
+											<option value="@account.Name">@account.Name</option>
+										}
+									</select>
+								</div>
+								<div class="col-md-3">
+									<label for="startDateFilter">Fecha Inicial:</label>
+									<input type="date" class="form-control" id="startDateFilter" @bind="startDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+								</div>
+
+								<div class="col-md-3">
+									<label for="endDateFilter">Fecha Final:</label>
+									<input type="date" class="form-control" id="endDateFilter" @bind="endDate" min="@startDate.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+								</div>
+
+
+							</div>
+
+							<table class="table mt-3">
+								<thead>
+									<tr>
+										<th>Fecha</th>
+										<th>Categoría</th>
+										<th>Monto</th>
+										<th>Cuenta</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var expense in FilterExpenses())
+									{
+										<tr>
+											<td>@expense.CreationDate.ToShortDateString()</td>
+											<td>@expense.Category.Name</td>
+											<td>@expense.Amount</td>
+											<td>@expense.Account.Name</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="HideExpenseListModal">Cerrar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		else
+		{
+			<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Listado de Gastos</h5>
+							<button type="button" class="close" @onclick="HideExpenseListModal">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p>No hay gastos para mostrar</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="HideExpenseListModal">Cerrar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	}
+
+
 
 	@code {
 	private User CurrentUser;
 	private Domain.Workspace workspace;
+	private bool showExpenseList = false;
+	private List<Transaction> expenses = null;
+	private List<Report> reports;
+	private string selectedCategory = "";
+	private DateTime startDate = DateTime.Today;
+	private DateTime endDate = DateTime.Today;
+	private string selectedAccount = "";
+	private ExpensesReport expensesReport;
+	private List<Category> categories;
+	private List<Account> accounts;
 
 	protected override void OnInitialized()
 	{
@@ -53,6 +164,101 @@
 			workspace = MemoryDatabase.currentWorkspace;
 		}
 	}
+
+	private void ShowExpenseListModal()
+	{
+		expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
+		categories = workspace.CategoryList;
+		accounts = workspace.AccountList;
+		expenses = expensesReport.ListExpenses();
+		showExpenseList = true;
+	}
+	private void HideExpenseListModal()
+	{
+		showExpenseList = false;
+	}
+
+	/*private List<Transaction> FilterExpenses()
+	{
+		List<Transaction> filteredExpenses = expenses;
+
+		if (!string.IsNullOrEmpty(selectedCategory))
+		{
+			filteredExpenses = expensesReport.ListExpensesByCategory(selectedCategory);
+		}
+
+		if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+		{
+			try
+			{
+				filteredExpenses = filteredExpenses.Intersect(expensesReport.ListExpensesByDate(startDate, endDate)).ToList();
+			}
+			catch(Exception e)
+			{
+				ToastService.Notify(new(ToastType.Danger, $"Error {e.Message}"));
+			}
+
+		}
+
+		if (!string.IsNullOrEmpty(selectedAccount))
+		{
+			filteredExpenses = expensesReport.ListExpensesByAccount(selectedAccount);
+		}
+
+		return filteredExpenses;
+	}*/
+	private List<Transaction> FilterExpenses()
+	{
+		List<Transaction> filteredExpenses = expenses;
+
+		if (!string.IsNullOrEmpty(selectedCategory))
+		{
+			filteredExpenses = filteredExpenses
+				.Where(t => t.Category.Name == selectedCategory)
+				.ToList();
+		}
+
+		if (!string.IsNullOrEmpty(selectedAccount))
+		{
+			filteredExpenses = filteredExpenses
+				.Where(t => t.Account.Name == selectedAccount)
+				.ToList();
+		}
+
+		if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+		{
+			filteredExpenses = filteredExpenses
+				.Where(t => t.CreationDate >= startDate && t.CreationDate <= endDate)
+				.ToList();
+		}
+
+		return filteredExpenses;
+	}
+
+
+
+
+	private void GenerateReportObjectivesExpenses()
+	{
+	}
+
+	private void GenerateReportCategoryExpenses()
+	{
+	}
+
+	private void GenerateExpenseList()
+	{
+		
+	}
+
+	private void GenerateReportCardExpenses()
+	{
+	}
+
+	private void GenerateAccountBalance()
+	{
+	}
+
 }
 }
 else
