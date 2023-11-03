@@ -10,8 +10,9 @@ namespace Domain
     public abstract class Report
     {
         private Workspace _workSpace;
+
         public CurrencyType Currency { get; set; }
-        public Month Month { get; set; }
+
         public Workspace WorkSpace
         {
             get

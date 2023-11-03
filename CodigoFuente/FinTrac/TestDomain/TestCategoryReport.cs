@@ -19,6 +19,8 @@ namespace TestDomain
 		private List<Transaction> transactionListUSD;
 		private Account account;
 		private Account accountUSD;
+		private Category category;
+		private Category categoryHome;
 		private Goal goal;
 
 		[TestInitialize]
@@ -35,8 +37,8 @@ namespace TestDomain
 			account = new PersonalAccount { Name = "TestPersonalAccount", Currency = CurrencyType.UYU, WorkSpace = workSpace, StartingAmount = 20000 };
 			accountUSD = new PersonalAccount { Name = "TestPersonalAccountUSD", Currency = CurrencyType.USD, WorkSpace = workSpace, StartingAmount = 20000 };
 
-			Category category = new Category { Name = "Cosas personales", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = workSpace };
-			Category categoryHome = new Category { Name = "Hogar", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = workSpace };
+			category = new Category { Name = "Cosas personales", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = workSpace };
+			categoryHome = new Category { Name = "Hogar", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = workSpace };
 
 			transactionList = new List<Transaction>();
 
@@ -70,18 +72,41 @@ namespace TestDomain
 			goal.Categories.Add(category);
 			goal.Categories.Add(categoryHome);
 
-			categoryReportUYU = new CategoryReport { Currency = CurrencyType.UYU, WorkSpace = workSpace, Category = category };
-			categoryReportUSD = new CategoryReport { Currency = CurrencyType.USD, WorkSpace = workSpace, Category = categoryHome };
+			categoryReportUYU = new CategoryReport { Currency = CurrencyType.UYU, WorkSpace = workSpace, Category = category, Month = (Month)DateTime.Today.Month };
+			categoryReportUSD = new CategoryReport { Currency = CurrencyType.USD, WorkSpace = workSpace, Category = categoryHome, Month = (Month)DateTime.Today.Month };
 		}
 
 		[TestMethod]
 		public void CalculateCategoryReportUYU() 
 		{
 			string categoryName = categoryReportUYU.Category.Name;
+			double categorySpent = 4000;
 			double amountSpent = 7325;
-			string percentage = $"{(4000 * 100 / amountSpent).ToString()} %";
-			string reportOutput = $"{categoryName}: {amountSpent} => {percentage}";
+			string percentage = $"{Math.Round(categorySpent * 100 / amountSpent).ToString()} %";
+			string reportOutput = $"{categoryName}: {categorySpent} => {percentage}";
 			Assert.AreEqual(reportOutput, categoryReportUYU.CalculateReport());
+		}
+
+		[TestMethod]
+		public void CalculateCategoryReportUSD()
+		{
+			string categoryName = categoryReportUSD.Category.Name;
+			double categorySpent = 3325;
+			double amountSpent = 7325;
+			string percentage = $"{Math.Round(categorySpent * 100 / amountSpent).ToString()} %";
+			string reportOutput = $"{categoryName}: {categorySpent} => {percentage}";
+			Assert.AreEqual(reportOutput, categoryReportUSD.CalculateReport());
+		}
+
+		[TestMethod]
+		public void CalculateCategoryReportMonthWithoutTransactions()
+		{
+			CategoryReport categoryReportJanuary = new CategoryReport { Currency = CurrencyType.UYU, WorkSpace = workSpace, Category = category, Month = Month.Enero };
+			string categoryName = categoryReportJanuary.Category.Name;
+			double categorySpent = 0;
+			string percentage = "0 %";
+			string reportOutput = $"{categoryName}: {categorySpent} => {percentage}";
+			Assert.AreEqual(reportOutput, categoryReportJanuary.CalculateReport());
 		}
 	}
 }
