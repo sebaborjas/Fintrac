@@ -6,47 +6,58 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-	public class GoalsReport : Report
-	{
-		private double _definedAmount;
+    public class GoalsReport : Report
+    {
+        private double _amountSpent;
 
-		private double _amountSpent;
+        public bool GoalAchieved { get; set; }
 
-		public bool GoalAchieved { get; set; }
+        public double AmountSpent
+        {
+            get
+            {
+                return _amountSpent;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException("El monto definido no puede ser negativo");
+                }
+                _amountSpent = value;
+            }
+        }
 
-		public double DefinedAmount {
-			get 
-			{
-				return _definedAmount;
-			}
-			set
-			{
-				if (value < 0)
-				{
-					throw new ArgumentException("El monto definido no puede ser negativo");
-				}
-				_definedAmount = value;
-			}
-		}
+        public Goal Goal { get; set; }
 
-		public double AmountSpent {
-			get
-			{
-				return _amountSpent;
-			}
-			set
-			{
-				if (value < 0) 
-				{
-					throw new ArgumentException("El monto definido no puede ser negativo");
-				}
-				_amountSpent = value;
-			}
-		}
 
-		public void CalculateReport()
-		{
-			GoalAchieved = AmountSpent <= DefinedAmount;
-		}
-	}
+        public void CalculateReport()
+        {
+            List<Account> accounts = this.WorkSpace.AccountList;
+            foreach (Category category in Goal.Categories)
+            {
+                foreach (Account account in accounts)
+                {
+                    List<Transaction> transactions = account.TransactionList;
+                    foreach (Transaction transaction in transactions)
+                    {
+                        if (transaction.Category == category && transaction.CreationDate.Month == DateTime.Today.Month)
+                        {
+                            if (account.Currency == DataTypes.CurrencyType.UYU)
+                            {
+                                AmountSpent += transaction.Amount;
+                            }
+                            else
+                            {
+                                double dollarValue = this.GetExchangeValueOfDay(transaction.CreationDate);
+                                double transactionAmountInUYU = transaction.Amount * dollarValue;
+                                AmountSpent += transactionAmountInUYU;
+                            }
+                        }
+                    }
+                }
+            }
+            GoalAchieved = AmountSpent <= Goal.MaxAmount;
+        }
+    }
 }
