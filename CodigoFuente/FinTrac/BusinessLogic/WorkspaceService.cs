@@ -57,8 +57,8 @@ namespace BusinessLogic
 			else
 			{
 				oldUserAdmin.WorkspaceList.Remove(workspace);
+				_memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
 			}
-			_memoryDatabase.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
 		}
 
 		public List<Transaction> ListAllTransactionsAllAcounts(Workspace workspace)
@@ -76,6 +76,21 @@ namespace BusinessLogic
 			List<User> guestUsersWorkspace = _memoryDatabase.Users.Where(u => u.WorkspaceList.Contains(workspace)).ToList();
 			return guestUsersWorkspace;
 		}
+		public List<CreditCard> GetCreditCards(Workspace workspace)
+		{
+			List<CreditCard> creditCards = new List<CreditCard>();
+
+			foreach (Account account in workspace.AccountList)
+			{
+				if (account is CreditCard creditCard)
+				{
+					creditCards.Add(creditCard);
+				}
+			}
+
+			return creditCards;
+		}
+
 	}
 
 }

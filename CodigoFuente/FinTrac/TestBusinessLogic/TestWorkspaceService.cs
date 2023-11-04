@@ -150,7 +150,6 @@ namespace TestBusinessLogic
 			List<Transaction> expected = new List<Transaction> { transaction1, transaction2 };
 			List<Transaction> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
 			CollectionAssert.AreEqual(expected, transactionList);
-
 		}
 
 		[TestMethod]
@@ -183,5 +182,60 @@ namespace TestBusinessLogic
 			CollectionAssert.AreEqual(expected, listUser);
 
 		}
+
+		[TestMethod]
+		public void GetCreditCards()
+		{
+			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
+
+			Workspace workspace = new Workspace(useradmin, "Test");
+
+			_userService.Add(useradmin);
+			_service.Add(useradmin, workspace);
+
+			_userService.Add(user1);
+			_service.Add(user1, workspace);
+
+			Account personalAccount = new PersonalAccount
+			{
+				Name = "Test",
+				CreationDate = DateTime.Today.AddDays(-5),
+				StartingAmount = 1000,
+				Currency = CurrencyType.UYU,
+				WorkSpace = workspace
+			};
+
+			Account creditCardAccount = new CreditCard
+			{
+				BankName = "Santander",
+				LastDigits = "1234",
+				AvailableCredit = 10000,
+				DeadLine = 26,
+				Name = "Credit Santander",
+				Currency = CurrencyType.UYU,
+				WorkSpace = workspace
+			};
+
+			Account creditCardAccount2 = new CreditCard
+			{
+				BankName = "Santander2",
+				LastDigits = "5678",
+				AvailableCredit = 5000,
+				DeadLine = 18,
+				Name = "Credit Santander2",
+				Currency = CurrencyType.UYU,
+				WorkSpace = workspace
+			};
+
+			workspace.AccountList.Add(creditCardAccount);
+			workspace.AccountList.Add(personalAccount);
+			workspace.AccountList.Add(creditCardAccount2);
+
+			List<Account> expected = new List<Account> { creditCardAccount, creditCardAccount2 };
+			List<CreditCard> creditCardList = _service.GetCreditCards(workspace);
+			CollectionAssert.AreEqual(expected, creditCardList);
+		}
+
 	}
 }
