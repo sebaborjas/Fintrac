@@ -33,7 +33,7 @@
 				<td><button class="btn btn-primary btn-block" @onclick="() => ShowExpenseListModal()">Listado de Gastos</button></td>
 			</tr>
 			<tr>
-				<td><button class="btn btn-primary btn-block" @onclick="() => GenerateReportCardExpenses()">Reporte de Gastos por Tarjeta</button></td>
+				<td><button class="btn btn-primary btn-block" @onclick="ShowCreditCardModal">Reporte de Gastos por Tarjeta</button></td>
 			</tr>
 			<tr>
 				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateAccountBalance()">Balance de Cuentas</button></td>
@@ -139,6 +139,34 @@
 			</div>
 		}
 	}
+	@if (showCreditCardModal)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Seleccionar Tarjeta</h5>
+						<button type="button" class="close" @onclick="HideCreditCardModal">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<select class="form-control" @bind="selectedCreditCard">
+							<option value="">Seleccione una tarjeta</option>
+							@foreach (var creditCard in creditCards)
+							{
+								<option value="@creditCard.Name">@creditCard.Name</option>
+							}
+						</select>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="HideCreditCardModal">Cerrar</button>
+						<button type="button" class="btn btn-primary" @onclick="GenerateReportByCreditCard">Generar Reporte</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 
 
 
@@ -146,15 +174,18 @@
 	private User CurrentUser;
 	private Domain.Workspace workspace;
 	private bool showExpenseList = false;
-	private List<Transaction> expenses = null;
+	private bool showCreditCardModal = false;
+	private List<Transaction> expenses;
 	private List<Report> reports;
 	private string selectedCategory = "";
+	private string selectedCreditCard = "";
 	private DateTime startDate = DateTime.Today;
 	private DateTime endDate = DateTime.Today;
 	private string selectedAccount = "";
 	private ExpensesReport expensesReport;
 	private List<Category> categories;
 	private List<Account> accounts;
+	private List<CreditCard> creditCards;
 
 	protected override void OnInitialized()
 	{
@@ -177,7 +208,6 @@
 	{
 		showExpenseList = false;
 	}
-
 	private List<Transaction> FilterExpenses()
 	{
 		List<Transaction> filteredExpenses = expenses;
@@ -206,7 +236,24 @@
 		return filteredExpenses;
 	}
 
+	private void ShowCreditCardModal()
+	{
+		showCreditCardModal = true;
+	}
+	private void HideCreditCardModal()
+	{
+		showCreditCardModal = false;
+	}
 
+	private void GenerateReportByCreditCard()
+	{
+		if (selectedCreditCard != null)
+		{
+		}
+		else
+		{
+		}
+	}
 
 
 	private void GenerateReportObjectivesExpenses()
