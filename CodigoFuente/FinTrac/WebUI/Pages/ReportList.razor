@@ -178,35 +178,6 @@
 		showExpenseList = false;
 	}
 
-	/*private List<Transaction> FilterExpenses()
-	{
-		List<Transaction> filteredExpenses = expenses;
-
-		if (!string.IsNullOrEmpty(selectedCategory))
-		{
-			filteredExpenses = expensesReport.ListExpensesByCategory(selectedCategory);
-		}
-
-		if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
-		{
-			try
-			{
-				filteredExpenses = filteredExpenses.Intersect(expensesReport.ListExpensesByDate(startDate, endDate)).ToList();
-			}
-			catch(Exception e)
-			{
-				ToastService.Notify(new(ToastType.Danger, $"Error {e.Message}"));
-			}
-
-		}
-
-		if (!string.IsNullOrEmpty(selectedAccount))
-		{
-			filteredExpenses = expensesReport.ListExpensesByAccount(selectedAccount);
-		}
-
-		return filteredExpenses;
-	}*/
 	private List<Transaction> FilterExpenses()
 	{
 		List<Transaction> filteredExpenses = expenses;
