@@ -11,11 +11,11 @@ namespace BusinessLogic
 {
     public class CategoryService
     {
-        private readonly MemoryDatabase _memoryDatabase;
+        private readonly FintracContext _database;
 
-        public CategoryService(MemoryDatabase memoryDatabase)
+        public CategoryService(FintracContext database)
         {
-            _memoryDatabase = memoryDatabase;
+            _database = database;
         }
 
         public void Add(Workspace workspace, Category category)
@@ -32,16 +32,18 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
 
         public Category Get(Workspace workspace, string name)
         {
-            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.Find(x => x.ID == workspace.ID).CategoryList.Find(x => x.Name == name);
+            return _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).CategoryList.Find(x => x.Name == name);
         }
 
         public void Delete(Workspace workspace, Category category)
         {
-            var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
+            var user = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>();
             if (user != null)
             {
                 var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
@@ -66,6 +68,8 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
 
         public void Update(Workspace workspace, string categoryToUpdate, Category updatedCategory)
@@ -82,7 +86,7 @@ namespace BusinessLogic
                 }
                 else
                 {
-                    var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
+                    var user = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>();
                     if (user != null)
                     {
                         var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
@@ -111,6 +115,8 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
     }
 }
