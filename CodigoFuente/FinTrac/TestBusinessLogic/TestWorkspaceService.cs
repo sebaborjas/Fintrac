@@ -237,5 +237,57 @@ namespace TestBusinessLogic
 			CollectionAssert.AreEqual(expected, creditCardList);
 		}
 
+		[TestMethod]
+		public void GetPersonalAccounts()
+		{
+			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
+
+			Workspace workspace = new Workspace(useradmin, "Test");
+
+			_userService.Add(useradmin);
+			_service.Add(useradmin, workspace);
+
+			_userService.Add(user1);
+			_service.Add(user1, workspace);
+
+			Account personalAccount = new PersonalAccount
+			{
+				Name = "Test",
+				CreationDate = DateTime.Today.AddDays(-5),
+				StartingAmount = 1000,
+				Currency = CurrencyType.UYU,
+				WorkSpace = workspace
+			};
+
+			Account personalAccount2 = new PersonalAccount
+			{
+				Name = "Test2",
+				CreationDate = DateTime.Today.AddDays(-4),
+				StartingAmount = 2000,
+				Currency = CurrencyType.UYU,
+				WorkSpace = workspace
+			};
+
+			Account creditCardAccount = new CreditCard
+			{
+				BankName = "Santander2",
+				LastDigits = "5678",
+				AvailableCredit = 5000,
+				DeadLine = 18,
+				Name = "Credit Santander2",
+				Currency = CurrencyType.UYU,
+				WorkSpace = workspace
+			};
+
+			workspace.AccountList.Add(creditCardAccount);
+			workspace.AccountList.Add(personalAccount2);
+			workspace.AccountList.Add(creditCardAccount);
+
+			List<Account> expected = new List<Account> { creditCardAccount, personalAccount2 };
+			List<PersonalAccount> personalAccounts = _service.GetPersonalAccounts(workspace)
+			CollectionAssert.AreEqual(expected, personalAccounts);
+		}
+
 	}
 }
