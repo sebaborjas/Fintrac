@@ -36,7 +36,7 @@
 				<td><button class="btn btn-primary btn-block" @onclick="ShowCreditCardModal">Reporte de Gastos por Tarjeta</button></td>
 			</tr>
 			<tr>
-				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateAccountBalance()">Balance de Cuentas</button></td>
+				<td> <button class="btn btn-primary btn-block" @onclick="ShowAccountBalanceModal">Balance de Cuentas</button></td>
 			</tr>
 		</tbody>
 	</table>
@@ -209,9 +209,50 @@
 			</div>
 		</div>
 	}
+	@if (showAccountBalance)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg " role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Balance de Cuentas</h5>
+						<button type="button" class="close" @onclick="HideAccountBalanceModal">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<select class="form-control" @bind="selectedAccountName">
+							<option disabled value="">Seleccione una cuenta</option>
+							@foreach (var account in personalAccounts)
+							{
+								<option value="@account.Name">@account.Name</option>
+							}
+						</select>
+					</div>
+											<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="HideAccountBalanceModal">Cerrar</button>
+						<button type="button" class="btn btn-primary" @onclick="GetSelectedAccountBalance">Generar Reporte</button>
+					</div>
 
+					<div class="mx-2">
+						@if (selectedAccount != null)
+						{
+							@if (onChangeSelectedCreditCard == selectedAccountName && accountBalance > 0)
+							{
+								<p class="mx-2" style="font-size: 1.2em;">Saldo de la cuenta @selectedAccountName:</p>
+								<p class="mx-2">$ UYU : @accountBalance</p>
+							}
+							else
+							{
+								<p p class="mx-2">Debe generar el reporte para ver el saldo de la cuenta seleccionada!</p>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		</div>
 
-
+	}
 
 	@code {
 	private User CurrentUser;
@@ -219,17 +260,23 @@
 	private bool showExpenseList = false;
 	private bool showCreditCardModal = false;
 	private bool showCreditCardTransactions = false;
+	private bool showAccountBalance = false;
 	private List<Transaction> expenses;
 	private List<Report> reports;
 	private string selectedCategory = "";
 	private string selectedCreditCard = "";
+	private string onChangeSelectedCreditCard = "";
 	private DateTime startDate = DateTime.Today;
 	private DateTime endDate = DateTime.Today;
-	private string selectedAccount = "";
+	private string selectedAccountName = "";
+	private PersonalAccount selectedAccount;
 	private ExpensesReport expensesReport;
+	private AccountBalanceReport accountBalanceReport;
+	private double accountBalance = 0;
 	private List<Category> categories;
 	private List<Account> accounts;
 	private List<CreditCard> creditCards;
+	private List<PersonalAccount> personalAccounts;
 	private WorkspaceService _workspaceService;
 	private AccountService _accountService;
 	private List<Transaction> transactionsCreditCard;
@@ -243,14 +290,15 @@
 			workspace = MemoryDatabase.currentWorkspace;
 			_workspaceService = new WorkspaceService(MemoryDatabase);
 			_accountService = new AccountService(MemoryDatabase);
+			accounts = workspace.AccountList;
+			categories = workspace.CategoryList;
+			creditCards = _workspaceService.GetCreditCards(workspace);
 		}
 	}
 
 	private void ShowExpenseListModal()
 	{
 		expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
-		categories = workspace.CategoryList;
-		accounts = workspace.AccountList;
 		expenses = expensesReport.ListExpenses();
 		showExpenseList = true;
 	}
@@ -269,10 +317,10 @@
 				.ToList();
 		}
 
-		if (!string.IsNullOrEmpty(selectedAccount))
+		if (!string.IsNullOrEmpty(selectedAccountName))
 		{
 			filteredExpenses = filteredExpenses
-				.Where(t => t.Account.Name == selectedAccount)
+				.Where(t => t.Account.Name == selectedAccountName)
 				.ToList();
 		}
 
@@ -288,7 +336,6 @@
 
 	private void ShowCreditCardModal()
 	{
-		creditCards = _workspaceService.GetCreditCards(workspace);
 		showCreditCardModal = true;
 	}
 	private void HideCreditCardModal()
@@ -315,6 +362,28 @@
 
 	}
 
+	private void ShowAccountBalanceModal()
+	{
+		personalAccounts = _workspaceService.GetPersonalAccounts(workspace);
+		showAccountBalance = true;
+	}
+	private void HideAccountBalanceModal()
+	{
+		showAccountBalance = false;
+	}
+
+	private void GetSelectedAccountBalance()
+	{
+		if (!string.IsNullOrEmpty(selectedAccountName))
+		{
+			Console.WriteLine("selectedAccountName:", selectedAccountName.Length);
+			Console.WriteLine("onChangeSelectedCreditCard:", onChangeSelectedCreditCard.Length);
+			onChangeSelectedCreditCard = new String(selectedAccountName);
+			selectedAccount = (PersonalAccount)_accountService.Get(workspace, selectedAccountName);
+			accountBalanceReport = new AccountBalanceReport { WorkSpace = workspace, Account = selectedAccount };
+			accountBalance = accountBalanceReport.CalculateBalance();
+		}
+	}
 
 	private void GenerateReportObjectivesExpenses()
 	{
@@ -323,20 +392,6 @@
 	private void GenerateReportCategoryExpenses()
 	{
 	}
-
-	private void GenerateExpenseList()
-	{
-
-	}
-
-	private void GenerateReportCardExpenses()
-	{
-	}
-
-	private void GenerateAccountBalance()
-	{
-	}
-
 }
 }
 else
