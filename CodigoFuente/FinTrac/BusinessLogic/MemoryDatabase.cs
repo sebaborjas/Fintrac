@@ -36,11 +36,33 @@ namespace BusinessLogic
 
 			Account account = new PersonalAccount { Name = "TestPersonalAccount", Currency = CurrencyType.UYU, WorkSpace = defaultWorkspace, StartingAmount = 20000 };
 			Account accountUSD = new PersonalAccount { Name = "TestPersonalAccountUSD", Currency = CurrencyType.USD, WorkSpace = defaultWorkspace, StartingAmount = 20000 };
+			Account creditCardAccount = new CreditCard
+			{
+				BankName = "Santander",
+				LastDigits = "1234",
+				AvailableCredit = 10000,
+				DeadLine = 26,
+				Name = "Credit Santander",
+				Currency = CurrencyType.UYU,
+				WorkSpace = defaultWorkspace
+			};
+
+			Account creditCardAccount2 = new CreditCard
+			{
+				BankName = "Santander2",
+				LastDigits = "5678",
+				AvailableCredit = 5000,
+				DeadLine = 18,
+				Name = "Credit Santander2",
+				Currency = CurrencyType.UYU,
+				WorkSpace = defaultWorkspace
+			};
 
 			Category category = new Category { Name = "Cosas personales", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = defaultWorkspace };
 			Category categoryHome = new Category { Name = "Hogar", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = defaultWorkspace };
 			defaultWorkspace.CategoryList.Add(category);
 			defaultWorkspace.CategoryList.Add(categoryHome);
+
 			List<Transaction> transactionList = new List<Transaction>();
 
 			Transaction firstTransaction = new Transaction { Title = "Gasto 1", Amount = 2000, Account = account, Category = category, Currency = CurrencyType.UYU };
@@ -68,6 +90,22 @@ namespace BusinessLogic
 			accountUSD.TransactionList = transactionListUSD;
 
 			defaultWorkspace.AccountList.Add(accountUSD);
+
+			List<Transaction> transactionListCreditCard = new List<Transaction>();
+
+			Transaction firstTransactionCreditCard = new Transaction { Title = "Gasto 4", Amount = 2000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
+			Transaction secondTransactionCreditCard = new Transaction { Title = "Gasto 5", Amount = 1000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
+			Transaction thirdTransactionCreditCard = new Transaction { Title = "Gasto 6", Amount = 1000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
+
+			transactionListCreditCard.Add(firstTransactionCreditCard);
+			transactionListCreditCard.Add(secondTransactionCreditCard);
+			transactionListCreditCard.Add(thirdTransactionCreditCard);
+
+			creditCardAccount.TransactionList = transactionListCreditCard;
+
+
+			defaultWorkspace.AccountList.Add(creditCardAccount);
+			defaultWorkspace.AccountList.Add(creditCardAccount2);
 
 			Goal goal = new Goal { Title = "Ahorro", MaxAmount = 10000, Workspace = defaultWorkspace };
 			goal.Categories.Add(category);
