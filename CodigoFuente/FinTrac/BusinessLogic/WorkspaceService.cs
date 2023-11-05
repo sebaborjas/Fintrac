@@ -91,6 +91,21 @@ namespace BusinessLogic
 			return creditCards;
 		}
 
+		public List<PersonalAccount> GetPersonalAccounts(Workspace workspace)
+		{
+			List<PersonalAccount> personalAccounts = new List<PersonalAccount>();
+
+			foreach (Account account in workspace.AccountList)
+			{
+				if (account is PersonalAccount personalAccount)
+				{
+					personalAccounts.Add(personalAccount);
+				}
+			}
+
+			return personalAccounts;
+		}
+
 	}
 
 }
