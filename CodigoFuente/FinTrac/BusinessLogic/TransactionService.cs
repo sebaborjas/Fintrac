@@ -10,11 +10,11 @@ namespace BusinessLogic
 {
     public class TransactionService
     {
-        private readonly MemoryDatabase _memoryDatabase;
+        private readonly FintracContext _database;
 
-        public TransactionService(MemoryDatabase memoryDatabase)
+        public TransactionService(FintracContext database)
         {
-            _memoryDatabase = memoryDatabase;
+            _database = database;
         }
 
         public void Add(Account account, Transaction transaction)
@@ -23,7 +23,7 @@ namespace BusinessLogic
             {
                 throw new TransactionAlreadyExistsException();
             }
-            var user = _memoryDatabase.Users.FirstOrDefault(x => x.WorkspaceList.Contains(account.WorkSpace));
+            var user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(account.WorkSpace));
             if (user != null)
             {
                 var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
@@ -45,6 +45,7 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
 
         public void Duplicate(Account account, Transaction transaction)
@@ -59,11 +60,12 @@ namespace BusinessLogic
                 Account = transaction.Account
             };
             account.TransactionList.Add(duplicatedTransaction);
+            _database.SaveChanges();
         }
 
         public Transaction Get(Account account, int transactionID)
         {
-            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(account.WorkSpace)).WorkspaceList.Find(x => x.ID == account.WorkSpace.ID).AccountList.Find(x => x == account).TransactionList.Find(x => x.ID == transactionID);
+            return _database.Users.ToList().Find(x => x.WorkspaceList.Contains(account.WorkSpace)).WorkspaceList.Find(x => x.ID == account.WorkSpace.ID).AccountList.Find(x => x == account).TransactionList.Find(x => x.ID == transactionID);
         }
 
         public void Modify(Transaction transaction, string title, double amount)
@@ -71,6 +73,8 @@ namespace BusinessLogic
             Transaction transactionToUpdate = Get(transaction.Account, transaction.ID);
             transactionToUpdate.Amount = amount;
             transactionToUpdate.Title = title;
+
+            _database.SaveChanges();
         }
     }
 }
