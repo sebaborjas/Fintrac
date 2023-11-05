@@ -111,7 +111,16 @@ namespace BusinessLogic
 			goal.Categories.Add(category);
 			goal.Categories.Add(categoryHome);
 			defaultWorkspace.GoalList.Add(goal);
+
+			Goal goal2 = new Goal { Title = "Gastos", MaxAmount = 15000, Workspace = defaultWorkspace };
+			goal2.Categories.Add(categoryHome);
+			defaultWorkspace.GoalList.Add(goal2);
+
+			Goal goal3 = new Goal { Title = "Comida", MaxAmount = 5000, Workspace = defaultWorkspace };
+			goal3.Categories.Add(category);
+			defaultWorkspace.GoalList.Add(goal3);
 		}
+
 
 	}
 
