@@ -37,7 +37,7 @@
                     {
                         <tr>
                             <td>@goal.Title</td>
-                            <td>@goal.MaxAmount</td>
+                            <td>@goal.MaxAmount.ToString("N2")</td>
                             <td>@goal.Categories</td>
                             <td>
                                 <button class="btn btn-primary" @onclick="() => ShowEditGoalModal(goal)">Editar</button>

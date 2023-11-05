@@ -42,7 +42,7 @@
                         <tr>
                             <td>@transaction.Title</td>
                             <td>@transaction.CreationDate.ToShortDateString()</td>
-                            <td>@transaction.Amount</td>
+                            <td>@transaction.Amount.ToString("N2")</td>
                             <td>@transaction.Currency</td>
                             <td>@transaction.Account.Name</td>
                             <td>@transaction.Category.Name</td>
