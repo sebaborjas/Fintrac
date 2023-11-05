@@ -12,11 +12,11 @@ namespace BusinessLogic
 {
     public class ExchangeService
     {
-        private readonly MemoryDatabase _memoryDatabase;
+        private readonly FintracContext _database;
 
-        public ExchangeService(MemoryDatabase memoryDatabase)
+        public ExchangeService(FintracContext database)
         {
-            this._memoryDatabase = memoryDatabase;
+            this._database = database;
         }
 
         public void Add(Workspace workspace, Exchange exchange)
@@ -37,11 +37,13 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
 
         public void Delete(Workspace workspace, Exchange exchange)
         {
-            var user = _memoryDatabase.Users.FirstOrDefault(x => x.WorkspaceList.Contains(workspace));
+            var user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(workspace));
             if (user != null)
             {
                 var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
@@ -67,11 +69,13 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
 
         public Exchange Get(Workspace workspace, DateTime dateTime)
         {
-            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.Find(x => x.ID == workspace.ID).ExchangeList.Find(x => x.Date == dateTime);
+            return _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).ExchangeList.Find(x => x.Date == dateTime);
 
         }
 
@@ -95,6 +99,8 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
     }
 }
