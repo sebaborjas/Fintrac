@@ -106,6 +106,26 @@ namespace BusinessLogic
 			return personalAccounts;
 		}
 
+		public List<GoalsReport> GenerateGoalsReport(Workspace workspace)
+		{
+			List<GoalsReport> goalsReports = new List<GoalsReport>();
+
+			foreach (Goal goal in workspace.GoalList)
+			{
+				GoalsReport report = new GoalsReport
+				{
+					WorkSpace = workspace,
+					Goal = goal
+				};
+				report.CalculateReport();
+
+				goalsReports.Add(report);
+			}
+
+			return goalsReports;
+		}
+
+
 	}
 
 }
