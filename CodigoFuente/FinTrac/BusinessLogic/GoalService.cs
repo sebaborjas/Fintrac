@@ -13,11 +13,11 @@ namespace BusinessLogic
 {
     public class GoalService
     {
-        private readonly MemoryDatabase _memoryDatabase;
+        private readonly FintracContext _database;
 
-        public GoalService(MemoryDatabase memoryDatabase)
+        public GoalService(FintracContext database)
         {
-            _memoryDatabase = memoryDatabase;
+            _database = database;
         }
 
         public void Add(Workspace workspace, Goal goal)
@@ -38,11 +38,13 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
 
         public Goal Get(Workspace workspace, string title)
         {
-            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.Find(x => x.ID == workspace.ID).GoalList.Find(x => x.Title == title);
+            return _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).GoalList.Find(x => x.Title == title);
         }
 
         public void Delete(Workspace workspace, Goal goal)
@@ -60,6 +62,7 @@ namespace BusinessLogic
                 throw exception;
             }
 
+            _database.SaveChanges();
         }
 
         public void AddCategoryToGoal(Goal goal, List<Category> categories)
@@ -71,6 +74,8 @@ namespace BusinessLogic
                     goal.Categories.Add(category);
                 }
             }
+
+            _database.SaveChanges();
         }
 
         public void Update(Goal oldGoal, Goal newGoal)
@@ -98,6 +103,7 @@ namespace BusinessLogic
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
 
     }
