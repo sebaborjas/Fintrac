@@ -5,289 +5,347 @@ using Domain.Exceptions;
 
 namespace TestBusinessLogic
 {
-	[TestClass]
-	public class TestWorkspaceService
-	{
-		private WorkspaceService _service;
-		private UserService _userService;
-		private MemoryDatabase newMemory;
-		[TestInitialize]
-		public void SetUp()
-		{
-			newMemory = new MemoryDatabase();
-			_service = new WorkspaceService(newMemory);
-			_userService = new UserService(newMemory);
+    [TestClass]
+    public class TestWorkspaceService
+    {
+        private WorkspaceService _service;
+        private UserService _userService;
+        private MemoryDatabase newMemory;
+        [TestInitialize]
+        public void SetUp()
+        {
+            newMemory = new MemoryDatabase();
+            _service = new WorkspaceService(newMemory);
+            _userService = new UserService(newMemory);
 
-		}
-		[TestMethod]
-		public void AddWorkspace()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			Workspace workspace = new Workspace(useradmin, "Test");
+        }
+        [TestMethod]
+        public void AddWorkspace()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workspace = new Workspace(useradmin, "Test");
 
-			_userService.Add(useradmin);
-			_service.Add(useradmin, workspace);
-			Assert.AreEqual(workspace, useradmin.WorkspaceList.First(x => x == workspace));
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
+            Assert.AreEqual(workspace, useradmin.WorkspaceList.First(x => x == workspace));
 
-		}
-		[TestMethod]
-		[ExpectedException(typeof(WorkspaceAlreadyExistsException))]
-		public void AddWorkspaceAlreadyExists()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			Workspace workspace = new Workspace(useradmin, "Test");
+        }
+        [TestMethod]
+        [ExpectedException(typeof(WorkspaceAlreadyExistsException))]
+        public void AddWorkspaceAlreadyExists()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workspace = new Workspace(useradmin, "Test");
 
-			_userService.Add(useradmin);
-			_service.Add(useradmin, workspace);
-			_service.Add(useradmin, workspace);
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
+            _service.Add(useradmin, workspace);
 
-		}
+        }
 
-		[TestMethod]
-		public void GetWorkspace()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			Workspace workspace = new Workspace(useradmin, "Test");
+        [TestMethod]
+        public void GetWorkspace()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workspace = new Workspace(useradmin, "Test");
 
-			_userService.Add(useradmin);
-			_service.Add(useradmin, workspace);
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
 
-			Assert.AreEqual(workspace, _service.Get(workspace.ID));
-		}
+            Assert.AreEqual(workspace, _service.Get(workspace.ID));
+        }
 
-		[TestMethod]
-		public void UpdateWorkspaceName()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			Workspace workspace = new Workspace(useradmin, "Test");
-			_service.Add(useradmin, workspace);
+        [TestMethod]
+        public void UpdateWorkspaceName()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Workspace workspace = new Workspace(useradmin, "Test");
+            _service.Add(useradmin, workspace);
 
-			_service.UpdateName(workspace, "Nuevo Workspace");
-			Assert.AreEqual("Nuevo Workspace", workspace.Name);
-		}
-
-
-		[TestMethod]
-		public void DeleteWorkspaceWithOtherUsers()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			User otherUser = new User { Name = "Other", LastName = "Test", Email = "test@a.com", Password = "12345678909" };
-			Workspace workspace = new Workspace(useradmin, "Test");
-
-			_userService.Add(useradmin);
-			_userService.Add(otherUser);
-			_service.Add(useradmin, workspace);
-			_service.Add(otherUser, workspace);
-
-			_service.DeleteWorkspace(workspace);
-
-			Assert.AreEqual(workspace.UserAdmin, otherUser);
-		}
-
-		[TestMethod]
-		public void ListAllTransactions()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			var workspace = new Workspace(useradmin, "Test");
+            _service.UpdateName(workspace, "Nuevo Workspace");
+            Assert.AreEqual("Nuevo Workspace", workspace.Name);
+        }
 
 
-			Account personalAccount = new PersonalAccount
-			{
-				Name = "Test",
-				CreationDate = DateTime.Today.AddDays(-5),
-				StartingAmount = 1000,
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+        [TestMethod]
+        public void DeleteWorkspaceWithOtherUsers()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            User otherUser = new User { Name = "Other", LastName = "Test", Email = "test@a.com", Password = "12345678909" };
+            Workspace workspace = new Workspace(useradmin, "Test");
 
-			Account creditCardAccount = new CreditCard
-			{
-				BankName = "Santander",
-				LastDigits = "1234",
-				AvailableCredit = 10000,
-				DeadLine = 26,
-				Name = "Credit Santander",
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+            _userService.Add(useradmin);
+            _userService.Add(otherUser);
+            _service.Add(useradmin, workspace);
+            _service.Add(otherUser, workspace);
 
-			Category category = new Category
-			{
-				Name = "Test",
-				CreationDate = DateTime.Today.AddDays(-10),
-				Status = CategoryStatus.Active,
-				Workspace = workspace,
-				Type = CategoryType.Income
-			};
+            _service.DeleteWorkspace(workspace);
 
-			Transaction transaction1 = new Transaction
-			{
-				Title = "TransactionTest",
-				Account = creditCardAccount,
-				Category = category,
-				CreationDate = DateTime.Today.AddDays(-1),
-				Amount = 100,
-				Currency = CurrencyType.UYU,
-			};
+            Assert.AreEqual(workspace.UserAdmin, otherUser);
+        }
 
-			Transaction transaction2 = new Transaction
-			{
-				Title = "TransactionTest",
-				Account = personalAccount,
-				Category = category,
-				CreationDate = DateTime.Today.AddDays(-1),
-				Amount = 100,
-				Currency = CurrencyType.UYU,
-			};
-			creditCardAccount.TransactionList.Add(transaction1);
-			personalAccount.TransactionList.Add(transaction2);
-			workspace.AccountList.Add(creditCardAccount);
-			workspace.AccountList.Add(personalAccount);
-			workspace.CategoryList.Add(category);
+        [TestMethod]
+        public void ListAllTransactions()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            var workspace = new Workspace(useradmin, "Test");
 
-			_userService.Add(useradmin);
-			_service.Add(useradmin, workspace);
-			List<Transaction> expected = new List<Transaction> { transaction1, transaction2 };
-			List<Transaction> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
-			CollectionAssert.AreEqual(expected, transactionList);
-		}
 
-		[TestMethod]
-		public void ListGuestUsers()
-		{
+            Account personalAccount = new PersonalAccount
+            {
+                Name = "Test",
+                CreationDate = DateTime.Today.AddDays(-5),
+                StartingAmount = 1000,
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
 
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            Account creditCardAccount = new CreditCard
+            {
+                BankName = "Santander",
+                LastDigits = "1234",
+                AvailableCredit = 10000,
+                DeadLine = 26,
+                Name = "Credit Santander",
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
 
-			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
-			User user2 = new User { Name = "User2", LastName = "User2", Email = "user2@user.com", Password = "12345678909" };
-			User user3 = new User { Name = "User3", LastName = "User3", Email = "user3@user.com", Password = "12345678909" };
+            Category category = new Category
+            {
+                Name = "Test",
+                CreationDate = DateTime.Today.AddDays(-10),
+                Status = CategoryStatus.Active,
+                Workspace = workspace,
+                Type = CategoryType.Income
+            };
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+            Transaction transaction1 = new Transaction
+            {
+                Title = "TransactionTest",
+                Account = creditCardAccount,
+                Category = category,
+                CreationDate = DateTime.Today.AddDays(-1),
+                Amount = 100,
+                Currency = CurrencyType.UYU,
+            };
 
-			_userService.Add(useradmin);
-			_service.Add(useradmin, workspace);
+            Transaction transaction2 = new Transaction
+            {
+                Title = "TransactionTest",
+                Account = personalAccount,
+                Category = category,
+                CreationDate = DateTime.Today.AddDays(-1),
+                Amount = 100,
+                Currency = CurrencyType.UYU,
+            };
+            creditCardAccount.TransactionList.Add(transaction1);
+            personalAccount.TransactionList.Add(transaction2);
+            workspace.AccountList.Add(creditCardAccount);
+            workspace.AccountList.Add(personalAccount);
+            workspace.CategoryList.Add(category);
 
-			_userService.Add(user1);
-			_service.Add(user1, workspace);
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
+            List<Transaction> expected = new List<Transaction> { transaction1, transaction2 };
+            List<Transaction> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
+            CollectionAssert.AreEqual(expected, transactionList);
+        }
 
-			_userService.Add(user2);
-			_service.Add(user2, workspace);
+        [TestMethod]
+        public void ListGuestUsers()
+        {
 
-			_userService.Add(user3);
-			_service.Add(user3, workspace);
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
 
-			List<User> expected = new List<User> { useradmin, user1, user2, user3 };
-			List<User> listUser = _service.ListGuestUsers(workspace);
+            User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
+            User user2 = new User { Name = "User2", LastName = "User2", Email = "user2@user.com", Password = "12345678909" };
+            User user3 = new User { Name = "User3", LastName = "User3", Email = "user3@user.com", Password = "12345678909" };
 
-			CollectionAssert.AreEqual(expected, listUser);
+            Workspace workspace = new Workspace(useradmin, "Test");
 
-		}
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
 
-		[TestMethod]
-		public void GetCreditCards()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
+            _userService.Add(user1);
+            _service.Add(user1, workspace);
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+            _userService.Add(user2);
+            _service.Add(user2, workspace);
 
-			_userService.Add(useradmin);
-			_service.Add(useradmin, workspace);
+            _userService.Add(user3);
+            _service.Add(user3, workspace);
 
-			_userService.Add(user1);
-			_service.Add(user1, workspace);
+            List<User> expected = new List<User> { useradmin, user1, user2, user3 };
+            List<User> listUser = _service.ListGuestUsers(workspace);
 
-			Account personalAccount = new PersonalAccount
-			{
-				Name = "Test",
-				CreationDate = DateTime.Today.AddDays(-5),
-				StartingAmount = 1000,
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+            CollectionAssert.AreEqual(expected, listUser);
 
-			Account creditCardAccount = new CreditCard
-			{
-				BankName = "Santander",
-				LastDigits = "1234",
-				AvailableCredit = 10000,
-				DeadLine = 26,
-				Name = "Credit Santander",
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+        }
 
-			Account creditCardAccount2 = new CreditCard
-			{
-				BankName = "Santander2",
-				LastDigits = "5678",
-				AvailableCredit = 5000,
-				DeadLine = 18,
-				Name = "Credit Santander2",
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+        [TestMethod]
+        public void GetCreditCards()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
 
-			workspace.AccountList.Add(creditCardAccount);
-			workspace.AccountList.Add(personalAccount);
-			workspace.AccountList.Add(creditCardAccount2);
+            Workspace workspace = new Workspace(useradmin, "Test");
 
-			List<Account> expected = new List<Account> { creditCardAccount, creditCardAccount2 };
-			List<CreditCard> creditCardList = _service.GetCreditCards(workspace);
-			CollectionAssert.AreEqual(expected, creditCardList);
-		}
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
 
-		[TestMethod]
-		public void GetPersonalAccounts()
-		{
-			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
+            _userService.Add(user1);
+            _service.Add(user1, workspace);
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+            Account personalAccount = new PersonalAccount
+            {
+                Name = "Test",
+                CreationDate = DateTime.Today.AddDays(-5),
+                StartingAmount = 1000,
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
 
-			_userService.Add(useradmin);
-			_service.Add(useradmin, workspace);
+            Account creditCardAccount = new CreditCard
+            {
+                BankName = "Santander",
+                LastDigits = "1234",
+                AvailableCredit = 10000,
+                DeadLine = 26,
+                Name = "Credit Santander",
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
 
-			_userService.Add(user1);
-			_service.Add(user1, workspace);
+            Account creditCardAccount2 = new CreditCard
+            {
+                BankName = "Santander2",
+                LastDigits = "5678",
+                AvailableCredit = 5000,
+                DeadLine = 18,
+                Name = "Credit Santander2",
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
 
-			Account personalAccount = new PersonalAccount
-			{
-				Name = "Test",
-				CreationDate = DateTime.Today.AddDays(-5),
-				StartingAmount = 1000,
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+            workspace.AccountList.Add(creditCardAccount);
+            workspace.AccountList.Add(personalAccount);
+            workspace.AccountList.Add(creditCardAccount2);
 
-			Account personalAccount2 = new PersonalAccount
-			{
-				Name = "Test2",
-				CreationDate = DateTime.Today.AddDays(-4),
-				StartingAmount = 2000,
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+            List<Account> expected = new List<Account> { creditCardAccount, creditCardAccount2 };
+            List<CreditCard> creditCardList = _service.GetCreditCards(workspace);
+            CollectionAssert.AreEqual(expected, creditCardList);
+        }
 
-			Account creditCardAccount = new CreditCard
-			{
-				BankName = "Santander2",
-				LastDigits = "5678",
-				AvailableCredit = 5000,
-				DeadLine = 18,
-				Name = "Credit Santander2",
-				Currency = CurrencyType.UYU,
-				WorkSpace = workspace
-			};
+        [TestMethod]
+        public void GetPersonalAccounts()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
 
-			workspace.AccountList.Add(creditCardAccount);
-			workspace.AccountList.Add(personalAccount2);
-			workspace.AccountList.Add(creditCardAccount);
+            Workspace workspace = new Workspace(useradmin, "Test");
 
-			List<Account> expected = new List<Account> { creditCardAccount, personalAccount2 };
-			List<PersonalAccount> personalAccounts = _service.GetPersonalAccounts(workspace)
-			CollectionAssert.AreEqual(expected, personalAccounts);
-		}
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
 
-	}
+            _userService.Add(user1);
+            _service.Add(user1, workspace);
+
+            Account personalAccount = new PersonalAccount
+            {
+                Name = "Test",
+                CreationDate = DateTime.Today.AddDays(-5),
+                StartingAmount = 1000,
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
+
+            Account personalAccount2 = new PersonalAccount
+            {
+                Name = "Test2",
+                CreationDate = DateTime.Today.AddDays(-4),
+                StartingAmount = 2000,
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
+
+            Account creditCardAccount = new CreditCard
+            {
+                BankName = "Santander2",
+                LastDigits = "5678",
+                AvailableCredit = 5000,
+                DeadLine = 18,
+                Name = "Credit Santander2",
+                Currency = CurrencyType.UYU,
+                WorkSpace = workspace
+            };
+
+            workspace.AccountList.Add(personalAccount);
+            workspace.AccountList.Add(personalAccount2);
+            workspace.AccountList.Add(creditCardAccount);
+
+            List<Account> expected = new List<Account> { personalAccount, personalAccount2 };
+            List<PersonalAccount> personalAccounts = _service.GetPersonalAccounts(workspace);
+            CollectionAssert.AreEqual(expected, personalAccounts);
+        }
+
+        [TestMethod]
+        public void GenerateGoalsReport()
+        {
+            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
+
+            Workspace workspace = new Workspace(useradmin, "Test");
+
+            _userService.Add(useradmin);
+            _service.Add(useradmin, workspace);
+
+            _userService.Add(user1);
+            _service.Add(user1, workspace);
+
+            Goal goal1 = new Goal
+            {
+                Title = "Goal 1",
+                MaxAmount = 1000,
+                Categories = new List<Category>(),
+                Workspace = workspace
+            }; Category category1 = new Category
+            {
+                Name = "Category 1",
+                CreationDate = DateTime.Today.AddDays(-5),
+                Status = CategoryStatus.Active,
+                Workspace = workspace,
+                Type = CategoryType.Cost
+            };
+
+            Category category2 = new Category
+            {
+                Name = "Category 2",
+                CreationDate = DateTime.Today.AddDays(-5),
+                Status = CategoryStatus.Active,
+                Workspace = workspace,
+                Type = CategoryType.Cost
+            };
+
+            goal1.Categories.Add(category1);
+            goal1.Categories.Add(category2);
+
+            Goal goal2 = new Goal
+            {
+                Title = "Goal 2",
+                MaxAmount = 1000,
+                Categories = new List<Category>(),
+                Workspace = workspace
+            };
+            goal2.Categories.Add(category1);
+
+            workspace.GoalList.Add(goal1);
+            workspace.GoalList.Add(goal2);
+
+            List<GoalsReport> goalsReport = _service.GenerateGoalsReport(workspace);
+            Assert.IsTrue(goalsReport.Count == 2);
+            Assert.IsNotNull(goalsReport);
+        }
+
+    }
 }
