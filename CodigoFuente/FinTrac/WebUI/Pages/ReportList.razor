@@ -142,7 +142,7 @@
 	@if (showCreditCardModal)
 	{
 		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
+			<div class="modal-dialog modal-lg " role="document">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title">Seleccionar Tarjeta</h5>
@@ -152,7 +152,7 @@
 					</div>
 					<div class="modal-body">
 						<select class="form-control" @bind="selectedCreditCard">
-							<option value="">Seleccione una tarjeta</option>
+							<option disabled value="">Seleccione una tarjeta</option>
 							@foreach (var creditCard in creditCards)
 							{
 								<option value="@creditCard.Name">@creditCard.Name</option>
@@ -163,10 +163,53 @@
 						<button type="button" class="btn btn-secondary" @onclick="HideCreditCardModal">Cerrar</button>
 						<button type="button" class="btn btn-primary" @onclick="GenerateReportByCreditCard">Generar Reporte</button>
 					</div>
+
+					<div class="mx-1">
+						@if (showCreditCardTransactions)
+						{
+							@if (transactionsCreditCard.Count > 0)
+							{
+								<p class="mx-1" style="font-weight: bold; font-size: 1.2em;">Transacciones registradas en @DateTime.Now.ToString("MMMM"):</p>
+
+								<div class="table-responsive-md">
+									<table class="table table-md table-striped">
+										<thead>
+											<tr>
+												<th>Título</th>
+												<th>Fecha</th>
+												<th>Monto</th>
+												<th>Moneda</th>
+												<th>Cuenta</th>
+												<th>Categoría</th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach (var transaction in transactionsCreditCard)
+											{
+												<tr>
+													<td>@transaction.Title</td>
+													<td>@transaction.CreationDate.ToShortDateString()</td>
+													<td>@transaction.Amount</td>
+													<td>@transaction.Currency</td>
+													<td>@transaction.Account.Name</td>
+													<td>@transaction.Category.Name</td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>
+							}
+							else
+							{
+								<p class="mx-3" style="font-weight: bold; font-size: 1.2em;">No hay transacciones registradas en @DateTime.Now.ToString("MMMM")!</p>
+							}
+						}
+					</div>
 				</div>
 			</div>
 		</div>
 	}
+
 
 
 
@@ -175,6 +218,7 @@
 	private Domain.Workspace workspace;
 	private bool showExpenseList = false;
 	private bool showCreditCardModal = false;
+	private bool showCreditCardTransactions = false;
 	private List<Transaction> expenses;
 	private List<Report> reports;
 	private string selectedCategory = "";
@@ -186,6 +230,10 @@
 	private List<Category> categories;
 	private List<Account> accounts;
 	private List<CreditCard> creditCards;
+	private WorkspaceService _workspaceService;
+	private AccountService _accountService;
+	private List<Transaction> transactionsCreditCard;
+	private Account currentAccount;
 
 	protected override void OnInitialized()
 	{
@@ -193,6 +241,8 @@
 		{
 			CurrentUser = MemoryDatabase.currentUser;
 			workspace = MemoryDatabase.currentWorkspace;
+			_workspaceService = new WorkspaceService(MemoryDatabase);
+			_accountService = new AccountService(MemoryDatabase);
 		}
 	}
 
@@ -238,6 +288,7 @@
 
 	private void ShowCreditCardModal()
 	{
+		creditCards = _workspaceService.GetCreditCards(workspace);
 		showCreditCardModal = true;
 	}
 	private void HideCreditCardModal()
@@ -247,12 +298,21 @@
 
 	private void GenerateReportByCreditCard()
 	{
-		if (selectedCreditCard != null)
+		if (selectedCreditCard != "")
 		{
+			currentAccount = _accountService.Get(workspace, selectedCreditCard);
+			transactionsCreditCard = currentAccount.TransactionList;
+			showCreditCardTransactions = true;
 		}
 		else
 		{
+			ToastService.Notify(new ToastMessage
+				{
+					Type = ToastType.Danger,
+					Message = "Selecione una Terjeta de Crédito"
+				});
 		}
+
 	}
 
 
@@ -266,7 +326,7 @@
 
 	private void GenerateExpenseList()
 	{
-		
+
 	}
 
 	private void GenerateReportCardExpenses()
