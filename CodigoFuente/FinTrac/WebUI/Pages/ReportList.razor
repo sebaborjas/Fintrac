@@ -24,7 +24,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateReportObjectivesExpenses()">Reporte de Objetivos de Gastos</button></td>
+				<td> <button class="btn btn-primary btn-block" @onclick="() => ShowGoalReportModal()">Reporte de Objetivos de Gastos</button></td>
 			</tr>
 			<tr>
 				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateReportCategoryExpenses()">Reporte de Gastos por Categoría</button></td>
@@ -103,7 +103,7 @@
 										<tr>
 											<td>@expense.CreationDate.ToShortDateString()</td>
 											<td>@expense.Category.Name</td>
-											<td>@expense.Amount</td>
+											<td>@expense.Amount.ToString("N2")</td>
 											<td>@expense.Account.Name</td>
 										</tr>
 									}
@@ -189,7 +189,7 @@
 												<tr>
 													<td>@transaction.Title</td>
 													<td>@transaction.CreationDate.ToShortDateString()</td>
-													<td>@transaction.Amount</td>
+													<td>@transaction.Amount.ToString("N2")</td>
 													<td>@transaction.Currency</td>
 													<td>@transaction.Account.Name</td>
 													<td>@transaction.Category.Name</td>
@@ -229,7 +229,7 @@
 							}
 						</select>
 					</div>
-											<div class="modal-footer">
+					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" @onclick="HideAccountBalanceModal">Cerrar</button>
 						<button type="button" class="btn btn-primary" @onclick="GetSelectedAccountBalance">Generar Reporte</button>
 					</div>
@@ -253,6 +253,55 @@
 		</div>
 
 	}
+	@if (showGoalReport)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg " role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Reporte de Objetivos de Gastos</h5>
+						<button type="button" class="close" @onclick="HideGoalReportModal">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						@if (goalsReports.Any())
+						{
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Objetivo</th>
+										<th>Monto Definido</th>
+										<th>Monto Gastado</th>
+										<th>Objetivo Cumplido</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var report in goalsReports)
+									{
+										<tr style="background-color: @(report.GoalAchieved ? "#DFF0D8" : "#F2DEDE")">
+											<td>@report.Goal.Title</td>
+											<td>UYU: @report.Goal.MaxAmount.ToString("N2")</td>
+											<td>UYU: @report.AmountSpent.ToString("N2")</td>
+											<td>@(report.GoalAchieved ? "Sí" : "No")</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						}
+						else
+						{
+							<p>No hay objetivos definidos para mostrar.</p>
+						}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="HideGoalReportModal">Cerrar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	}
 
 	@code {
 	private User CurrentUser;
@@ -261,6 +310,7 @@
 	private bool showCreditCardModal = false;
 	private bool showCreditCardTransactions = false;
 	private bool showAccountBalance = false;
+	private bool showGoalReport = false;
 	private List<Transaction> expenses;
 	private List<Report> reports;
 	private string selectedCategory = "";
@@ -277,6 +327,7 @@
 	private List<Account> accounts;
 	private List<CreditCard> creditCards;
 	private List<PersonalAccount> personalAccounts;
+	private List<GoalsReport> goalsReports;
 	private WorkspaceService _workspaceService;
 	private AccountService _accountService;
 	private List<Transaction> transactionsCreditCard;
@@ -342,7 +393,6 @@
 	{
 		showCreditCardModal = false;
 	}
-
 	private void GenerateReportByCreditCard()
 	{
 		if (selectedCreditCard != "")
@@ -371,18 +421,27 @@
 	{
 		showAccountBalance = false;
 	}
-
 	private void GetSelectedAccountBalance()
 	{
 		if (!string.IsNullOrEmpty(selectedAccountName))
 		{
-			Console.WriteLine("selectedAccountName:", selectedAccountName.Length);
-			Console.WriteLine("onChangeSelectedCreditCard:", onChangeSelectedCreditCard.Length);
 			onChangeSelectedCreditCard = new String(selectedAccountName);
 			selectedAccount = (PersonalAccount)_accountService.Get(workspace, selectedAccountName);
 			accountBalanceReport = new AccountBalanceReport { WorkSpace = workspace, Account = selectedAccount };
 			accountBalance = accountBalanceReport.CalculateBalance();
 		}
+	}
+
+	private void ShowGoalReportModal()
+	{
+		Console.WriteLine("ShowGoalReportModal");
+		goalsReports = _workspaceService.GenerateGoalsReport(workspace);
+
+		showGoalReport = true;
+	}
+	private void HideGoalReportModal()
+	{
+		showGoalReport = false;
 	}
 
 	private void GenerateReportObjectivesExpenses()
