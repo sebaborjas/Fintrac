@@ -1,4 +1,5 @@
 using Domain;
+using Domain.DataTypes;
 using Domain.Exceptions;
 
 namespace BusinessLogic
@@ -125,7 +126,25 @@ namespace BusinessLogic
 			return goalsReports;
 		}
 
+		public List<CategoryReport> GenerateCategoryReports(Workspace workspace, Month month)
+		{
+			List<CategoryReport> categoryReports = new List<CategoryReport>();
 
+			foreach (var category in workspace.CategoryList)
+			{
+				CategoryReport report = new CategoryReport
+				{
+					WorkSpace = workspace,
+					Month = month,
+					Category = category
+				};
+
+				report.CalculateReport();
+				categoryReports.Add(report);
+			}
+
+			return categoryReports;
+		}
 	}
 
 }
