@@ -27,7 +27,7 @@
 				<td> <button class="btn btn-primary btn-block" @onclick="() => ShowGoalReportModal()">Reporte de Objetivos de Gastos</button></td>
 			</tr>
 			<tr>
-				<td> <button class="btn btn-primary btn-block" @onclick="() => GenerateReportCategoryExpenses()">Reporte de Gastos por Categoría</button></td>
+				<td> <button class="btn btn-primary btn-block" @onclick="() => ShowCategoryReportsModal()">Reporte de Gastos por Categoría</button></td>
 			</tr>
 			<tr>
 				<td><button class="btn btn-primary btn-block" @onclick="() => ShowExpenseListModal()">Listado de Gastos</button></td>
@@ -302,6 +302,61 @@
 		</div>
 
 	}
+	@if (showCategoryReportsModal)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg " role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="reportModalLabel">Generar reporte de Categorias</h5>
+						<button type="button" class="close" @onclick="HideCategoryReportsModal">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="selectMonth">Seleccionar Mes:</label>
+							<select class="form-control" @bind="selectedMonth">
+								<option disabled value="">Seleccione un mes</option>
+								@foreach (Domain.DataTypes.Month month in Enum.GetValues(typeof(Domain.DataTypes.Month)))
+								{
+									<option value="@month">@month</option>
+								}
+							</select>
+						</div>
+						@if (categoryReports != null)
+						{
+							<div class="m-2">
+								<p style="font-weight: bold; font-size: 1.2em;">Para el mes de @selectedMonth:</p>
+								@if (categoryReports != null && categoryReports.Any())
+								{
+									<table class="table">
+										<tbody>
+											@foreach (var report in categoryReports)
+											{
+												<tr>
+													<td>@report.CalculateReport()</td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								}
+								else
+								{
+									<p>No hay datos disponibles para mostrar.</p>
+								}
+							</div>
+						}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @onclick="HideCategoryReportsModal">Cerrar</button>
+						<button type="button" class="btn btn-primary" @onclick="GenerateCategoryReports">Generar Informes</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	}
 
 	@code {
 	private User CurrentUser;
@@ -311,11 +366,13 @@
 	private bool showCreditCardTransactions = false;
 	private bool showAccountBalance = false;
 	private bool showGoalReport = false;
+	private bool showCategoryReportsModal = false;
 	private List<Transaction> expenses;
 	private List<Report> reports;
 	private string selectedCategory = "";
 	private string selectedCreditCard = "";
 	private string onChangeSelectedCreditCard = "";
+	private Domain.DataTypes.Month selectedMonth;
 	private DateTime startDate = DateTime.Today;
 	private DateTime endDate = DateTime.Today;
 	private string selectedAccountName = "";
@@ -328,6 +385,7 @@
 	private List<CreditCard> creditCards;
 	private List<PersonalAccount> personalAccounts;
 	private List<GoalsReport> goalsReports;
+	private List<CategoryReport> categoryReports;
 	private WorkspaceService _workspaceService;
 	private AccountService _accountService;
 	private List<Transaction> transactionsCreditCard;
@@ -434,9 +492,7 @@
 
 	private void ShowGoalReportModal()
 	{
-		Console.WriteLine("ShowGoalReportModal");
 		goalsReports = _workspaceService.GenerateGoalsReport(workspace);
-
 		showGoalReport = true;
 	}
 	private void HideGoalReportModal()
@@ -444,12 +500,28 @@
 		showGoalReport = false;
 	}
 
-	private void GenerateReportObjectivesExpenses()
+	private void ShowCategoryReportsModal()
 	{
+		showCategoryReportsModal = true;
 	}
-
-	private void GenerateReportCategoryExpenses()
+	private void HideCategoryReportsModal()
 	{
+		showCategoryReportsModal = false;
+	}
+	void GenerateCategoryReports()
+	{
+		if (selectedMonth != 0)
+		{
+			categoryReports = _workspaceService.GenerateCategoryReports(workspace, selectedMonth);
+		}
+		else
+		{
+			ToastService.Notify(new ToastMessage
+				{
+					Type = ToastType.Danger,
+					Message = "Seleccione un mes."
+				});
+		}
 	}
 }
 }
