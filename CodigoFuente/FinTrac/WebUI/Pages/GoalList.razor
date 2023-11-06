@@ -2,11 +2,11 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de objetivos </PageTitle>
     @if (goalList.Any())
@@ -187,14 +187,14 @@
 
     protected override void OnInitialized()
     {
-        if (MemoryDatabase.isLoggedIn)
+        if (FintracContext.isLoggedIn)
         {
             selectedCategories = new List<Category>();
-            CurrentUser = MemoryDatabase.currentUser;
-            workspace = MemoryDatabase.currentWorkspace;
+            CurrentUser = FintracContext.currentUser;
+            workspace = FintracContext.currentWorkspace;
             goalList = workspace.GoalList;
             workpaceCategoryList = workspace.CategoryList.Where(x=> x.Type == CategoryType.Cost).ToList();
-            _goalService = new GoalService(MemoryDatabase);
+            _goalService = new GoalService(FintracContext);
             newGoal = new Goal();
         }
 

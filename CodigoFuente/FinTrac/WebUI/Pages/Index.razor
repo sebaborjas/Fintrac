@@ -2,13 +2,14 @@
 @using BusinessLogic
 @using Domain
 @inject NavigationManager NavigationManager
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 
-@if(MemoryDatabase.isLoggedIn){
+@if (FintracContext.isLoggedIn)
+{
 <PageTitle>Home</PageTitle>
 
 
-@if (!MemoryDatabase.isLoggedIn)
+	@if (!FintracContext.isLoggedIn)
 {
 	try
 	{
@@ -19,7 +20,7 @@
 		Console.WriteLine(e);
 	}
 }
-@if (MemoryDatabase.isLoggedIn)
+	@if (FintracContext.isLoggedIn)
 {
 	<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
 	<div class="row">
@@ -51,16 +52,16 @@
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			user = MemoryDatabase.currentUser;
-			workspaces = MemoryDatabase.currentUser.WorkspaceList;
+			user = FintracContext.currentUser;
+			workspaces = FintracContext.currentUser.WorkspaceList;
 		}
 	}
 
 	private void HandleCardClick(Domain.Workspace workspace)
 	{
-		MemoryDatabase.currentWorkspace = workspace;
+		FintracContext.currentWorkspace = workspace;
 		NavigationManager.NavigateTo("/workspace");
 
 	}

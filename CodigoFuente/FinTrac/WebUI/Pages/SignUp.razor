@@ -8,7 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject ToastService ToastService
 
-@inject MemoryDatabase MemoryDatabase;
+@inject FintracContext FintracContext;
 
 <div id="main-wrapper" class="container">
     <div class="row justify-content-center">
@@ -135,7 +135,7 @@
 
     protected override void OnInitialized()
     {
-        _userService = new UserService(MemoryDatabase);
+        _userService = new UserService(FintracContext);
     }
 
     public void RegisterUser()
