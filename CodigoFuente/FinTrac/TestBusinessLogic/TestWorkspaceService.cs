@@ -10,11 +10,11 @@ namespace TestBusinessLogic
     {
         private WorkspaceService _service;
         private UserService _userService;
-        private MemoryDatabase newMemory;
+        private FintracContext newMemory;
         [TestInitialize]
         public void SetUp()
         {
-            newMemory = new MemoryDatabase();
+            newMemory = TestContextFactory.CreateContext();
             _service = new WorkspaceService(newMemory);
             _userService = new UserService(newMemory);
 

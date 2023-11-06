@@ -19,8 +19,8 @@ namespace TestBusinessLogic
         [TestInitialize]
         public void SetUp()
         {
-            MemoryDatabase _database = new MemoryDatabase();
-            _service = new ExchangeService(_database);
+			FintracContext _database = TestContextFactory.CreateContext();
+			_service = new ExchangeService(_database);
             _workspaceService = new WorkspaceService(_database);
             _userService = new UserService(_database);
 
