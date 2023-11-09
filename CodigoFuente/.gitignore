@@ -20,7 +20,7 @@
 # Mono auto generated files
 mono_crash.*
 
-CodigoFuente/FinTrac/WebUI/appsettings.json
+FinTrac/WebUI/appsettings.json
 
 # Build results
 [Dd]ebug/
