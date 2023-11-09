@@ -31,7 +31,7 @@ namespace TestBusinessLogic
 
             _user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
 
-            _workspace = new Workspace(_user, "Test");
+            _workspace = new Workspace{ UserAdmin = _user, Name = $"Espacio personal de {_user.Name} {_user.LastName}" };
 
             _userService.Add(_user);
             _workspaceService.Add(_user, _workspace);

@@ -37,7 +37,7 @@ namespace TestBusinessLogic
             _exchangeService = new ExchangeService(_database);
 
             _user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
-            _workspace = new Workspace(_user, "Test");
+            _workspace = new Workspace{ UserAdmin = _user, Name = $"Espacio personal de {_user.Name} {_user.LastName}" };
             _account = new PersonalAccount { Name = "Caja de ahorro", WorkSpace = _workspace, Currency = CurrencyType.UYU };
             _category = new Category { Name = "Gastos casa", Status = CategoryStatus.Active, Type = CategoryType.Cost };
             _transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };

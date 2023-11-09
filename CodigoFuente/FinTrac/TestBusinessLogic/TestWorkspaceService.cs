@@ -23,7 +23,7 @@ namespace TestBusinessLogic
         public void AddWorkspace()
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            var workspace = new Workspace(useradmin, "Test");
+            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
 
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
@@ -35,7 +35,7 @@ namespace TestBusinessLogic
         public void AddWorkspaceAlreadyExists()
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            var workspace = new Workspace(useradmin, "Test");
+            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
 
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
@@ -47,7 +47,7 @@ namespace TestBusinessLogic
         public void GetWorkspace()
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            var workspace = new Workspace(useradmin, "Test");
+            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
 
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
@@ -59,7 +59,7 @@ namespace TestBusinessLogic
         public void UpdateWorkspaceName()
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            var workspace = new Workspace(useradmin, "Test");
+            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
             _service.Add(useradmin, workspace);
 
             _service.UpdateName(workspace, "Nuevo Workspace");
@@ -72,7 +72,7 @@ namespace TestBusinessLogic
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             User otherUser = new User { Name = "Other", LastName = "Test", Email = "test@a.com", Password = "12345678909" };
-            var workspace = new Workspace(useradmin, "Test");
+            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
 
             _userService.Add(useradmin);
             _userService.Add(otherUser);
@@ -88,7 +88,7 @@ namespace TestBusinessLogic
         public void ListAllTransactions()
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            var workspace = new Workspace(useradmin, "Test");
+            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
 
 
             Account personalAccount = new PersonalAccount

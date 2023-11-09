@@ -27,7 +27,7 @@ namespace TestBusinessLogic
             _service = new InvitationService(newMemory);
 
             _useradmin = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
-            _workspace = new Workspace(_useradmin, "Test");
+            _workspace = new Workspace{ UserAdmin = _useradmin, Name = $"Espacio personal de {_useradmin.Name} {_useradmin.LastName}" };
             _userService.Add(_useradmin);
             _workspaceService.Add(_useradmin, _workspace);
             _userToInvite = new User { Email = "invite@test.com", Name = "Pepe", LastName = "Test", Password = "12345678901" };
