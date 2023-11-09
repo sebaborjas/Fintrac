@@ -9,6 +9,7 @@ namespace Domain.DataTypes
     public enum CurrencyType
     {
         UYU,
-        USD
+        USD,
+        EUR
     }
 }

@@ -31,7 +31,7 @@ namespace BusinessLogic
 			user.WorkspaceList.Add(defaultWorkspace);
 			Users.Add(user);
 
-			Exchange exchange = new Exchange { Date = DateTime.Today.AddDays(-5), DollarValue = 35 };
+			Exchange exchange = new Exchange { Workspace = defaultWorkspace, Date = DateTime.Today.AddDays(-5),Currency = CurrencyType.USD, CurrencyValue = 35 };
 			defaultWorkspace.ExchangeList.Add(exchange);
 
 			Account account = new PersonalAccount { Name = "TestPersonalAccount", Currency = CurrencyType.UYU, WorkSpace = defaultWorkspace, StartingAmount = 20000 };

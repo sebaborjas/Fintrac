@@ -25,7 +25,7 @@ namespace TestDomain
             workSpace = new Workspace(user, "TestWorkspace");
 
             user.WorkspaceList.Add(workSpace);
-            Exchange exchange = new Exchange { Date = DateTime.Today.AddDays(-5), DollarValue = 35 };
+            Exchange exchange = new Exchange { Currency = CurrencyType.USD ,Date = DateTime.Today.AddDays(-5), CurrencyValue = 35 };
             workSpace.ExchangeList.Add(exchange);
 
             account = new PersonalAccount { Name = "TestPersonalAccount", Currency = CurrencyType.UYU, WorkSpace = workSpace, StartingAmount = 20000 };

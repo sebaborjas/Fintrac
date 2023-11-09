@@ -32,7 +32,7 @@ namespace Domain
         protected Double GetExchangeValueOfDay(DateTime date)
         {
             Exchange exchange = WorkSpace.ExchangeList.MaxBy(x => x.Date <= date);
-            return exchange.DollarValue;
+            return exchange.CurrencyValue;
         }
     }
 

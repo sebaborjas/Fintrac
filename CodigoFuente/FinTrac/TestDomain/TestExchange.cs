@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using System.Transactions;
 using Domain;
 using Domain.Exceptions;
+using Domain.DataTypes;
 
 namespace TestDomain
 {
@@ -17,13 +18,14 @@ namespace TestDomain
             exchange = new Exchange
             {
                 Date = DateTime.Today,
+                Currency = CurrencyType.USD
             };
         }
 
         [TestMethod]
         public void EqualsExchanges()
         {
-            Exchange otherExchange = new Exchange { Date = DateTime.Today };
+            Exchange otherExchange = new Exchange { Date = DateTime.Today, Currency = CurrencyType.USD };
 
             Assert.AreEqual(exchange, otherExchange);
         }
@@ -31,7 +33,7 @@ namespace TestDomain
         [TestMethod]
         public void NotEqualsExchanges()
         {
-            Exchange otherExchange = new Exchange { Date = DateTime.Today.AddDays(-1) };
+            Exchange otherExchange = new Exchange { Date = DateTime.Today.AddDays(-1), Currency = CurrencyType.USD };
 
             Assert.AreNotEqual(exchange, otherExchange);
         }
@@ -50,24 +52,24 @@ namespace TestDomain
         }
 
         [TestMethod]
-        public void TestDollarValueInt()
+        public void TestCurrencyValueInt()
         {
-            exchange.DollarValue = 40;
-            Assert.AreEqual(40, exchange.DollarValue);
+            exchange.CurrencyValue = 40;
+            Assert.AreEqual(40, exchange.CurrencyValue);
         }
 
         [TestMethod]
-        public void TestDollarValueDecimal()
+        public void TestCurrencyValueDecimal()
         {
-            exchange.DollarValue = 40.5;
-            Assert.AreEqual(40.5, exchange.DollarValue);
+            exchange.CurrencyValue = 40.5;
+            Assert.AreEqual(40.5, exchange.CurrencyValue);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void TestDollarValueNegativo()
+        public void TestCurrencyValueNegativo()
         {
-            exchange.DollarValue = -100;
+            exchange.CurrencyValue = -100;
         }
 
         [TestMethod]

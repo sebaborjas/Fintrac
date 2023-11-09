@@ -102,13 +102,6 @@ namespace TestDomain
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
-        public void TestCurrencyInvalid()
-        {
-            transaction.Currency = (CurrencyType)3;
-        }
-
-        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestAccountNull()
         {

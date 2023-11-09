@@ -53,13 +53,13 @@ namespace Domain
                 {
                     if (transaction.Category.Type == CategoryType.Income)
                     {
-                        ingresos += transaction.Amount * this.GetDolarVallueOfDay(transaction.CreationDate);
+                        ingresos += transaction.Amount * this.GetCurrencyVallueOfDay(transaction.CreationDate);
                     }
                     else
                     {
-                        costos += transaction.Amount * this.GetDolarVallueOfDay(transaction.CreationDate);
+                        costos += transaction.Amount * this.GetCurrencyVallueOfDay(transaction.CreationDate);
                     }
-                    balance = this.Account.StartingAmount * this.GetDolarVallueOfDay(Account.CreationDate) + ingresos - costos;
+                    balance = this.Account.StartingAmount * this.GetCurrencyVallueOfDay(Account.CreationDate) + ingresos - costos;
 
                 }
                 
@@ -67,12 +67,12 @@ namespace Domain
             return balance;
         }
 
-        private Double GetDolarVallueOfDay(DateTime date)
+        private Double GetCurrencyVallueOfDay(DateTime date)
         {
         
-            Exchange exchange = Account.WorkSpace.ExchangeList.MaxBy(x => x.Date <= date);
+            Exchange exchange = Account.WorkSpace.ExchangeList.MaxBy(x => x.Date <= date && x.Currency == Currency);
 
-            return exchange.DollarValue;
+            return exchange.CurrencyValue;
         }
     }
 }

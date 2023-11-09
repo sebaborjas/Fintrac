@@ -29,7 +29,7 @@ namespace BusinessLogic
                 var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
                 if (targetWorkspace != null)
                 {
-                    var exchange = targetWorkspace.ExchangeList.Find(x => x.Date <= transaction.CreationDate);
+                    var exchange = targetWorkspace.ExchangeList.Find(x => x.Date <= transaction.CreationDate && x.Currency == transaction.Currency);
                     if (exchange == null)
                     {
                         throw new ExchangeNotFoundException();
