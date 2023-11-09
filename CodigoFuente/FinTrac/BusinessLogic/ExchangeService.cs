@@ -48,7 +48,7 @@ namespace BusinessLogic
                 var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
                 if (targetWorkspace != null)
                 {
-                    var accountWithTransactions = targetWorkspace.AccountList.FirstOrDefault(x => x.TransactionList.Count > 0);
+                    var accountWithTransactions = targetWorkspace.AccountList.FirstOrDefault(x => x.TransactionList.Count > 0 && x.Currency == exchange.Currency);
                     if (accountWithTransactions != null)
                     {
                         var transaction = accountWithTransactions.TransactionList.FirstOrDefault(x => x.CreationDate >= exchange.Date && x.Currency == exchange.Currency);
