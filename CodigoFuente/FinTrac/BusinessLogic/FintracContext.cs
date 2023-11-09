@@ -11,10 +11,15 @@ namespace BusinessLogic
     public class FintracContext : DbContext
     {
         public bool isLoggedIn { get; set; } = false;
+
         public DbSet<User> Users { get; set; }
+
         public User currentUser { get; set; }
+
         public Account currentAccount { get; set; }
+
         public Workspace currentWorkspace { get; set; }
+
         public FintracContext(DbContextOptions<FintracContext> options) : base(options)
         {
 
@@ -22,7 +27,30 @@ namespace BusinessLogic
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); 
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Ignore<Report>();
+            modelBuilder.Ignore<Account>();
+
+            modelBuilder.Entity<User>().HasKey(x => x.Email);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.RecievedInvitations)
+                .WithOne(i => i.UserToInvite)
+                .HasForeignKey(i => i.UserToInviteId);
+
+            modelBuilder.Entity<Invitation>()
+                .HasOne(i => i.Admin).WithMany()
+                .HasForeignKey(i => i.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Invitation>()
+                .HasOne(i => i.UserToInvite)
+                .WithMany()
+                .HasForeignKey(i => i.UserToInviteId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
         }
     }
 }

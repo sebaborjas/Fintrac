@@ -6,9 +6,10 @@ using System.Security.Cryptography.X509Certificates;
 
 using System.Text;
 using System.Threading.Tasks;
-
+using BusinessLogic.Interfaces;
 using Domain;
 using Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic
 {
@@ -29,18 +30,19 @@ namespace BusinessLogic
             }
             try
             {
-              Workspace defaultWorkspace = new Workspace(u, $"Personal {u.Name} {u.LastName}");
-              u.WorkspaceList.Add(defaultWorkspace);
-              _database.Users.Add(u);
-            }
+		        Workspace defaultWorkspace = new Workspace { UserAdmin = u, Name = $"Espacio personal de {u.Name} {u.LastName}" };
+                u.WorkspaceList.Add(defaultWorkspace);
+                _database.Users.Add(u);
+            }   
             catch (Exception exception)
             {
-                throw exception;
+				throw exception;
+                
             }
             _database.SaveChanges();
         }
 
-        public User Get(string email)
+		public User Get(string email)
         {
             return _database.Users.Where(u => u.Email == email).FirstOrDefault<User>();
             }
@@ -88,5 +90,6 @@ namespace BusinessLogic
 
 
         }
-    }
+
+	}
 }

@@ -4,6 +4,7 @@ namespace Domain
 {
     public class Exchange
     {
+        public int Id { get; set; }
         private DateTime _date;
         private double _dollarValue;
 

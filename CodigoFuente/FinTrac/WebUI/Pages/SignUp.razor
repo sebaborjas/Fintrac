@@ -149,8 +149,9 @@
         }
         catch (Exception e)
         {
-            
+            Console.WriteLine(e);
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+           
 		}
     }
 }

@@ -8,7 +8,9 @@ namespace Domain
 {
 	public class PersonalAccount : Account
 	{
-		private double _startingAmount;
+        public int Id { get; set; }
+
+        private double _startingAmount;
 		public double StartingAmount 
 		{
 			get

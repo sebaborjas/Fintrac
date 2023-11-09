@@ -6,6 +6,7 @@ namespace Domain
 {
     public abstract class Account
     {
+        public int Id { get; set; }
         private string _name;
         private DateTime _creationDate = DateTime.Today;
         private Workspace _workSpace;

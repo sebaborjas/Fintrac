@@ -10,6 +10,8 @@ namespace Domain
 {
     public class AccountBalanceReport : Report
     {
+        public int Id { get; set; }
+
         private PersonalAccount _account;
         public PersonalAccount Account 
         {

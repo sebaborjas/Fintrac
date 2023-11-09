@@ -12,6 +12,8 @@ namespace Domain
 {
     public class Goal
     {
+        public int Id { get; set; }
+
         private string _title;
         private double _maxAmount;
         private Workspace _workspace;
