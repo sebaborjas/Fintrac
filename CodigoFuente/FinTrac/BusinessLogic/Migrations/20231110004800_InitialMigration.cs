@@ -47,6 +47,28 @@ namespace BusinessLogic.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Accounts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Currency = table.Column<int>(type: "int", nullable: false),
+                    WorkSpaceID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Accounts_Workspace_WorkSpaceID",
+                        column: x => x.WorkSpaceID,
+                        principalTable: "Workspace",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Exchange",
                 columns: table => new
                 {
@@ -128,6 +150,45 @@ namespace BusinessLogic.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CreditCards",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastDigits = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AvailableCredit = table.Column<double>(type: "float", nullable: false),
+                    DeadLine = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CreditCards", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CreditCards_Accounts_Id",
+                        column: x => x.Id,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PersonalAccounts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    StartingAmount = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PersonalAccounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PersonalAccounts_Accounts_Id",
+                        column: x => x.Id,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Category",
                 columns: table => new
                 {
@@ -155,6 +216,41 @@ namespace BusinessLogic.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Transaction",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    Currency = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transaction", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Transaction_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transaction_Category_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Accounts_WorkSpaceID",
+                table: "Accounts",
+                column: "WorkSpaceID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Category_GoalId",
@@ -197,6 +293,16 @@ namespace BusinessLogic.Migrations
                 column: "WorkspaceID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transaction_AccountId",
+                table: "Transaction",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_CategoryId",
+                table: "Transaction",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Workspace_UserAdminEmail",
                 table: "Workspace",
                 column: "UserAdminEmail");
@@ -206,13 +312,25 @@ namespace BusinessLogic.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Category");
+                name: "CreditCards");
 
             migrationBuilder.DropTable(
                 name: "Exchange");
 
             migrationBuilder.DropTable(
                 name: "Invitation");
+
+            migrationBuilder.DropTable(
+                name: "PersonalAccounts");
+
+            migrationBuilder.DropTable(
+                name: "Transaction");
+
+            migrationBuilder.DropTable(
+                name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "Category");
 
             migrationBuilder.DropTable(
                 name: "Goal");

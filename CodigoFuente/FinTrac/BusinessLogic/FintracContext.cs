@@ -30,9 +30,17 @@ namespace BusinessLogic
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Ignore<Report>();
-            modelBuilder.Ignore<Account>();
+
+            modelBuilder.Entity<Transaction>().HasOne(t => t.Category).WithMany().HasForeignKey(c => c.CategoryId).OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Account>().ToTable("Accounts");
+            modelBuilder.Entity<CreditCard>().ToTable("CreditCards");
+            modelBuilder.Entity<PersonalAccount>().ToTable("PersonalAccounts");
+
 
             modelBuilder.Entity<User>().HasKey(x => x.Email);
+
+
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.RecievedInvitations)

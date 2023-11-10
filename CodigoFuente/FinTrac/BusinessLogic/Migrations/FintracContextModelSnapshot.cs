@@ -22,6 +22,36 @@ namespace BusinessLogic.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Account", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Currency")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WorkSpaceID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkSpaceID");
+
+                    b.ToTable("Accounts", (string)null);
+
+                    b.UseTptMappingStrategy();
+                });
+
             modelBuilder.Entity("Domain.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -142,6 +172,42 @@ namespace BusinessLogic.Migrations
                     b.ToTable("Invitation");
                 });
 
+            modelBuilder.Entity("Domain.Transaction", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Currency")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Transaction");
+                });
+
             modelBuilder.Entity("Domain.User", b =>
                 {
                     b.Property<string>("Email")
@@ -188,6 +254,48 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("UserAdminEmail");
 
                     b.ToTable("Workspace");
+                });
+
+            modelBuilder.Entity("Domain.CreditCard", b =>
+                {
+                    b.HasBaseType("Domain.Account");
+
+                    b.Property<double>("AvailableCredit")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DeadLine")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastDigits")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("CreditCards", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.PersonalAccount", b =>
+                {
+                    b.HasBaseType("Domain.Account");
+
+                    b.Property<double>("StartingAmount")
+                        .HasColumnType("float");
+
+                    b.ToTable("PersonalAccounts", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Account", b =>
+                {
+                    b.HasOne("Domain.Workspace", "WorkSpace")
+                        .WithMany("AccountList")
+                        .HasForeignKey("WorkSpaceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkSpace");
                 });
 
             modelBuilder.Entity("Domain.Category", b =>
@@ -258,6 +366,25 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Workspace");
                 });
 
+            modelBuilder.Entity("Domain.Transaction", b =>
+                {
+                    b.HasOne("Domain.Account", "Account")
+                        .WithMany("TransactionList")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Domain.Workspace", b =>
                 {
                     b.HasOne("Domain.User", "UserAdmin")
@@ -267,6 +394,29 @@ namespace BusinessLogic.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAdmin");
+                });
+
+            modelBuilder.Entity("Domain.CreditCard", b =>
+                {
+                    b.HasOne("Domain.Account", null)
+                        .WithOne()
+                        .HasForeignKey("Domain.CreditCard", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.PersonalAccount", b =>
+                {
+                    b.HasOne("Domain.Account", null)
+                        .WithOne()
+                        .HasForeignKey("Domain.PersonalAccount", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Account", b =>
+                {
+                    b.Navigation("TransactionList");
                 });
 
             modelBuilder.Entity("Domain.Goal", b =>
@@ -283,6 +433,8 @@ namespace BusinessLogic.Migrations
 
             modelBuilder.Entity("Domain.Workspace", b =>
                 {
+                    b.Navigation("AccountList");
+
                     b.Navigation("CategoryList");
 
                     b.Navigation("ExchangeList");

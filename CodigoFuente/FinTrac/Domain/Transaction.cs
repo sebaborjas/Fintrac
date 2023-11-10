@@ -23,6 +23,9 @@ namespace Domain
         private Category _category;
         private Account _account;
 
+        public int AccountId {  get; private set; }
+        public int CategoryId { get; private set; }
+
         public Transaction()
         {
             ID = nextId;
@@ -103,6 +106,7 @@ namespace Domain
                 }
 
                 _category = value;
+                CategoryId = value.Id;
             }
 
         }
@@ -124,6 +128,7 @@ namespace Domain
                     throw new InvalidTransactionCurrencyException();
                 }
                 _account = value;
+                AccountId = value.Id;
             }
         }
 
