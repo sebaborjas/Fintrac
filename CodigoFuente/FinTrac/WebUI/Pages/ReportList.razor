@@ -42,7 +42,7 @@
 	</table>
 	@if (showExpenseList)
 	{
-		@if (expenses != null && expenses.Any())
+		@if (expenses.Any())
 		{
 			<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg">
@@ -67,7 +67,7 @@
 								</div>
 								<div class="col-md-3">
 									<label for="accountFilter">Cuenta:</label>
-									<select class="form-control" id="accountFilter" @bind="selectedAccount">
+									<select class="form-control" id="accountFilter" @bind="selectedAccountExpensesName">
 										<option value="">Todas</option>
 										@foreach (var account in accounts)
 										{
@@ -372,12 +372,14 @@
 	private string selectedCategory = "";
 	private string selectedCreditCard = "";
 	private string onChangeSelectedCreditCard = "";
+	private string selectedAccountExpensesName = "";
 	private Domain.DataTypes.Month selectedMonth;
 	private DateTime startDate = DateTime.Today;
 	private DateTime endDate = DateTime.Today;
 	private string selectedAccountName = "";
 	private PersonalAccount selectedAccount;
 	private ExpensesReport expensesReport;
+	private User selectedAccountExpenses;
 	private AccountBalanceReport accountBalanceReport;
 	private double accountBalance = 0;
 	private List<Category> categories;
@@ -402,13 +404,13 @@
 			accounts = workspace.AccountList;
 			categories = workspace.CategoryList;
 			creditCards = _workspaceService.GetCreditCards(workspace);
+			expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
+			expenses = expensesReport.ListExpenses();
 		}
 	}
 
 	private void ShowExpenseListModal()
 	{
-		expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
-		expenses = expensesReport.ListExpenses();
 		showExpenseList = true;
 	}
 	private void HideExpenseListModal()
@@ -426,10 +428,10 @@
 				.ToList();
 		}
 
-		if (!string.IsNullOrEmpty(selectedAccountName))
+		if (!string.IsNullOrEmpty(selectedAccountExpensesName))
 		{
 			filteredExpenses = filteredExpenses
-				.Where(t => t.Account.Name == selectedAccountName)
+				.Where(t => t.Account.Name == selectedAccountExpensesName)
 				.ToList();
 		}
 
