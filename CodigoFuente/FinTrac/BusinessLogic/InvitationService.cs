@@ -12,11 +12,11 @@ namespace BusinessLogic
 {
     public class InvitationService
     {
-        private readonly MemoryDatabase _memoryDatabase;
+        private readonly FintracContext _database;
 
-        public InvitationService(MemoryDatabase memoryDatabase)
+        public InvitationService(FintracContext database)
         {
-            this._memoryDatabase = memoryDatabase;
+            this._database = database;
         }
 
         public void Add(Invitation invitation)
@@ -25,33 +25,35 @@ namespace BusinessLogic
             {
                 throw new InvitationOnlyUserAdmin();
             }
-            if (_memoryDatabase.Users.Find(x => x.Email == invitation.UserToInvite.Email) == null)
+            if (_database.Users.Where(x => x.Email == invitation.UserToInvite.Email) == null)
             {
                 throw new InvalidUserException();
             }
-            if (_memoryDatabase.Users.Find(x => x.Email == invitation.UserToInvite.Email).RecievedInvitations.Contains(invitation))
+            if (_database.Users.Where(x => x.Email == invitation.UserToInvite.Email).FirstOrDefault<User>().RecievedInvitations.Contains(invitation))
             {
                 throw new InvitationAlreadyExistsException();
             }
-            if (_memoryDatabase.Users.Find(x => x.Email == invitation.UserToInvite.Email).WorkspaceList.Contains(invitation.Workspace))
+            if (_database.Users.Where(x => x.Email == invitation.UserToInvite.Email).FirstOrDefault<User>().WorkspaceList.Contains(invitation.Workspace))
             {
                 throw new UserAlreadyInWorkspaceException();
             }
             try
             {
-                _memoryDatabase.Users.Find(x => x.Email == invitation.UserToInvite.Email).RecievedInvitations.Add(invitation);
+                _database.Users.Where(x => x.Email == invitation.UserToInvite.Email).FirstOrDefault<User>().RecievedInvitations.Add(invitation);
             }
             catch (Exception exception)
             {
                 throw exception;
             }
 
+            _database.SaveChanges();
+
         }
 
         public Invitation Get(int ID)
         {
             Invitation invitation = null;
-            var user = _memoryDatabase.Users.Find(x => x.RecievedInvitations.Any(x => x.ID == ID));
+            var user = _database.Users.Where(x => x.RecievedInvitations.Any(x => x.ID == ID)).FirstOrDefault<User>();
             if (user != null)
             {
                 invitation = user.RecievedInvitations.Find(x => x.ID == ID);
@@ -72,13 +74,15 @@ namespace BusinessLogic
                 Invitation invitationToDelete = Get(ID);
                 if (invitationToDelete != null)
                 {
-                    _memoryDatabase.Users.Find(x => x == invitationToDelete.UserToInvite).RecievedInvitations.Remove(invitationToDelete);
+                    _database.Users.Where(x => x == invitationToDelete.UserToInvite).FirstOrDefault<User>().RecievedInvitations.Remove(invitationToDelete);
                 }
             }
             catch (Exception exception)
             {
                 throw exception;
             }
+
+            _database.SaveChanges();
         }
 
         public void AcceptInvitation(int ID)
@@ -89,7 +93,7 @@ namespace BusinessLogic
                 if (invitationAccepted != null)
                 {
                     User user = invitationAccepted.UserToInvite;
-                    _memoryDatabase.Users.Find(x => x == user).WorkspaceList.Add(invitationAccepted.Workspace);
+                    _database.Users.Where(x => x == user).FirstOrDefault<User>().WorkspaceList.Add(invitationAccepted.Workspace);
                     this.Delete(ID);
                 }
             }
@@ -97,7 +101,7 @@ namespace BusinessLogic
             {
                 throw exception;
             }
-
+            _database.SaveChanges();
         }
 
     }

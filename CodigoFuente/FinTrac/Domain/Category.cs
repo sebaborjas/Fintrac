@@ -11,6 +11,7 @@ namespace Domain
 {
 	public class Category
 	{
+		public int Id { get; set; }
 		private string _name;
 		private DateTime _creationDate = DateTime.Today;
 		private CategoryType _type;

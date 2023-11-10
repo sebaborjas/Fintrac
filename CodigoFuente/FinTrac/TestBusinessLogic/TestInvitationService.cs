@@ -11,7 +11,7 @@ namespace TestBusinessLogic
         private InvitationService _service;
         private WorkspaceService _workspaceService;
         private UserService _userService;
-        private MemoryDatabase newMemory;
+        private FintracContext newMemory;
         private User _useradmin;
         private User _userToInvite;
         private Workspace _workspace;
@@ -21,13 +21,13 @@ namespace TestBusinessLogic
         [TestInitialize]
         public void SetUp()
         {
-            newMemory = new MemoryDatabase();
-            _workspaceService = new WorkspaceService(newMemory);
+            newMemory =  TestContextFactory.CreateContext();
+			_workspaceService = new WorkspaceService(newMemory);
             _userService = new UserService(newMemory);
             _service = new InvitationService(newMemory);
 
             _useradmin = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
-            _workspace = new Workspace(_useradmin, "Test");
+            _workspace = new Workspace{ UserAdmin = _useradmin, Name = $"Espacio personal de {_useradmin.Name} {_useradmin.LastName}" };
             _userService.Add(_useradmin);
             _workspaceService.Add(_useradmin, _workspace);
             _userToInvite = new User { Email = "invite@test.com", Name = "Pepe", LastName = "Test", Password = "12345678901" };

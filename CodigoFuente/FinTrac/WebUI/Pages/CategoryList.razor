@@ -2,11 +2,11 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de categorías</PageTitle>
     @if (categoryList.Any())
@@ -200,12 +200,12 @@
 
     protected override void OnInitialized()
     {
-        if (MemoryDatabase.isLoggedIn)
+        if (FintracContext.isLoggedIn)
         {
-            CurrentUser = MemoryDatabase.currentUser;
-            workspace = MemoryDatabase.currentWorkspace;
+            CurrentUser = FintracContext.currentUser;
+            workspace = FintracContext.currentWorkspace;
             categoryList = workspace.CategoryList;
-            _categoryService = new CategoryService(MemoryDatabase);
+            _categoryService = new CategoryService(FintracContext);
             newCategory = new Category();
         }
 

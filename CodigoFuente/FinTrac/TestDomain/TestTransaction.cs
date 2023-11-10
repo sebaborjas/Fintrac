@@ -119,7 +119,7 @@ namespace TestDomain
         public void TestPersonalAccount()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
             transaction.Account = account;
             Assert.AreEqual(account, transaction.Account);
@@ -129,7 +129,7 @@ namespace TestDomain
         public void TestCreditCardAccount()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new CreditCard
             {
                 BankName = "Test",
@@ -171,7 +171,7 @@ namespace TestDomain
         public void TestTransactionCurrencyEqualsAccountCurrency()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
 
             transaction.Account = account;
@@ -186,7 +186,7 @@ namespace TestDomain
         public void TestTransactionCurrencyNotEqualsAccountCurrency()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
 
             transaction.Currency = CurrencyType.USD;

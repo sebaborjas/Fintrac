@@ -20,7 +20,7 @@ namespace TestDomain
         public void SetUp()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            workSpace = new Workspace(newUser, "Test");
+            workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
 
 
             account = new CreditCard { Name = "Cuenta personal", CreationDate = DateTime.Today.AddDays(-60), WorkSpace = workSpace, BankName = "Santander", LastDigits = "1234", AvailableCredit = 300, DeadLine = 20 };

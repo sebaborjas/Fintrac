@@ -2,12 +2,12 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de transacciones para la cuenta @currentAccount.Name</PageTitle>
 
@@ -180,16 +180,16 @@
     private List<User> GuestUsers;
     protected override void OnInitialized()
     {
-        if (MemoryDatabase.isLoggedIn)
+        if (FintracContext.isLoggedIn)
         {
-            CurrentUser = MemoryDatabase.currentUser;
-            currentAccount = MemoryDatabase.currentAccount;
+            CurrentUser = FintracContext.currentUser;
+            currentAccount = FintracContext.currentAccount;
 
-            workspace = MemoryDatabase.currentWorkspace;
-            _workspaceService = new WorkspaceService(MemoryDatabase);
-            _transactionService = new TransactionService(MemoryDatabase);
+            workspace = FintracContext.currentWorkspace;
+            _workspaceService = new WorkspaceService(FintracContext);
+            _transactionService = new TransactionService(FintracContext);
 
-            _categoryService = new CategoryService(MemoryDatabase);
+            _categoryService = new CategoryService(FintracContext);
             newTransaction = new Transaction();
             categories = workspace.CategoryList;
             transactionList = currentAccount.TransactionList;

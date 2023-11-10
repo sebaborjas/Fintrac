@@ -13,6 +13,8 @@ namespace Domain
 
     public class CreditCard : Account
     {
+        public int Id { get; set; }
+
         private string _bankName;
         private string _lastDigits;
         private double _availableCredit;

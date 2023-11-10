@@ -9,13 +9,13 @@ namespace Domain
         public int ID { get; set; }
         public static int Id { get; private set; } = 1;
 
-        public Workspace(User userAdmin, string name)
-        {
-            ID = Id;
-            Name = name;
-            UserAdmin = userAdmin;
-            Id++;
-        }
+        //public Workspace(User userAdmin, string name)
+        //{
+        //    ID = Id;
+        //    Name = name;
+        //    UserAdmin = userAdmin;
+        //    Id++;
+        //}
 
 
         private string _name;

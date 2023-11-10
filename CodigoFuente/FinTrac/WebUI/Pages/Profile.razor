@@ -1,10 +1,11 @@
 ﻿@page "/profile"
 @using BusinessLogic
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if(MemoryDatabase.isLoggedIn){ 
+@if (FintracContext.isLoggedIn)
+{
 <PageTitle>Profile</PageTitle>
 
 <h1>Perfil</h1>
@@ -12,8 +13,8 @@
 <div class="profile-header">
 	<img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" width="10%" />
 	<div class="profile-info">
-		<h2>@MemoryDatabase.currentUser.Name @MemoryDatabase.currentUser.LastName</h2>
-		<p>@MemoryDatabase.currentUser.Email</p>
+			<h2>@FintracContext.currentUser.Name @FintracContext.currentUser.LastName</h2>
+			<p>@FintracContext.currentUser.Email</p>
 	</div>
 </div>
 <div class="profile-details">
@@ -98,14 +99,14 @@
 	private UserService _userService;
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			name = MemoryDatabase.currentUser.Name;
-			email = MemoryDatabase.currentUser.Email;
-			lastName = MemoryDatabase.currentUser.LastName;
-			address = MemoryDatabase.currentUser.Address;
-			password = MemoryDatabase.currentUser.Password;
-			_userService = new UserService(MemoryDatabase);
+			name = FintracContext.currentUser.Name;
+			email = FintracContext.currentUser.Email;
+			lastName = FintracContext.currentUser.LastName;
+			address = FintracContext.currentUser.Address;
+			password = FintracContext.currentUser.Password;
+			_userService = new UserService(FintracContext);
 		}
 
 	}

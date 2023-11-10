@@ -21,7 +21,7 @@ namespace TestDomain
         public void SetUp() 
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            workSpace = new Workspace(newUser, "Test");
+            workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
 
 
             PersonalAccount account = new PersonalAccount { Name = "Cuenta personal", StartingAmount = 700, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-10) };
@@ -64,7 +64,7 @@ namespace TestDomain
         public void SetCorrectWorkspace()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
-            Workspace newWorkspace = new Workspace(newUser, "Nuevo");
+            Workspace newWorkspace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             expensesReport.WorkSpace = newWorkspace;
         }
 

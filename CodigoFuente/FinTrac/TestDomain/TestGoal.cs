@@ -87,7 +87,7 @@ namespace TestDomain
                 Password = "1234567891",
                 Email = "test@test.com"
             };
-            Workspace workspace = new Workspace(admin, "Test");
+            Workspace workspace = new Workspace{ UserAdmin = admin, Name = $"Espacio personal de {admin.Name} {admin.LastName}" };
             goal.Workspace = workspace;
             Assert.AreEqual(workspace, goal.Workspace);
         }

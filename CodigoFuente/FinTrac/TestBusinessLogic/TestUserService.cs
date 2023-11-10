@@ -11,7 +11,7 @@ namespace TestBusinessLogic
 		[TestInitialize]
 		public void SetUp()
 		{
-			_service = new UserService(new MemoryDatabase());
+			_service = new UserService(TestContextFactory.CreateContext());
 			
 		}
 		[TestMethod]
