@@ -30,14 +30,12 @@ namespace BusinessLogic
             {
 
                 user.WorkspaceList.Add(w);
-
+                _database.SaveChanges();
             }
             catch (Exception exception)
             {
                 throw exception;
-            }
-
-            _database.SaveChanges();
+            }         
         }
 
         public Workspace Get(int ID)
@@ -59,7 +57,25 @@ namespace BusinessLogic
         public void DeleteWorkspace(Workspace workspace)
         {
             User oldUserAdmin = workspace.UserAdmin;
-            if (_database.Users.Count(x => x.WorkspaceList.Contains(workspace)) > 1)
+
+            List<User> users = _database.Users.ToList();
+
+            int workspaceUsersCount = 0;
+
+            foreach(User user in users)
+            {
+                foreach(Workspace currentWorkspace in user.WorkspaceList)
+                {
+                    if(currentWorkspace.ID == workspace.ID)
+                    {
+                        workspaceUsersCount++;
+                    }
+                }
+            }
+
+            
+
+            if (workspaceUsersCount > 1)
             {
                 User newUserAdmin = _database.Users.First(x => x.WorkspaceList.Contains(workspace) && x != oldUserAdmin);
                 workspace.UserAdmin = newUserAdmin;
@@ -68,8 +84,9 @@ namespace BusinessLogic
             {
                 oldUserAdmin.WorkspaceList.Remove(workspace);
                 _database.Users.First(x => x == oldUserAdmin).WorkspaceList.Remove(workspace);
+                _database.SaveChanges();
             }
-            _database.SaveChanges();
+            
         }
 
         public List<Transaction> ListAllTransactionsAllAcounts(Workspace workspace)
