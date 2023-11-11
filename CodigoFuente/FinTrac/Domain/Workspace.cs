@@ -7,18 +7,9 @@ namespace Domain
     public class Workspace
     {
         public int ID { get; set; }
-        public static int Id { get; private set; } = 1;
-
-        //public Workspace(User userAdmin, string name)
-        //{
-        //    ID = Id;
-        //    Name = name;
-        //    UserAdmin = userAdmin;
-        //    Id++;
-        //}
-
 
         private string _name;
+        private string _userAdminId;
         public string Name
         {
             get
@@ -38,6 +29,8 @@ namespace Domain
             }
         }
         public User UserAdmin { get; set; }
+
+        public string UserAdminId { get { return _userAdminId; } set { _userAdminId = UserAdmin.Email; } }
         public List<Account> AccountList { get; } = new List<Account>();
         public List<Report> ReportList { get; } = new List<Report>();
         public List<Exchange> ExchangeList { get; } = new List<Exchange>();
