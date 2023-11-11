@@ -78,7 +78,7 @@
                             <label for="currency">Moneda</label>
                             <select class="form-control" id="currency" @bind="newCurrencyType">
                                 <option value="" disabled selected>Seleccionar</option>
-                                @foreach (var value in Enum.GetValues(typeof(CurrencyType)))
+                                @foreach (var value in Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>().Where(c => c != CurrencyType.UYU))
                                 {
                                     <option value="@value">@value</option>
                                 }
