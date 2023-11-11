@@ -24,7 +24,7 @@ namespace TestDomain
                 Password = "1234567891",
                 Email = "test@test.com"
             };
-            workspace = new Workspace{ UserAdmin = admin, Name = $"Espacio personal de {admin.Name} {admin.LastName}" };
+            workspace = new Workspace{ UserAdmin = admin, Name = $"Espacio personal de {admin.Name} {admin.LastName}", ID = 1 };
         }
         [TestMethod]
         public void EqualsWorkspace()
@@ -37,7 +37,7 @@ namespace TestDomain
         [TestMethod]
         public void NotEqualsWorkspace()
         {
-            Workspace otherWorkspace = new Workspace{ UserAdmin = admin, Name = $"Espacio personal de {admin.Name} {admin.LastName}" };
+            Workspace otherWorkspace = new Workspace { UserAdmin = admin, Name = "Nuevo workspace", ID = 2};
 
             Assert.AreNotEqual(otherWorkspace, workspace);
         }
