@@ -245,13 +245,13 @@ namespace BusinessLogic.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserAdminEmail")
+                    b.Property<string>("UserAdminId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("UserAdminEmail");
+                    b.HasIndex("UserAdminId");
 
                     b.ToTable("Workspace");
                 });
@@ -389,7 +389,7 @@ namespace BusinessLogic.Migrations
                 {
                     b.HasOne("Domain.User", "UserAdmin")
                         .WithMany("WorkspaceList")
-                        .HasForeignKey("UserAdminEmail")
+                        .HasForeignKey("UserAdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

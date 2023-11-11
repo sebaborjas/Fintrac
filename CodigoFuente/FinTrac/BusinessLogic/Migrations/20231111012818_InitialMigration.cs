@@ -33,14 +33,14 @@ namespace BusinessLogic.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserAdminEmail = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserAdminId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Workspace", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Workspace_Users_UserAdminEmail",
-                        column: x => x.UserAdminEmail,
+                        name: "FK_Workspace_Users_UserAdminId",
+                        column: x => x.UserAdminId,
                         principalTable: "Users",
                         principalColumn: "Email",
                         onDelete: ReferentialAction.Cascade);
@@ -303,9 +303,9 @@ namespace BusinessLogic.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Workspace_UserAdminEmail",
+                name: "IX_Workspace_UserAdminId",
                 table: "Workspace",
-                column: "UserAdminEmail");
+                column: "UserAdminId");
         }
 
         /// <inheritdoc />
