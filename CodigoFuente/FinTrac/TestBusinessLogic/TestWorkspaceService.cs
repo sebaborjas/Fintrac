@@ -23,7 +23,7 @@ namespace TestBusinessLogic
         public void AddWorkspace()
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
+            var workspace = new Workspace{ UserAdmin = useradmin, Name = "Nuevo Espacio" };
 
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
@@ -70,18 +70,21 @@ namespace TestBusinessLogic
         [TestMethod]
         public void DeleteWorkspaceWithOtherUsers()
         {
-            User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+            User firstUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             User otherUser = new User { Name = "Other", LastName = "Test", Email = "test@a.com", Password = "12345678909" };
-            var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
+            Workspace newWorkspace = new Workspace { UserAdmin = firstUser, Name = "Nuevo WorkSpace" };
 
-            _userService.Add(useradmin);
+            _userService.Add(firstUser);
             _userService.Add(otherUser);
-            _service.Add(useradmin, workspace);
-            _service.Add(otherUser, workspace);
 
-            _service.DeleteWorkspace(workspace);
 
-            Assert.AreEqual(workspace.UserAdmin, otherUser);
+            //Esos metodos pasan el newWorkspace de la lista de firstUSer a la de otehrUser no lo agregan en ambos
+            _service.Add(firstUser, newWorkspace);
+            _service.Add(otherUser, newWorkspace);
+
+            _service.DeleteWorkspace(newWorkspace);
+
+            Assert.AreEqual(newWorkspace.UserAdmin, otherUser);
         }
 
         [TestMethod]
