@@ -41,6 +41,9 @@ namespace BusinessLogic
             modelBuilder.Entity<User>().HasKey(x => x.Email);
 
 
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.WorkspaceList)
+                .WithOne(w => w.UserAdmin).HasForeignKey(w => w.UserAdminId);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.RecievedInvitations)
