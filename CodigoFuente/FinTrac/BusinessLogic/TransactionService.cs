@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Exceptions;
+using Domain.DataTypes;
 
 namespace BusinessLogic
 {
@@ -30,7 +31,7 @@ namespace BusinessLogic
                 if (targetWorkspace != null)
                 {
                     var exchange = targetWorkspace.ExchangeList.Find(x => x.Date <= transaction.CreationDate && x.Currency == transaction.Currency);
-                    if (exchange == null)
+                    if (exchange == null && transaction.Currency != CurrencyType.UYU)
                     {
                         throw new ExchangeNotFoundException();
                     }

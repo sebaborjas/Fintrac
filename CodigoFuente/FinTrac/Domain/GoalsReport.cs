@@ -49,8 +49,8 @@ namespace Domain
                             }
                             else
                             {
-                                double dollarValue = this.GetExchangeValueOfDay(transaction.CreationDate);
-                                double transactionAmountInUYU = transaction.Amount * dollarValue;
+                                double currencyValue = this.GetExchangeValueOfDay(transaction.CreationDate);
+                                double transactionAmountInUYU = transaction.Amount * currencyValue;
                                 AmountSpent += transactionAmountInUYU;
                             }
                         }

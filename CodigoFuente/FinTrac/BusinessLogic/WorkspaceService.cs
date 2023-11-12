@@ -145,6 +145,23 @@ namespace BusinessLogic
 
 			return categoryReports;
 		}
+
+		public List<DailyReport> GenerateMonthlyReport(Workspace workspace, Month month, int year)
+		{
+			List<DailyReport> DailyReports = new List<DailyReport>();
+
+			for (int i = 1; i <= DateTime.DaysInMonth(year, (int)month); i++)
+			{
+				DailyReport dailyReport = new DailyReport
+				{
+					WorkSpace = workspace,
+					Date = new DateTime(year, (int)month, i)
+				};
+				dailyReport.CalculateReport();
+				DailyReports.Add(dailyReport);
+			}
+			return DailyReports;
+		}
 	}
 
 }
