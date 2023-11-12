@@ -1,11 +1,12 @@
 ﻿using Domain;
+using Domain.DataTypes;
 
 namespace Domain
 {
     public class Exchange
     {
         private DateTime _date;
-        private double _dollarValue;
+        private double _currencyValue;
 
         public DateTime Date
         {
@@ -26,30 +27,32 @@ namespace Domain
             }
         }
 
-        public double DollarValue {
+        public double CurrencyValue {
             get
             {
-                return _dollarValue;
+                return _currencyValue;
             }
             set
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentException("El valor del dolar debe ser mayor a 0");
+                    throw new ArgumentException("El valor de la moneda debe ser mayor a 0");
                 }
                 else
                 {
-                    _dollarValue = value;
+                    _currencyValue = value;
                 }
             }
         }
+
+        public CurrencyType Currency { get; set;}
 
         public Workspace Workspace { get; set; }
 
         public override bool Equals(object? obj)
         {
             Exchange exchange = (Exchange)obj;
-            return this.Date == exchange.Date;
+            return this.Date == exchange.Date && this.Currency == exchange.Currency;
         }
 
     }
