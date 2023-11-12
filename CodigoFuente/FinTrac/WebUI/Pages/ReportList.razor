@@ -382,9 +382,9 @@
 								}
 							</select>
 							<label for="inputYear">Ingresar Año:</label>
-							<select class="form-control" @bind="year">
+							<select class="form-control" @bind="selectedYear">
 								<option disabled value="">Seleccione un año</option>
-								@for (int year = 2024; year >= 1950; year--)
+								@for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 50; year--)
 								{
 									<option value="@year">@year</option>
 								}
@@ -452,7 +452,7 @@
 	private string onChangeSelectedCreditCard = "";
 	private string selectedAccountExpensesName = "";
 	private Domain.DataTypes.Month selectedMonth;
-	private int year;
+	private int selectedYear;
 	private DateTime startDate = DateTime.Today;
 	private DateTime endDate = DateTime.Today;
 	private string selectedAccountName = "";
@@ -486,6 +486,8 @@
 			creditCards = _workspaceService.GetCreditCards(workspace);
 			expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
 			expenses = expensesReport.ListExpenses();
+			selectedYear = DateTime.Now.Year;
+			selectedMonth = Domain.DataTypes.Month.Enero;
 		}
 	}
 
@@ -618,7 +620,7 @@
     {
         if (selectedMonth != 0)
         {
-            DailyReports = _workspaceService.GenerateMonthlyReport(workspace, selectedMonth, year);
+            DailyReports = _workspaceService.GenerateMonthlyReport(workspace, selectedMonth, selectedYear);
         }
         else
         {
