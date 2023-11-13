@@ -2,19 +2,39 @@
 @using BusinessLogic
 @using Domain
 @using System.Text.RegularExpressions
-@inject FintracContext FintracContext
+@inject MemoryDatabase MemoryDatabase
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (FintracContext.isLoggedIn)
+@if (MemoryDatabase.isLoggedIn)
 {
 
 	<PageTitle>Workspace @workspace.Name</PageTitle>
-	<h3>Workspace @workspace.Name</h3>
-	<FontAwesomeIcon Icon="fa-dollar-sign" />
-	<p>Usuarios invitados: @(GuestUsers != null ? GuestUsers.Count : 0)</p>
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/">
+			<span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+		</NavLink>
+	</div>
 
-	<div class="row">
+	<div class="col-12">
+		<h3>Workspace @workspace.Name</h3>
+		<FontAwesomeIcon Icon="fa-dollar-sign" />
+		<p>Usuarios en el Workspace: @(guestUsers != null ? guestUsers.Count : 0)</p>
+		<div class="d-flex justify-content-between align-items-center m-1">
+			<div class="ms-auto">
+				<button class="btn btn-primary" @onclick="() => ShowEditWorkspaceModal()">Editar Workspace</button>
+			</div>
+		</div>
+
+		<div class="d-flex justify-content-between align-items-center m-1">
+			<div class="ms-auto">
+				<button class="btn btn-danger" @onclick="() => ShowDeleteWorkspaceModal()">Abandonar Workspace</button>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="row  mb-5">
 		@foreach (var item in lista)
 		{
 			<div class="col-12">
@@ -37,7 +57,66 @@
 		}
 	</div>
 
+	@if (showEditWorkspaceModal)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Editar nombre del Workspace</h5>
+						<button type="button" class="close" aria-label="Close" @onclick="() => HideEditWorkspaceModal()">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="workspaceName">Nombre del Workspace</label>
+							<input type="text" class="form-control" id="workspaceName" @bind="nameWorkspace" />
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" @onclick="() => HideEditWorkspaceModal()">Cancelar</button>
+							<button type="button" class="btn btn-primary" @onclick="EditWorkspace">Guardar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+	@if (showDeleteWorkspaceModal)
+	{
+		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Confirmar Eliminaci�n</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="() => HideDeleteWorkspaceModal()">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						�Est�s seguro de que deseas abandonar este Workspace?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => HideDeleteWorkspaceModal()">Cancelar</button>
+						<button type="button" class="btn btn-danger" @onclick="() => DeleteWorkspace()">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	}
+
 	@code {
+	private WorkspaceService _workspaceService;
+	private UserService _userService;
+	private User UserAdmin;
+	private User CurrentUser;
+	private List<User> guestUsers;
+	private Domain.Workspace workspace;
+	private bool showEditWorkspaceModal = false;
+	private bool showDeleteWorkspaceModal = false;
+	private string nameWorkspace;
+
 	public class ListItem
 	{
 		public string Key { get; set; }
@@ -45,11 +124,7 @@
 		public string Icon { get; set; }
 	}
 
-	private User CurrentUser;
-	private Domain.Workspace workspace;
 
-	private List<User> GuestUsers;
-	private User UserAdmin;
 	private List<ListItem> lista = new List<ListItem>
 	{
 		new ListItem { Key = "GuestUsers", Name ="Usuarios Invitados", Icon = "person" },
@@ -61,12 +136,17 @@
 		new ListItem { Key = "GoalList", Name ="Objetivos", Icon = "target" }
 	};
 
+
 	protected override void OnInitialized()
 	{
-		if (FintracContext.isLoggedIn)
+		if (MemoryDatabase.isLoggedIn)
 		{
-			CurrentUser = FintracContext.currentUser;
-			workspace = FintracContext.currentWorkspace;
+			CurrentUser = MemoryDatabase.currentUser;
+			workspace = MemoryDatabase.currentWorkspace;
+			nameWorkspace = workspace.Name;
+			_workspaceService = new WorkspaceService(MemoryDatabase);
+			_userService = new UserService(MemoryDatabase);
+			guestUsers = _workspaceService.ListGuestUsers(workspace);
 		}
 	}
 
@@ -75,7 +155,66 @@
 
 		NavigationManager.NavigateTo($"/workspace/{key}");
 	}
+	private void ShowEditWorkspaceModal()
+	{
+		showEditWorkspaceModal = true;
+	}
 
+	private void HideEditWorkspaceModal()
+	{
+		showEditWorkspaceModal = false;
+	}
+
+	private void EditWorkspace()
+	{
+		try
+		{
+			User currentUser = CurrentUser;
+			_workspaceService.UpdateName(workspace, nameWorkspace);
+
+			ToastService.Notify(new(ToastType.Success, "Workspace editado correctamente."));
+			HideEditWorkspaceModal();
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+		NavigationManager.NavigateTo("/");
+	}
+
+	private void ShowDeleteWorkspaceModal()
+	{
+		showDeleteWorkspaceModal = true;
+	}
+
+	private void HideDeleteWorkspaceModal()
+	{
+		showDeleteWorkspaceModal = false;
+	}
+
+	private void DeleteWorkspace()
+	{
+		try
+		{
+			if (CurrentUser == workspace.UserAdmin)
+			{
+				_workspaceService.DeleteWorkspace(workspace);
+			}
+			else
+			{
+				_userService.LeaveWorkspace(CurrentUser, workspace);
+			}
+			ToastService.Notify(new(ToastType.Success, "Workspace abandonado correctamente."));
+			HideDeleteWorkspaceModal();
+			NavigationManager.NavigateTo("/");
+
+		}
+		catch (Exception e)
+		{
+			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+		}
+		NavigationManager.NavigateTo("/");
+	}
 }
 }
 else

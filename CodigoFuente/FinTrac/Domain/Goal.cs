@@ -17,6 +17,7 @@ namespace Domain
         private string _title;
         private double _maxAmount;
         private Workspace _workspace;
+        public string Token { get; set; }
 
         public Goal()
         {

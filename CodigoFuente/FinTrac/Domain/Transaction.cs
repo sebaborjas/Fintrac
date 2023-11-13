@@ -19,7 +19,6 @@ namespace Domain
         private string _title;
         private DateTime _creationDate = DateTime.Today;
         private double _amount;
-        private CurrencyType _currency;
         private Category _category;
         private Account _account;
 
@@ -77,19 +76,7 @@ namespace Domain
             }
         }
 
-        public CurrencyType Currency
-        {
-            get => _currency;
-            set
-            {
-                if (value != CurrencyType.UYU && value != CurrencyType.USD)
-                {
-                    throw new Exception();
-                }
-                _currency = value;
-
-            }
-        }
+        public CurrencyType Currency { get; set; }
 
         public Category Category
         {

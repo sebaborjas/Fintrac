@@ -1,4 +1,4 @@
-﻿@page "/workspace/GoalList"
+@page "/workspace/GoalList"
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
@@ -6,9 +6,17 @@
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
+
 @if (FintracContext.isLoggedIn)
+
 {
     <PageTitle>Lista de objetivos </PageTitle>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/workspace">
+            <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+        </NavLink>
+    </div>
+
     @if (goalList.Any())
     {
         <div class="col-12">
@@ -22,6 +30,7 @@
                         <th>Nombre</th>
                         <th>Maximo a gastar</th>
                         <th>Categorias</th>
+                        <th>Link para compartir</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -31,9 +40,26 @@
                         <tr>
                             <td>@goal.Title</td>
                             <td>@goal.MaxAmount</td>
-                            <td>@goal.Categories</td>
+                            <td>
+
+                                @foreach (Category category in @goal.Categories)
+                                {
+                                    <p class="p-0">@category.Name </p>
+                                }
+                            </td>
+                            @if (goal.Token != null && goal.Token != "")
+                            {
+                                <td>https://localhost:7180/goal/@goal.Token</td>
+
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
                             <td>
                                 <button class="btn btn-primary" @onclick="() => ShowEditGoalModal(goal)">Editar</button>
+                                <button class="btn btn-primary" @onclick="()=>GenerateShareLink(goal)">Compartir</button>
+                                <button class="btn btn-primary" @onclick="()=>DisableShareLink(goal)">Dejar de compartir</button>
                                 <button class="btn btn-danger" @onclick="() => DeleteGoal(goal)">Eliminar</button>
                             </td>
                         </tr>
@@ -73,28 +99,22 @@
                             <label for="maxamount">Tope del objetivo</label>
                             <input type="number" class="form-control" id="maxamount" @bind="goalMaxAmount" />
                         </div>
-                        <div class="form-group">
-                            <label for="category">Categoría</label>
-                            <select class="form-control" multiple>
-                                @if (workpaceCategoryList.Any())
-                                {
-                                    <option value="" disabled selected>Seleccionar</option>
-                                    @foreach (var category in workpaceCategoryList)
-                                    {
-                                        <option value="@category.Name">@category.Name</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option value="" disabled selected>No hay opción disponible</option>
-                                }
-                            </select>
-                          
-                        </div>
+                        <div>
+                            <h3>Categorias</h3>
+                            @foreach (var category in workpaceCategoryList)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="@category.Name" id="flexCheckDefault-@category.Name" @onchange=" eventArgs =>{CheckBoxClicked(category ,eventArgs.Value);}">
+                                    <label class="form-check-label" for="flexCheckDefault-@category.Name">
+                                        @category.Name
+                                    </label>
+                                </div>
 
+                            }
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @onclick="() => HideAddGoalModal()">Cancelar</button>
-                            <button type="button" class="btn btn-primary" @onclick="AddGoal">Guardar</button>
+                            <button type="button" class="btn btn-primary" @onclick="AddGoal">Agregar</button>
                         </div>
                     </div>
                 </div>
@@ -114,13 +134,30 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="dollarValue">Valor del Dolar</label>
-                            <input type="number" class="form-control" id="dollarValue" @bind="editedDollarValue" />
+                            <label for="goalTitle">Nombre del Objetivo</label>
+                            <input type="text" class="form-control" id="goalTitle" @bind="goalTitle" />
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="() => HideEditGoalModal()">Cancelar</button>
-                        <button type="button" class="btn btn-primary" @onclick="() =>SaveGoalValue()">Guardar</button>
+                        <div class="form-group">
+                            <label for="maxamount">Tope del objetivo</label>
+                            <input type="number" class="form-control" id="maxamount" @bind="goalMaxAmount" />
+                        </div>
+                        <div>
+                            <h3>Categorias</h3>
+                            @foreach (var category in workpaceCategoryList)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="@category.Name" id="flexCheckDefault" @onchange=" eventArgs =>{CheckBoxClicked(category ,eventArgs.Value);}" checked="@IsChecked(category)">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        @category.Name
+                                    </label>
+                                </div>
+
+                            }
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="() => HideAddGoalModal()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" @onclick="() => EditGoal()">Editar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,19 +180,26 @@
     private Goal selectedGoal;
 
     private string goalTitle;
+    private string goalOldTitle;
+
     private double goalMaxAmount;
 
     private bool showEditGoalModal = false;
     private double editedDollarValue = 0;
 
-    private void HideEditGoalModal()
+    protected override void OnInitialized()
     {
-        showEditGoalModal = false;
-    }
-    private void ShowEditGoalModal(Goal goal)
-    {
-        selectedGoal = goal;
-        showEditGoalModal = true;
+        if (MemoryDatabase.isLoggedIn)
+        {
+            selectedCategories = new List<Category>();
+            CurrentUser = MemoryDatabase.currentUser;
+            workspace = MemoryDatabase.currentWorkspace;
+            goalList = workspace.GoalList;
+            workpaceCategoryList = workspace.CategoryList.Where(x => x.Type == CategoryType.Cost).ToList();
+            _goalService = new GoalService(MemoryDatabase);
+            newGoal = new Goal();
+        }
+
     }
 
     private void SaveGoalValue()
@@ -164,54 +208,147 @@
         {
             _goalService.Update(selectedGoal, newGoal);
             goalList = workspace.GoalList;
-            HideEditGoalModal();
             ToastService.Notify(new(ToastType.Success, "Objetivo modificado con exito!"));
         }
         catch (Exception e)
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideEditGoalModal();
         NavigationManager.NavigateTo("/workspace/ObjetivoList");
 
     }
-
     private void ShowAddGoalModal()
     {
         showAddGoalModal = true;
     }
-
     private void HideAddGoalModal()
     {
         showAddGoalModal = false;
     }
-
-    protected override void OnInitialized()
-    {
-        if (FintracContext.isLoggedIn)
-        {
-            selectedCategories = new List<Category>();
-            CurrentUser = FintracContext.currentUser;
-            workspace = FintracContext.currentWorkspace;
-            goalList = workspace.GoalList;
-            workpaceCategoryList = workspace.CategoryList.Where(x=> x.Type == CategoryType.Cost).ToList();
-            _goalService = new GoalService(FintracContext);
-            newGoal = new Goal();
-        }
-
-    }
-
-
-
     private void AddGoal()
     {
         try
         {
             Console.WriteLine(selectedCategories.Count);
-            HideAddGoalModal();
             Goal newGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
             _goalService.Add(workspace, newGoal);
             goalList = workspace.GoalList;
             ToastService.Notify(new(ToastType.Success, "Objetivo agregado con exito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        HideAddGoalModal();
+        NavigationManager.NavigateTo("/workspace/GoalList");
+    }
+
+    private void HideEditGoalModal()
+    {
+        showEditGoalModal = false;
+    }
+
+    private void GenerateShareLink(Goal goal)
+    {
+        try
+        {
+            Goal newGoalToken = new Goal();
+            newGoalToken.Title = goal.Title;
+            newGoalToken.Workspace = goal.Workspace;
+            newGoalToken.MaxAmount = goal.MaxAmount;
+            newGoalToken.Categories = goal.Categories;
+            _goalService.GenerateUniqueToken(newGoalToken);
+            _goalService.Update(goal, newGoalToken);
+            NavigationManager.NavigateTo("/workspace/GoalList");
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+    }
+
+    private void DisableShareLink(Goal goal)
+    {
+        try
+        {
+            Goal newGoalToken = new Goal();
+            newGoalToken.Title = goal.Title;
+            newGoalToken.Workspace = goal.Workspace;
+            newGoalToken.MaxAmount = goal.MaxAmount;
+            newGoalToken.Categories = goal.Categories;
+            newGoalToken.Token = "";
+            _goalService.Update(goal, newGoalToken);
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+    }
+
+    private void ShowEditGoalModal(Goal goal)
+    {
+
+        selectedGoal = new Goal
+            {
+                Title = goal.Title,
+                MaxAmount = goal.MaxAmount,
+                Categories = new List<Category>(goal.Categories)
+            };
+        goalOldTitle = new String(selectedGoal.Title);
+        goalTitle = new String(selectedGoal.Title);
+
+        goalMaxAmount = selectedGoal.MaxAmount;
+
+        showEditGoalModal = true;
+    }
+
+    public bool IsChecked(Category category)
+    {
+        bool check = false;
+        Goal goalSelected = FindGoal(selectedGoal.Title);
+        Console.WriteLine("IsChecked", selectedGoal.Title);
+        if (goalSelected.Categories.Contains(category))
+        {
+            check = true;
+        }
+        return check;
+    }
+
+    private Goal FindGoal(string goalTitle)
+    {
+        Goal goalFinded = goalList.Find(x => x.Title.Equals(goalTitle));
+        return goalFinded;
+    }
+
+    private void CheckBoxClicked(Category category, object checkedValue)
+    {
+        if ((bool)checkedValue)
+        {
+            if (!selectedCategories.Contains(category))
+            {
+                selectedCategories.Add(category);
+            }
+        }
+        else
+        {
+            if (selectedCategories.Contains(category))
+            {
+                selectedCategories.Remove(category);
+            }
+        }
+    }
+
+    private void EditGoal()
+    {
+        try
+        {
+
+            Goal updatedGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
+            Goal oldGoal = FindGoal(selectedGoal.Title);
+            _goalService.Update(oldGoal, updatedGoal);
+            HideEditGoalModal();
+            ToastService.Notify(new(ToastType.Success, "Objetivo modificado con exito!"));
         }
         catch (Exception e)
         {
@@ -224,7 +361,6 @@
     {
         try
         {
-            HideEditGoalModal();
             _goalService.Delete(workspace, goal);
             goalList = workspace.GoalList;
             ToastService.Notify(new(ToastType.Success, "Objetivo eliminado con exito!"));
@@ -233,11 +369,19 @@
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
+        HideEditGoalModal();
         NavigationManager.NavigateTo("/workspace/GoalList");
     }
 }
 }
 else
 {
-    NavigationManager.NavigateTo("/login");
+    try
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+    catch
+    {
+
+    }
 }

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ namespace BusinessLogic
 
         public void Add(Workspace workspace, Exchange exchange)
         {
-            if (exchange.DollarValue <= 0)
+            if (exchange.CurrencyValue <= 0)
             {
-                throw new ArgumentException(("El valor del dolar debe ser mayor a 0"));
+                throw new ArgumentException(("El valor de la moneda debe ser mayor a 0"));
             }
             if (workspace.ExchangeList.Contains(exchange))
             {
@@ -49,10 +50,10 @@ namespace BusinessLogic
                 var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
                 if (targetWorkspace != null)
                 {
-                    var accountWithTransactions = targetWorkspace.AccountList.FirstOrDefault(x => x.TransactionList.Count > 0);
+                    var accountWithTransactions = targetWorkspace.AccountList.FirstOrDefault(x => x.TransactionList.Count > 0 && x.Currency == exchange.Currency);
                     if (accountWithTransactions != null)
                     {
-                        var transaction = accountWithTransactions.TransactionList.FirstOrDefault(x => x.CreationDate >= exchange.Date);
+                        var transaction = accountWithTransactions.TransactionList.FirstOrDefault(x => x.CreationDate >= exchange.Date && x.Currency == exchange.Currency);
                         if (transaction != null)
                         {
                             throw new ExchangeHasTransactionsException();
@@ -73,27 +74,46 @@ namespace BusinessLogic
             _database.SaveChanges();
         }
 
-        public Exchange Get(Workspace workspace, DateTime dateTime)
+        public Exchange Get(ExchangeQueryParameters exchange)
         {
-            return _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).ExchangeList.Find(x => x.Date == dateTime);
+            var result = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).ExchangeList.Find(x => x.Date == dateTime);
 
+
+            if (result != null)
+            {
+                var workspace = result.WorkspaceList.FirstOrDefault(w => w.ID == exchange.Workspace.ID);
+
+                if (workspace != null)
+                {
+                    return workspace.ExchangeList.FirstOrDefault(x => x.Date == exchange.Date && x.Currency == exchange.CurrencyType);
+                }
+            }
+
+            return null;
         }
 
-        public void Update(Workspace workspace, Exchange exchange, double newDollarValue)
+        public void Update(Workspace workspace, Exchange exchange, double newCurrencyValue)
         {
             try
             {
-                if(newDollarValue <= 0)
+                if (newCurrencyValue <= 0)
                 {
-                       throw new ArgumentException(("El valor del dolar debe ser mayor a 0"));
+                    throw new ArgumentException(("El valor de la moneda debe ser mayor a 0"));
                 }
-                Exchange exchangeToUpdate = Get(workspace, exchange.Date);
+                ExchangeQueryParameters exchangeToGet = new ExchangeQueryParameters
+                {
+                    CurrencyType = exchange.Currency,
+                    Workspace = exchange.Workspace,
+                    Date = exchange.Date
+                };
+
+                Exchange exchangeToUpdate = Get(exchangeToGet);
                 if (exchangeToUpdate == null)
                 {
                     throw new ElementNotFoundException("No existe un cambio para esa fecha");
                 }
 
-                exchange.DollarValue = newDollarValue;
+                exchange.CurrencyValue = newCurrencyValue;
             }
             catch (Exception exception)
             {

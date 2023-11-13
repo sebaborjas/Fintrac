@@ -10,6 +10,11 @@
 {
 
 	<PageTitle>Administrar Cuentas</PageTitle>
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/workspace">
+			<span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+		</NavLink>
+	</div>
 
 	<div class="d-flex justify-content-between align-items-center">
 		<h3>Cuentas</h3>
@@ -115,7 +120,7 @@
 						@if (newAccount.Type == "PersonalAccount")
 						{
 							<div class="form-group">
-								<label for="startingAmount">Monto Inicial</label>
+								<label for="startingAmount.ToString(" N2")">Monto Inicial</label>
 								<input type="number" class="form-control" id="startingAmount" @bind="newAccount.StartingAmount" min="0" />
 							</div>
 						}
@@ -191,7 +196,7 @@
 
 							<div class="row mb-2 mx-0">
 								<div class="col-2"><i class="oi oi-media-record"></i></div>
-								<div class="col-10"><p>Monto inicial: @((selectedAccount as PersonalAccount).StartingAmount)</p></div>
+								<div class="col-10"><p>Monto inicial: @((selectedAccount as PersonalAccount).StartingAmount).ToString("N2")</p></div>
 							</div>
 						}
 						<div class="row mb-2 mx-0">
@@ -350,8 +355,6 @@
 					Type = ToastType.Success,
 					Message = "Datos de la cuenta actualizados con éxito"
 				});
-			HideEditAccountModal();
-			HideSelectedAccountModal();
 		}
 		catch (Exception e)
 		{
@@ -361,6 +364,8 @@
 					Message = $"Error: {e.Message}"
 				});
 		}
+		HideEditAccountModal();
+		HideSelectedAccountModal();
 	}
 
 	private void DeleteAccount()
@@ -370,14 +375,14 @@
 		{
 			_accountService.Delete(workspace, selectedAccount.Name);
 			accountList = workspace.AccountList;
-			HideEditAccountModal();
-			HideAddAccountModal();
-			HideSelectedAccountModal();
 		}
 		else
 		{
 			ToastService.Notify(new(ToastType.Danger, "No se puede eliminar una cuenta con transacciones asociadas"));
 		}
+		HideEditAccountModal();
+		HideAddAccountModal();
+		HideSelectedAccountModal();
 
 	}
 

@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessLogic.Interfaces;
+
 using Domain;
 using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -42,10 +43,11 @@ namespace BusinessLogic
             _database.SaveChanges();
         }
 
-		public User Get(string email)
+		    public User Get(string email)
         {
             return _database.Users.Where(u => u.Email == email).FirstOrDefault<User>();
-            }
+        }
+
 
 		public User UpdateUser(String name, String email, String lastName, String address, String password)
 		{
@@ -68,7 +70,6 @@ namespace BusinessLogic
 			return userToUpdate;
 		}
 
-
 		public void DeleteUser(User user)
         {
             _database.Users.Remove(user);
@@ -87,9 +88,19 @@ namespace BusinessLogic
             {
                 throw new InvalidUserException();
             }
-
-
         }
 
+		public void LeaveWorkspace(User user, Workspace workspace)
+		{
+			if (user.WorkspaceList.Contains(workspace))
+			{
+				user.WorkspaceList.Remove(workspace);
+			}
+			else
+			{
+				throw new ElementNotFoundException("No se encontró el usuario");
+			}
+
+		}
 	}
 }

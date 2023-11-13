@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -14,6 +14,7 @@ namespace BusinessLogic
     public class GoalService
     {
         private readonly FintracContext _database;
+        private Random random = new Random();
 
         public GoalService(FintracContext database)
         {
@@ -87,16 +88,21 @@ namespace BusinessLogic
                     oldGoal.Title = newGoal.Title;
                     oldGoal.MaxAmount = newGoal.MaxAmount;
                     oldGoal.Categories = newGoal.Categories;
+                    oldGoal.Categories = new List<Category>(newGoal.Categories);
+                    oldGoal.Token = newGoal.Token;
                 }
                 else
                 {
-                    if (newGoal.Workspace.GoalList.Contains(newGoal))
+                    if (oldGoal.Workspace.GoalList.Contains(newGoal))
                     {
                         throw new GoalAlreadyExistsException();
                     }
                     oldGoal.Title = newGoal.Title;
                     oldGoal.MaxAmount = newGoal.MaxAmount;
                     oldGoal.Categories = newGoal.Categories;
+                    oldGoal.Categories = new List<Category>(newGoal.Categories);
+                    oldGoal.Token = newGoal.Token;
+                }
                 }
             }
             catch (Exception exception)
@@ -105,6 +111,12 @@ namespace BusinessLogic
             }
             _database.SaveChanges();
         }
+  
+        public void GenerateUniqueToken(Goal goal)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            goal.Token = new string(Enumerable.Repeat(chars, 12)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
 
     }
-}

@@ -119,8 +119,8 @@ namespace TestDomain
                 CreationDate = DateTime.Today.AddDays(-2)
             };
 
-            Exchange exchangeToday = new Exchange { DollarValue = DollarToday, Date = DateTime.Today, Workspace = accountBalanceReport.WorkSpace };
-            Exchange exchangeYesterday = new Exchange { DollarValue = DollarBefore, Date = DateTime.Today.AddDays(-5), Workspace = accountBalanceReport.WorkSpace };
+            Exchange exchangeToday = new Exchange { Currency = CurrencyType.USD, CurrencyValue = DollarToday, Date = DateTime.Today, Workspace = accountBalanceReport.WorkSpace };
+            Exchange exchangeYesterday = new Exchange { Currency = CurrencyType.USD, CurrencyValue = DollarBefore, Date = DateTime.Today.AddDays(-5), Workspace = accountBalanceReport.WorkSpace };
 
             workSpace.ExchangeList.Add(exchangeToday);
             workSpace.ExchangeList.Add(exchangeYesterday);

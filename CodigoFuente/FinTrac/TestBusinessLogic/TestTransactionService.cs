@@ -41,7 +41,7 @@ namespace TestBusinessLogic
             _account = new PersonalAccount { Name = "Caja de ahorro", WorkSpace = _workspace, Currency = CurrencyType.UYU };
             _category = new Category { Name = "Gastos casa", Status = CategoryStatus.Active, Type = CategoryType.Cost };
             _transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
-            _exchange = new Exchange { Date = DateTime.Today.AddDays(-2), DollarValue = 40, Workspace = _workspace };
+            _exchange = new Exchange { Date = DateTime.Today.AddDays(-2), CurrencyValue = 40, Workspace = _workspace };
 
             _userService.Add(_user);
             _workspaceService.Add(_user, _workspace);
