@@ -38,7 +38,28 @@ namespace BusinessLogic
 
         public Category Get(Workspace workspace, string name)
         {
-            return _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).CategoryList.Find(x => x.Name == name);
+			User user = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>();
+
+			if (user == null)
+			{
+				return null;
+			}
+
+			Workspace workspaceToFind = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
+
+			if (workspaceToFind == null)
+			{
+				return null;
+			}
+
+			Category category = workspaceToFind.CategoryList.FirstOrDefault(x => x.Name == name);
+
+			if (category == null)
+			{
+				return null;
+			}
+
+			return category;
         }
 
         public void Delete(Workspace workspace, Category category)
