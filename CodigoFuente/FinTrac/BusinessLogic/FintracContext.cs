@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BusinessLogic
 {
@@ -20,7 +21,7 @@ namespace BusinessLogic
 
         public Workspace currentWorkspace { get; set; }
 
-        public FintracContext(DbContextOptions<FintracContext> options) : base(options)
+		public FintracContext(DbContextOptions<FintracContext> options) : base(options)
         {
 
         }
@@ -33,17 +34,26 @@ namespace BusinessLogic
 
             modelBuilder.Entity<Transaction>().HasOne(t => t.Category).WithMany().HasForeignKey(c => c.CategoryId).OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Account>().ToTable("Accounts");
+            modelBuilder.Entity<Account>().HasMany(a => a.TransactionList).WithOne(t => t.Account).HasForeignKey(t => t.AccountId);
+
+			modelBuilder.Entity<Account>().ToTable("Accounts");
             modelBuilder.Entity<CreditCard>().ToTable("CreditCards");
             modelBuilder.Entity<PersonalAccount>().ToTable("PersonalAccounts");
 
 
             modelBuilder.Entity<User>().HasKey(x => x.Email);
 
-
             modelBuilder.Entity<User>()
-                .HasMany(u => u.WorkspaceList)
-                .WithOne(w => w.UserAdmin).HasForeignKey(w => w.UserAdminId);
+            .HasMany(u => u.WorkspaceList)
+            .WithMany(w => w.Users)
+			.UsingEntity<Dictionary<string, object>>(
+			"UsersWorkspaces",
+			j => j.HasOne<Workspace>().WithMany().OnDelete(DeleteBehavior.Cascade),
+			j => j.HasOne<User>().WithMany().OnDelete(DeleteBehavior.ClientCascade));
+
+
+			modelBuilder.Entity<Workspace>()
+                .HasOne(workspace => workspace.UserAdmin);
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.RecievedInvitations)

@@ -75,7 +75,8 @@ namespace BusinessLogic.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DollarValue = table.Column<double>(type: "float", nullable: false),
+                    CurrencyValue = table.Column<double>(type: "float", nullable: false),
+                    Currency = table.Column<int>(type: "int", nullable: false),
                     WorkspaceID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -95,6 +96,7 @@ namespace BusinessLogic.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MaxAmount = table.Column<double>(type: "float", nullable: false),
                     WorkspaceID = table.Column<int>(type: "int", nullable: false)
@@ -144,6 +146,29 @@ namespace BusinessLogic.Migrations
                     table.ForeignKey(
                         name: "FK_Invitation_Workspace_WorkspaceID",
                         column: x => x.WorkspaceID,
+                        principalTable: "Workspace",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UsersWorkspaces",
+                columns: table => new
+                {
+                    UsersEmail = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WorkspaceListID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UsersWorkspaces", x => new { x.UsersEmail, x.WorkspaceListID });
+                    table.ForeignKey(
+                        name: "FK_UsersWorkspaces_Users_UsersEmail",
+                        column: x => x.UsersEmail,
+                        principalTable: "Users",
+                        principalColumn: "Email");
+                    table.ForeignKey(
+                        name: "FK_UsersWorkspaces_Workspace_WorkspaceListID",
+                        column: x => x.WorkspaceListID,
                         principalTable: "Workspace",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
@@ -303,6 +328,11 @@ namespace BusinessLogic.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UsersWorkspaces_WorkspaceListID",
+                table: "UsersWorkspaces",
+                column: "WorkspaceListID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Workspace_UserAdminId",
                 table: "Workspace",
                 column: "UserAdminId");
@@ -325,6 +355,9 @@ namespace BusinessLogic.Migrations
 
             migrationBuilder.DropTable(
                 name: "Transaction");
+
+            migrationBuilder.DropTable(
+                name: "UsersWorkspaces");
 
             migrationBuilder.DropTable(
                 name: "Accounts");

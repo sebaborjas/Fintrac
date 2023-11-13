@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231111012818_InitialMigration")]
+    [Migration("20231113204912_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -99,11 +99,14 @@ namespace BusinessLogic.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Currency")
+                        .HasColumnType("int");
+
+                    b.Property<double>("CurrencyValue")
+                        .HasColumnType("float");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<double>("DollarValue")
-                        .HasColumnType("float");
 
                     b.Property<int>("WorkspaceID")
                         .HasColumnType("int");
@@ -127,6 +130,10 @@ namespace BusinessLogic.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -257,6 +264,21 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("UserAdminId");
 
                     b.ToTable("Workspace");
+                });
+
+            modelBuilder.Entity("UsersWorkspaces", b =>
+                {
+                    b.Property<string>("UsersEmail")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("WorkspaceListID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UsersEmail", "WorkspaceListID");
+
+                    b.HasIndex("WorkspaceListID");
+
+                    b.ToTable("UsersWorkspaces");
                 });
 
             modelBuilder.Entity("Domain.CreditCard", b =>
@@ -391,12 +413,27 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Workspace", b =>
                 {
                     b.HasOne("Domain.User", "UserAdmin")
-                        .WithMany("WorkspaceList")
+                        .WithMany()
                         .HasForeignKey("UserAdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("UserAdmin");
+                });
+
+            modelBuilder.Entity("UsersWorkspaces", b =>
+                {
+                    b.HasOne("Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersEmail")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceListID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.CreditCard", b =>
@@ -430,8 +467,6 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.User", b =>
                 {
                     b.Navigation("RecievedInvitations");
-
-                    b.Navigation("WorkspaceList");
                 });
 
             modelBuilder.Entity("Domain.Workspace", b =>

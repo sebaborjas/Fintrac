@@ -91,10 +91,13 @@ namespace TestBusinessLogic
         public void ListAllTransactions()
         {
             User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+
             var workspace = new Workspace{ UserAdmin = useradmin, Name = $"Espacio personal de {useradmin.Name} {useradmin.LastName}" };
 
+			_userService.Add(useradmin);
+			_service.Add(useradmin, workspace);
 
-            Account personalAccount = new PersonalAccount
+			Account personalAccount = new PersonalAccount
             {
                 Name = "Test",
                 CreationDate = DateTime.Today.AddDays(-5),
@@ -142,14 +145,13 @@ namespace TestBusinessLogic
                 Amount = 100,
                 Currency = CurrencyType.UYU,
             };
+
             creditCardAccount.TransactionList.Add(transaction1);
             personalAccount.TransactionList.Add(transaction2);
             workspace.AccountList.Add(creditCardAccount);
             workspace.AccountList.Add(personalAccount);
             workspace.CategoryList.Add(category);
 
-            _userService.Add(useradmin);
-            _service.Add(useradmin, workspace);
             List<Transaction> expected = new List<Transaction> { transaction1, transaction2 };
             List<Transaction> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
             CollectionAssert.AreEqual(expected, transactionList);

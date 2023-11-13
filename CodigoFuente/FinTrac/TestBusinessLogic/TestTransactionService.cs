@@ -36,24 +36,38 @@ namespace TestBusinessLogic
             _userService = new UserService(_database);
             _exchangeService = new ExchangeService(_database);
 
-            _user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
-            _workspace = new Workspace{ UserAdmin = _user, Name = $"Espacio personal de {_user.Name} {_user.LastName}" };
-            _account = new PersonalAccount { Name = "Caja de ahorro", WorkSpace = _workspace, Currency = CurrencyType.UYU };
-            _category = new Category { Name = "Gastos casa", Status = CategoryStatus.Active, Type = CategoryType.Cost };
-            _transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
-            _exchange = new Exchange { Date = DateTime.Today.AddDays(-2), CurrencyValue = 40, Workspace = _workspace };
+            //_user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
+            //_workspace = new Workspace{ UserAdmin = _user, Name = $"Espacio personal de {_user.Name} {_user.LastName}" };
+            //_account = new PersonalAccount { Name = "Caja de ahorro", WorkSpace = _workspace, Currency = CurrencyType.UYU };
+            //_category = new Category { Name = "Gastos casa", Status = CategoryStatus.Active, Type = CategoryType.Cost };
+            //_transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
+            //_exchange = new Exchange { Date = DateTime.Today.AddDays(-2), CurrencyValue = 40, Workspace = _workspace };
 
-            _userService.Add(_user);
-            _workspaceService.Add(_user, _workspace);
-            _accountService.Add(_workspace, _account);
-            _exchangeService.Add(_workspace, _exchange);
+            //_userService.Add(_user);
+            //_workspaceService.Add(_user, _workspace);
+            //_accountService.Add(_workspace, _account);
+            //_exchangeService.Add(_workspace, _exchange);
         }
 
         [TestMethod]
         public void AddTransactionFoundExchange()
         {
-            _service.Add(_account, _transaction);
-            Assert.AreEqual(_transaction, _service.Get(_account, _transaction.ID));
+			var user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
+			_userService.Add(user);
+
+			var workspace = new Workspace { UserAdmin = user, Name = $"Espacio personal de {user.Name} {user.LastName}" };
+			_workspaceService.Add(user, workspace);
+
+			var account = new PersonalAccount { Name = "Caja de ahorro", WorkSpace = workspace, Currency = CurrencyType.UYU };
+			_accountService.Add(workspace, account);
+
+			var category = new Category { Name = "Gastos casa", Status = CategoryStatus.Active, Type = CategoryType.Cost };
+			var transaction = new Transaction { Account = account, Amount = 100, Category = category, Currency = CurrencyType.UYU, Title = "Test" };
+			var exchange = new Exchange { Date = DateTime.Today.AddDays(-2), CurrencyValue = 40, Workspace = workspace };
+			_exchangeService.Add(workspace, exchange);
+
+			_service.Add(account, transaction);
+            Assert.AreEqual(transaction, _service.Get(account, transaction.ID));
         }
 
         [TestMethod]
