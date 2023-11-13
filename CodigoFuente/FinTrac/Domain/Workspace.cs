@@ -33,6 +33,9 @@ namespace Domain
 
         public string UserAdminId { get { return _userAdminId; } set { _userAdminId = UserAdmin.Email; } }
         public List<Account> AccountList { get; } = new List<Account>();
+        
+        public List<User> Users { get; } = new List<User>();
+
         public List<Report> ReportList { get; } = new List<Report>();
         public List<Exchange> ExchangeList { get; } = new List<Exchange>();
         public List<Category> CategoryList { get; } = new List<Category>();
