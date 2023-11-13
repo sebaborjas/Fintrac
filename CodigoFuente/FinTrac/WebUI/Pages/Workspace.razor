@@ -2,11 +2,11 @@
 @using BusinessLogic
 @using Domain
 @using System.Text.RegularExpressions
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
 
 	<PageTitle>Workspace @workspace.Name</PageTitle>
@@ -139,13 +139,13 @@
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			CurrentUser = MemoryDatabase.currentUser;
-			workspace = MemoryDatabase.currentWorkspace;
+			CurrentUser = FintracContext.currentUser;
+			workspace = FintracContext.currentWorkspace;
 			nameWorkspace = workspace.Name;
-			_workspaceService = new WorkspaceService(MemoryDatabase);
-			_userService = new UserService(MemoryDatabase);
+			_workspaceService = new WorkspaceService(FintracContext);
+			_userService = new UserService(FintracContext);
 			guestUsers = _workspaceService.ListGuestUsers(workspace);
 		}
 	}

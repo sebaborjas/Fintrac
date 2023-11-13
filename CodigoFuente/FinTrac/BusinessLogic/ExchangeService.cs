@@ -76,12 +76,14 @@ namespace BusinessLogic
 
         public Exchange Get(ExchangeQueryParameters exchange)
         {
-            var result = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).ExchangeList.Find(x => x.Date == dateTime);
+            Workspace workspace = exchange.Workspace;
+
+			var result = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).ExchangeList.Find(x => x.Date == exchange.Date);
 
 
             if (result != null)
             {
-                var workspace = result.WorkspaceList.FirstOrDefault(w => w.ID == exchange.Workspace.ID);
+                var workspaceFounded = result.WorkspaceList.FirstOrDefault(w => w.ID == exchange.Workspace.ID);
 
                 if (workspace != null)
                 {

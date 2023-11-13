@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Domain;
 using Domain.Exceptions;
+using Domain.DataTypes;
 
 namespace BusinessLogic
 {
@@ -101,7 +101,7 @@ namespace BusinessLogic
 		public List<User> ListGuestUsers(Workspace workspace)
 		{
 
-			List<User> guestUsersWorkspace = _memoryDatabase.Users.Where(u => u.WorkspaceList.Contains(workspace)).ToList();
+			List<User> guestUsersWorkspace = _database.Users.Where(u => u.WorkspaceList.Contains(workspace)).ToList();
 			return guestUsersWorkspace;
 		}
 		public List<CreditCard> GetCreditCards(Workspace workspace)

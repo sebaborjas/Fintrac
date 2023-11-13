@@ -2,11 +2,11 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes;
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
 
 	<PageTitle>Administrar Usuarios</PageTitle>
@@ -114,13 +114,13 @@
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			CurrentUser = MemoryDatabase.currentUser;
-			workspace = MemoryDatabase.currentWorkspace;
-			_invitationService = new InvitationService(MemoryDatabase);
-			_userService = new UserService(MemoryDatabase);
-			_workspaceService = new WorkspaceService(MemoryDatabase);
+			CurrentUser = FintracContext.currentUser;
+			workspace = FintracContext.currentWorkspace;
+			_invitationService = new InvitationService(FintracContext);
+			_userService = new UserService(FintracContext);
+			_workspaceService = new WorkspaceService(FintracContext);
 			guestUsers = _workspaceService.ListGuestUsers(workspace);
 		}
 	}

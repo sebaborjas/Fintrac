@@ -1,10 +1,10 @@
 @page "/profile"
 @using BusinessLogic
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
 	<PageTitle>Profile</PageTitle>
 	<div class="nav-item px-3">
@@ -26,8 +26,8 @@
 			</div>
 			<div class="col-md-9">
 				<div class="profile-info">
-					<h2>@MemoryDatabase.currentUser.Name @MemoryDatabase.currentUser.LastName</h2>
-					<p>@MemoryDatabase.currentUser.Email</p>
+					<h2>@FintracContext.currentUser.Name @FintracContext.currentUser.LastName</h2>
+					<p>@FintracContext.currentUser.Email</p>
 				</div>
 				<div class="profile-details">
 					<h3>Información del perfil</h3>
@@ -130,15 +130,15 @@
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			currentUser = MemoryDatabase.currentUser;
+			currentUser = FintracContext.currentUser;
 			name = currentUser.Name;
 			email = currentUser.Email;
 			lastName = currentUser.LastName;
 			address = currentUser.Address;
 			password = currentUser.Password;
-			_userService = new UserService(MemoryDatabase);
+			_userService = new UserService(FintracContext);
 		}
 
 	}
@@ -159,7 +159,7 @@
 		try
 		{
 			showDeleteAccountModal = false;
-			MemoryDatabase.isLoggedIn = false;
+			FintracContext.isLoggedIn = false;
 			ToastService.Notify(new(ToastType.Success, "Cuenta eliminada con éxito!"));
 			NavigationManager.NavigateTo("/login");
 			_userService.DeleteUser(currentUser);

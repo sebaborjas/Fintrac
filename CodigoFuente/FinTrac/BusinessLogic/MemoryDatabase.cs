@@ -27,7 +27,7 @@ namespace BusinessLogic
 				Address = "123"
 			};
 
-			Workspace defaultWorkspace = new Workspace(user, $"{user.Name} {user.LastName}");
+			Workspace defaultWorkspace = new Workspace{UserAdmin = user, Name = $"{user.Name} {user.LastName}"};
 			user.WorkspaceList.Add(defaultWorkspace);
 			Users.Add(user);
 

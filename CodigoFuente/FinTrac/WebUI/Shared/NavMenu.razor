@@ -59,10 +59,10 @@
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			CurrentUser = MemoryDatabase.currentUser;
-			_invitationService = new InvitationService(MemoryDatabase);
+			CurrentUser = FintracContext.currentUser;
+			_invitationService = new InvitationService(FintracContext);
 			pendingNotifications = CurrentUser.RecievedInvitations;
 		}
 	}

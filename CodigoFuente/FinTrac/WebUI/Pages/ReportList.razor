@@ -2,11 +2,11 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
 	<PageTitle>Reportes</PageTitle>
 	<div class="nav-item px-3">
@@ -475,12 +475,12 @@
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			CurrentUser = MemoryDatabase.currentUser;
-			workspace = MemoryDatabase.currentWorkspace;
-			_workspaceService = new WorkspaceService(MemoryDatabase);
-			_accountService = new AccountService(MemoryDatabase);
+			CurrentUser = FintracContext.currentUser;
+			workspace = FintracContext.currentWorkspace;
+			_workspaceService = new WorkspaceService(FintracContext);
+			_accountService = new AccountService(FintracContext);
 			accounts = workspace.AccountList;
 			categories = workspace.CategoryList;
 			creditCards = _workspaceService.GetCreditCards(workspace);

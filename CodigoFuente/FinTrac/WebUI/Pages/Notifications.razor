@@ -2,11 +2,11 @@
 @using BusinessLogic
 @using Domain
 @using System.Text.RegularExpressions
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
 
 	<PageTitle>Notificaciones</PageTitle>
@@ -63,10 +63,10 @@
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			CurrentUser = MemoryDatabase.currentUser;
-			_invitationService = new InvitationService(MemoryDatabase);
+			CurrentUser = FintracContext.currentUser;
+			_invitationService = new InvitationService(FintracContext);
 			recievedInvitations = CurrentUser.RecievedInvitations;
 		}
 	}

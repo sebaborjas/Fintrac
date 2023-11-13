@@ -82,7 +82,7 @@ namespace TestBusinessLogic
 			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
 			User guestUser = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+			Workspace workspace = new Workspace {UserAdmin = useradmin, Name = "Test"};
 
 			_service.Add(useradmin);
 			_serviceWorkspace.Add(useradmin, workspace);

@@ -103,7 +103,7 @@ namespace BusinessLogic
                     oldGoal.Categories = new List<Category>(newGoal.Categories);
                     oldGoal.Token = newGoal.Token;
                 }
-                }
+
             }
             catch (Exception exception)
             {
@@ -111,7 +111,7 @@ namespace BusinessLogic
             }
             _database.SaveChanges();
         }
-  
+
         public void GenerateUniqueToken(Goal goal)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -120,3 +120,4 @@ namespace BusinessLogic
         }
 
     }
+}

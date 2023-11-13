@@ -166,7 +166,7 @@ namespace TestBusinessLogic
 			User user2 = new User { Name = "User2", LastName = "User2", Email = "user2@user.com", Password = "12345678909" };
 			User user3 = new User { Name = "User3", LastName = "User3", Email = "user3@user.com", Password = "12345678909" };
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+			Workspace workspace = new Workspace { UserAdmin = useradmin, Name = "Test" };
 
 			_userService.Add(useradmin);
 			_service.Add(useradmin, workspace);
@@ -193,7 +193,7 @@ namespace TestBusinessLogic
 			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
 			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+			Workspace workspace = new Workspace{ UserAdmin = useradmin, Name = "Test" };
 
 			_userService.Add(useradmin);
 			_service.Add(useradmin, workspace);
@@ -247,7 +247,7 @@ namespace TestBusinessLogic
 			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
 			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+			Workspace workspace = new Workspace{ UserAdmin = useradmin, Name = "Test" };
 
 			_userService.Add(useradmin);
 			_service.Add(useradmin, workspace);
@@ -299,7 +299,7 @@ namespace TestBusinessLogic
 			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
 			User user1 = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
 
-			Workspace workspace = new Workspace(useradmin, "Test");
+			Workspace workspace = new Workspace{ UserAdmin = useradmin, Name = "Test" };
 
 			_userService.Add(useradmin);
 			_service.Add(useradmin, workspace);
@@ -355,7 +355,7 @@ namespace TestBusinessLogic
 		public void GenerateCategoryReports()
 		{
 			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			Workspace workspace = new Workspace(useradmin, "Test");
+			Workspace workspace = new Workspace{ UserAdmin = useradmin, Name = "Test" };
 			_userService.Add(useradmin);
 			_service.Add(useradmin, workspace);
 
