@@ -9,17 +9,19 @@ namespace TestBusinessLogic
 	{
 		private UserService _service;
 		private WorkspaceService _serviceWorkspace;
-		private MemoryDatabase newMemory;
+		private FintracContext newMemory;
 		[TestInitialize]
 		public void SetUp()
 		{
-			_service = new UserService(TestContextFactory.CreateContext());
+			newMemory = TestContextFactory.CreateContext();
+			_service = new UserService(newMemory);
+			_serviceWorkspace = new WorkspaceService(newMemory);
 		}
 
 		[TestMethod]
 		public void AddUser()
 		{
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 			Assert.AreEqual(user, _service.Get(user.Email));
 
@@ -29,7 +31,7 @@ namespace TestBusinessLogic
 		[ExpectedException(typeof(UserAlreadyExistsException))]
 		public void AddUserAlreadyExists()
 		{
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 			_service.Add(user);
 		}
@@ -39,7 +41,7 @@ namespace TestBusinessLogic
 		public void GetUser()
 		{
 			string email = "test@test.com";
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 			Assert.AreEqual(email, _service.Get(email).Email);
 		}
@@ -48,7 +50,7 @@ namespace TestBusinessLogic
 		public void DeleteUser()
 		{
 			string email = "test@test.com";
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 
 			_service.DeleteUser(user);

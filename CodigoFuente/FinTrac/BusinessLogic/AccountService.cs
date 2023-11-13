@@ -38,8 +38,27 @@ namespace BusinessLogic
 
         public Account Get(Workspace workspace, string name)
         {
-            return _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>().WorkspaceList.Find(x => x.ID == workspace.ID).AccountList.Find(x => x.Name == name);
-            
+            User user = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>();
+
+            if (user == null) {
+				return null;
+			}
+
+            Workspace workspaceToFind = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
+
+			if (workspaceToFind == null)
+			{
+				return null;
+			}
+
+            Account account = workspaceToFind.AccountList.FirstOrDefault(x => x.Name == name);
+
+            if (account == null)
+            {
+				return null;
+			}
+
+            return account;
         }
 
         public void Modify(string oldName, Account accountModified)
