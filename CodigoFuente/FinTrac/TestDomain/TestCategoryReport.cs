@@ -28,7 +28,11 @@ namespace TestDomain
 		{
 			User user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "1234567890" };
 
-			workSpace = new Workspace(user, "TestWorkspace");
+			workSpace = new Workspace
+			{
+				UserAdmin = user,
+				Name = "TestWorkspace"
+			};
 
 			user.WorkspaceList.Add(workSpace);
 			Exchange exchange = new Exchange { Date = DateTime.Today.AddDays(-5), Currency = CurrencyType.USD, CurrencyValue = 35 };
