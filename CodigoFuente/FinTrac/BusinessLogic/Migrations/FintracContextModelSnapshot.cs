@@ -22,21 +22,6 @@ namespace BusinessLogic.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CategoryGoal", b =>
-                {
-                    b.Property<int>("CategoriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GoalId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CategoriesId", "GoalId");
-
-                    b.HasIndex("GoalId");
-
-                    b.ToTable("CategoryGoal");
-                });
-
             modelBuilder.Entity("Domain.Account", b =>
                 {
                     b.Property<int>("Id")
@@ -78,6 +63,9 @@ namespace BusinessLogic.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("GoalId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -92,6 +80,8 @@ namespace BusinessLogic.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GoalId");
 
                     b.HasIndex("WorkspaceID");
 
@@ -305,21 +295,6 @@ namespace BusinessLogic.Migrations
                     b.ToTable("PersonalAccounts", (string)null);
                 });
 
-            modelBuilder.Entity("CategoryGoal", b =>
-                {
-                    b.HasOne("Domain.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Goal", null)
-                        .WithMany()
-                        .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Account", b =>
                 {
                     b.HasOne("Domain.Workspace", "WorkSpace")
@@ -333,6 +308,10 @@ namespace BusinessLogic.Migrations
 
             modelBuilder.Entity("Domain.Category", b =>
                 {
+                    b.HasOne("Domain.Goal", null)
+                        .WithMany("Categories")
+                        .HasForeignKey("GoalId");
+
                     b.HasOne("Domain.Workspace", "Workspace")
                         .WithMany("CategoryList")
                         .HasForeignKey("WorkspaceID")
@@ -457,6 +436,11 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Account", b =>
                 {
                     b.Navigation("TransactionList");
+                });
+
+            modelBuilder.Entity("Domain.Goal", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Domain.User", b =>
