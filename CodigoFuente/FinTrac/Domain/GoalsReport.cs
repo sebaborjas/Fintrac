@@ -38,8 +38,8 @@ namespace Domain
             {
                 foreach (Account account in accounts)
                 {
-                    List<Transaction> transactions = account.TransactionList;
-                    foreach (Transaction transaction in transactions)
+                    List<Transactions> transactions = account.TransactionList;
+                    foreach (Transactions transaction in transactions)
                     {
                         if (transaction.Category == category && transaction.CreationDate.Month == DateTime.Today.Month)
                         {

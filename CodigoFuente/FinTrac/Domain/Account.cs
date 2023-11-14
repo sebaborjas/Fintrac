@@ -57,7 +57,7 @@ namespace Domain
             } 
         }
 
-        public List<Transaction> TransactionList { get; set; } = new List<Transaction>();
+        public List<Transactions> TransactionList { get; set; } = new List<Transactions>();
 
         public abstract void Update(Account account);
 

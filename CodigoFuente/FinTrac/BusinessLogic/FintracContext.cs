@@ -31,11 +31,7 @@ namespace BusinessLogic
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Ignore<Report>();
-
-            modelBuilder.Entity<Transaction>().HasOne(t => t.Category).WithMany().HasForeignKey(c => c.CategoryId).OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Account>().HasMany(a => a.TransactionList).WithOne(t => t.Account).HasForeignKey(t => t.AccountId);
-
+  
 			modelBuilder.Entity<Account>().ToTable("Accounts");
             modelBuilder.Entity<CreditCard>().ToTable("CreditCards");
             modelBuilder.Entity<PersonalAccount>().ToTable("PersonalAccounts");
@@ -58,19 +54,26 @@ namespace BusinessLogic
             modelBuilder.Entity<User>()
                 .HasMany(u => u.RecievedInvitations)
                 .WithOne(i => i.UserToInvite)
-                .HasForeignKey(i => i.UserToInviteId);
-
-            modelBuilder.Entity<Invitation>()
-                .HasOne(i => i.Admin).WithMany()
-                .HasForeignKey(i => i.AdminId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Invitation>()
-                .HasOne(i => i.UserToInvite)
-                .WithMany()
                 .HasForeignKey(i => i.UserToInviteId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Invitation>()
+                .HasOne(i => i.Workspace)
+                .WithMany().HasForeignKey(w => w.ID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+			modelBuilder.Entity<Transactions>()
+                .HasOne(t => t.Category)
+                .WithMany().HasForeignKey(c => c.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Transactions>()
+				.HasOne(t => t.Account)
+				.WithMany(a => a.TransactionList)
+                .HasForeignKey(t => t.AccountId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+                
 
         }
     }

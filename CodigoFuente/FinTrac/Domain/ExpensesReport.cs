@@ -10,10 +10,10 @@ namespace Domain
 {
     public class ExpensesReport : Report
     {
-        public List<Transaction> ListExpenses()
+        public List<Transactions> ListExpenses()
         {
 
-            List<Transaction> transactionList = new List<Transaction>();
+            List<Transactions> transactionList = new List<Transactions>();
             foreach (Account account in WorkSpace.AccountList)
             {
                 transactionList.AddRange(account.TransactionList.Where(x => x.Category.Type == CategoryType.Cost));
@@ -22,9 +22,9 @@ namespace Domain
 
         }
 
-        public List<Transaction> ListExpensesByCategory(string categoryName)
+        public List<Transactions> ListExpensesByCategory(string categoryName)
         {
-            List<Transaction> transactionList = new List<Transaction>();
+            List<Transactions> transactionList = new List<Transactions>();
             foreach (Account account in WorkSpace.AccountList)
             {
                 transactionList.AddRange(account.TransactionList.Where(x => x.Category.Name == categoryName));
@@ -33,13 +33,13 @@ namespace Domain
             return transactionList;
         }
 
-        public List<Transaction> ListExpensesByDate(DateTime fromDate, DateTime toDate)
+        public List<Transactions> ListExpensesByDate(DateTime fromDate, DateTime toDate)
         {
             if(fromDate > toDate)
             {
                 throw new InvalidDateException();
             }
-            List<Transaction> transactionList = new List<Transaction>();
+            List<Transactions> transactionList = new List<Transactions>();
             foreach (Account account in WorkSpace.AccountList)
             {
                 transactionList.AddRange(account.TransactionList.Where(x => x.CreationDate >= fromDate && x.CreationDate <= toDate));
@@ -48,9 +48,9 @@ namespace Domain
             return transactionList;
         }
 
-        public List<Transaction> ListExpensesByAccount(string accountName)
+        public List<Transactions> ListExpensesByAccount(string accountName)
         {
-            List<Transaction> transactionList = new List<Transaction>();
+            List<Transactions> transactionList = new List<Transactions>();
             foreach (Account account in WorkSpace.AccountList)
             {
                 transactionList.AddRange(account.TransactionList.Where(x => x.Account.Name == accountName));

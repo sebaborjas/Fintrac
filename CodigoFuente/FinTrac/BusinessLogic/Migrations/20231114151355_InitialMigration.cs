@@ -96,7 +96,7 @@ namespace BusinessLogic.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MaxAmount = table.Column<double>(type: "float", nullable: false),
                     WorkspaceID = table.Column<int>(type: "int", nullable: false)
@@ -116,12 +116,9 @@ namespace BusinessLogic.Migrations
                 name: "Invitation",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WorkspaceID = table.Column<int>(type: "int", nullable: false),
+                    ID = table.Column<int>(type: "int", nullable: false),
                     AdminId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserToInviteId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserEmail = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserToInviteId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -131,12 +128,7 @@ namespace BusinessLogic.Migrations
                         column: x => x.AdminId,
                         principalTable: "Users",
                         principalColumn: "Email",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Invitation_Users_UserEmail",
-                        column: x => x.UserEmail,
-                        principalTable: "Users",
-                        principalColumn: "Email");
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Invitation_Users_UserToInviteId",
                         column: x => x.UserToInviteId,
@@ -144,11 +136,11 @@ namespace BusinessLogic.Migrations
                         principalColumn: "Email",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Invitation_Workspace_WorkspaceID",
-                        column: x => x.WorkspaceID,
+                        name: "FK_Invitation_Workspace_ID",
+                        column: x => x.ID,
                         principalTable: "Workspace",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -243,7 +235,7 @@ namespace BusinessLogic.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transaction",
+                name: "Transactions",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
@@ -257,15 +249,15 @@ namespace BusinessLogic.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transaction", x => x.ID);
+                    table.PrimaryKey("PK_Transactions", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Transaction_Accounts_AccountId",
+                        name: "FK_Transactions_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Transaction_Category_CategoryId",
+                        name: "FK_Transactions_Category_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "Id",
@@ -303,28 +295,18 @@ namespace BusinessLogic.Migrations
                 column: "AdminId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invitation_UserEmail",
-                table: "Invitation",
-                column: "UserEmail");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Invitation_UserToInviteId",
                 table: "Invitation",
                 column: "UserToInviteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invitation_WorkspaceID",
-                table: "Invitation",
-                column: "WorkspaceID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transaction_AccountId",
-                table: "Transaction",
+                name: "IX_Transactions_AccountId",
+                table: "Transactions",
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transaction_CategoryId",
-                table: "Transaction",
+                name: "IX_Transactions_CategoryId",
+                table: "Transactions",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
@@ -354,7 +336,7 @@ namespace BusinessLogic.Migrations
                 name: "PersonalAccounts");
 
             migrationBuilder.DropTable(
-                name: "Transaction");
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "UsersWorkspaces");
