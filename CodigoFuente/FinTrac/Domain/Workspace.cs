@@ -7,8 +7,6 @@ namespace Domain
     public class Workspace
     {
         public int ID { get; set; }
-
-
         private string _name;
         private string _userAdminId;
         public string Name

@@ -72,6 +72,9 @@ namespace BusinessLogic
 				.WithMany(a => a.TransactionList)
                 .HasForeignKey(t => t.AccountId)
 				.OnDelete(DeleteBehavior.Restrict);
-		}
+
+                
+
+        }
     }
 }

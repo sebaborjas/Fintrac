@@ -14,8 +14,7 @@ namespace Domain
     public class Transactions
     {
 
-        private static int nextId = 1;
-        public int ID { get; private set; }
+        public int ID { get; set; }
         private string _title;
         private DateTime _creationDate = DateTime.Today;
         private double _amount;
@@ -25,11 +24,6 @@ namespace Domain
         public int AccountId {  get; private set; }
         public int CategoryId { get; private set; }
 
-        public Transactions()
-        {
-            ID = nextId;
-            nextId++;
-        }
         public string Title
         {
             get => _title;

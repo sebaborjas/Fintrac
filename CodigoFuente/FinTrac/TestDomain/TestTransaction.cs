@@ -31,9 +31,9 @@ namespace TestDomain
         }
 
         [TestMethod]
-        public void NotEqualsUsers()
+        public void NotEqualsTransaction()
         {
-            Transactions otherTransaction = new Transactions { Title = "Test" };
+            Transactions otherTransaction = new Transactions { Title = "Test" , ID = 2};
 
             Assert.AreNotEqual(otherTransaction, transaction);
         }

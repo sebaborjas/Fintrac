@@ -70,7 +70,7 @@ namespace TestBusinessLogic
         [ExpectedException(typeof(ExchangeNotFoundException))]
         public void AddTransactionNotFoundExchange()
         {
-			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
+			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.USD, Title = "Test" };
 			_exchangeService.Delete(_workspace, _exchange);
             _service.Add(_account, _transaction);
             Assert.AreEqual(_transaction, _service.Get(_account, _transaction.ID));
