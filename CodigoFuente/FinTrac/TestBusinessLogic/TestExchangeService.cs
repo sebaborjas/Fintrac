@@ -105,7 +105,7 @@ namespace TestBusinessLogic
                 Type = CategoryType.Income,
                 Workspace = _workspace,
             };
-            Transaction transaction = new Transaction
+            Transactions transaction = new Transactions
             {
                 Title = "Test",
                 CreationDate = DateTime.Today,

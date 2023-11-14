@@ -89,9 +89,9 @@ namespace BusinessLogic
             
         }
 
-        		public List<Transaction> ListAllTransactionsAllAcounts(Workspace workspace)
+        		public List<Transactions> ListAllTransactionsAllAcounts(Workspace workspace)
 		{
-			List<Transaction> transactionList = new List<Transaction>();
+			List<Transactions> transactionList = new List<Transactions>();
 			foreach (Account account in workspace.AccountList)
 			{
 				transactionList.AddRange(account.TransactionList);

@@ -11,7 +11,7 @@ using Domain.Exceptions;
 
 namespace Domain
 {
-    public class Transaction
+    public class Transactions
     {
 
         private static int nextId = 1;
@@ -25,7 +25,7 @@ namespace Domain
         public int AccountId {  get; private set; }
         public int CategoryId { get; private set; }
 
-        public Transaction()
+        public Transactions()
         {
             ID = nextId;
             nextId++;
@@ -121,7 +121,7 @@ namespace Domain
 
         public override bool Equals(object? obj)
         {
-            Transaction transaction = (Transaction)obj;
+            Transactions transaction = (Transactions)obj;
             return this.ID == transaction.ID;
         }
     }

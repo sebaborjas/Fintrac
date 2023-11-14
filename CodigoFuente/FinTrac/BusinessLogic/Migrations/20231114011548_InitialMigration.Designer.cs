@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231113204912_InitialMigration")]
+    [Migration("20231114011548_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -134,7 +134,6 @@ namespace BusinessLogic.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Token")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("WorkspaceID")
@@ -150,39 +149,26 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Invitation", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("AdminId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserEmail")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserToInviteId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("WorkspaceID")
-                        .HasColumnType("int");
-
                     b.HasKey("ID");
 
                     b.HasIndex("AdminId");
 
-                    b.HasIndex("UserEmail");
-
                     b.HasIndex("UserToInviteId");
-
-                    b.HasIndex("WorkspaceID");
 
                     b.ToTable("Invitation");
                 });
 
-            modelBuilder.Entity("Domain.Transaction", b =>
+            modelBuilder.Entity("Domain.Transactions", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -215,7 +201,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Transaction");
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Domain.User", b =>
@@ -365,23 +351,19 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.User", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.User", null)
-                        .WithMany("RecievedInvitations")
-                        .HasForeignKey("UserEmail");
-
-                    b.HasOne("Domain.User", "UserToInvite")
-                        .WithMany()
-                        .HasForeignKey("UserToInviteId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Workspace", "Workspace")
                         .WithMany()
-                        .HasForeignKey("WorkspaceID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.User", "UserToInvite")
+                        .WithMany("RecievedInvitations")
+                        .HasForeignKey("UserToInviteId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Admin");
@@ -391,12 +373,12 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Workspace");
                 });
 
-            modelBuilder.Entity("Domain.Transaction", b =>
+            modelBuilder.Entity("Domain.Transactions", b =>
                 {
                     b.HasOne("Domain.Account", "Account")
                         .WithMany("TransactionList")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Category", "Category")

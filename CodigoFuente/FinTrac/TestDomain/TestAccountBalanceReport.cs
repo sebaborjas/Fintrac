@@ -67,14 +67,14 @@ namespace TestDomain
             Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
             Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
 
-            Transaction trasaccionIngreso = new Transaction { 
+            Transactions trasaccionIngreso = new Transactions { 
                 Title = "Transaction 1",
                 Amount = ingresos,
                 Currency = CurrencyType.UYU,
                 Category = categoriaIngreso,
             };
 
-            Transaction trasaccionCosto = new Transaction
+            Transactions trasaccionCosto = new Transactions
             {
                 Title = "Transaction 2",
                 Amount = costos,
@@ -102,7 +102,7 @@ namespace TestDomain
             Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
             Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
 
-            Transaction trasaccionIngreso = new Transaction
+            Transactions trasaccionIngreso = new Transactions
             {
                 Title = "Transaction 1",
                 Amount = ingresos,
@@ -110,7 +110,7 @@ namespace TestDomain
                 Category = categoriaIngreso,
             };
 
-            Transaction trasaccionCosto = new Transaction
+            Transactions trasaccionCosto = new Transactions
             {
                 Title = "Transaction 2",
                 Amount = costos,
