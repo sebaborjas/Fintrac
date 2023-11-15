@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes;
+@using Microsoft.EntityFrameworkCore;
 @inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
@@ -122,6 +123,10 @@
 			_userService = new UserService(FintracContext);
 			_workspaceService = new WorkspaceService(FintracContext);
 			guestUsers = _workspaceService.ListGuestUsers(workspace);
+			var user = FintracContext.Users
+				.Include(u => u.WorkspaceList)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+
 		}
 	}
 

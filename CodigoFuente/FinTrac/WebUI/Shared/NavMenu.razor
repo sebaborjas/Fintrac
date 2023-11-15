@@ -1,7 +1,7 @@
 @inherits LayoutComponentBase
 @using BusinessLogic
 @inject FintracContext FintracContext
-
+@using Microsoft.EntityFrameworkCore;
 
 
 @if (FintracContext.isLoggedIn)
@@ -64,6 +64,10 @@
 			CurrentUser = FintracContext.currentUser;
 			_invitationService = new InvitationService(FintracContext);
 			pendingNotifications = CurrentUser.RecievedInvitations;
+			var user = FintracContext.Users
+				.Include(u => u.RecievedInvitations)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+			
 		}
 	}
 

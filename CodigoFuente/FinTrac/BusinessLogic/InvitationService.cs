@@ -94,6 +94,7 @@ namespace BusinessLogic
                 {
                     User user = invitationAccepted.UserToInvite;
                     _database.Users.Where(x => x == user).FirstOrDefault<User>().WorkspaceList.Add(invitationAccepted.Workspace);
+                    _database.SaveChanges();
                     this.Delete(ID);
                 }
             }
@@ -101,7 +102,6 @@ namespace BusinessLogic
             {
                 throw exception;
             }
-            _database.SaveChanges();
         }
 
     }

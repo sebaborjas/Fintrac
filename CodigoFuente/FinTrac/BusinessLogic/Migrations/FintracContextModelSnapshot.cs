@@ -348,7 +348,7 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.User", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Workspace", "Workspace")

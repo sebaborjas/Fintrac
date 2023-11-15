@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
+@using Microsoft.EntityFrameworkCore;
 @inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
@@ -206,10 +207,30 @@
             _transactionService = new TransactionService(FintracContext);
             _accountService = new AccountService(FintracContext);
             _categoryService = new CategoryService(FintracContext);
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
             newTransaction = new Transactions();
             categories = workspace.CategoryList;
             accounts = workspace.AccountList;
+            var workspaceData = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceAccounts = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                .ThenInclude(w => w.AccountList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceCategories = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                .ThenInclude(w => w.CategoryList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceExchanges = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                .ThenInclude(w => w.ExchangeList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var accountsTransactions = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                .ThenInclude(w => w.AccountList)
+                .ThenInclude(a => a.TransactionList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
     }
 
