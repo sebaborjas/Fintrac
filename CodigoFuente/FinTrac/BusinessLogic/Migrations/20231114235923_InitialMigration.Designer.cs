@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231114151355_InitialMigration")]
+    [Migration("20231114235923_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -351,7 +351,7 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.User", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Workspace", "Workspace")

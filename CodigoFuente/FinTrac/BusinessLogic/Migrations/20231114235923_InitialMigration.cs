@@ -128,7 +128,7 @@ namespace BusinessLogic.Migrations
                         column: x => x.AdminId,
                         principalTable: "Users",
                         principalColumn: "Email",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invitation_Users_UserToInviteId",
                         column: x => x.UserToInviteId,

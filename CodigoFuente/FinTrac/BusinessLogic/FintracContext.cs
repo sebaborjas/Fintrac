@@ -21,7 +21,7 @@ namespace BusinessLogic
 
         public Workspace currentWorkspace { get; set; }
 
-		public FintracContext(DbContextOptions<FintracContext> options) : base(options)
+        public FintracContext(DbContextOptions<FintracContext> options) : base(options)
         {
 
         }
@@ -31,8 +31,8 @@ namespace BusinessLogic
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Ignore<Report>();
-  
-			modelBuilder.Entity<Account>().ToTable("Accounts");
+
+            modelBuilder.Entity<Account>().ToTable("Accounts");
             modelBuilder.Entity<CreditCard>().ToTable("CreditCards");
             modelBuilder.Entity<PersonalAccount>().ToTable("PersonalAccounts");
 
@@ -42,38 +42,43 @@ namespace BusinessLogic
             modelBuilder.Entity<User>()
             .HasMany(u => u.WorkspaceList)
             .WithMany(w => w.Users)
-			.UsingEntity<Dictionary<string, object>>(
-			"UsersWorkspaces",
-			j => j.HasOne<Workspace>().WithMany().OnDelete(DeleteBehavior.Cascade),
-			j => j.HasOne<User>().WithMany().OnDelete(DeleteBehavior.ClientCascade));
+            .UsingEntity<Dictionary<string, object>>(
+            "UsersWorkspaces",
+            j => j.HasOne<Workspace>().WithMany().OnDelete(DeleteBehavior.Cascade),
+            j => j.HasOne<User>().WithMany().OnDelete(DeleteBehavior.ClientCascade));
 
-
-			modelBuilder.Entity<Workspace>()
+            modelBuilder.Entity<Workspace>()
                 .HasOne(workspace => workspace.UserAdmin);
+
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.RecievedInvitations)
                 .WithOne(i => i.UserToInvite)
                 .HasForeignKey(i => i.UserToInviteId)
-				.OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Invitation>()
                 .HasOne(i => i.Workspace)
                 .WithMany().HasForeignKey(w => w.ID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<Transactions>()
+            modelBuilder.Entity<Invitation>()
+                .HasOne(i => i.Admin)
+                .WithMany().HasForeignKey(i => i.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Transactions>()
                 .HasOne(t => t.Category)
                 .WithMany().HasForeignKey(c => c.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-			modelBuilder.Entity<Transactions>()
-				.HasOne(t => t.Account)
-				.WithMany(a => a.TransactionList)
+            modelBuilder.Entity<Transactions>()
+                .HasOne(t => t.Account)
+                .WithMany(a => a.TransactionList)
                 .HasForeignKey(t => t.AccountId)
-				.OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);
 
-                
+
 
         }
     }
