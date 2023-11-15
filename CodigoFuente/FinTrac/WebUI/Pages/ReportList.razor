@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
+@using Microsoft.EntityFrameworkCore;
 @inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
@@ -482,12 +483,40 @@
 			_workspaceService = new WorkspaceService(FintracContext);
 			_accountService = new AccountService(FintracContext);
 			accounts = workspace.AccountList;
-			categories = workspace.CategoryList;
-			creditCards = _workspaceService.GetCreditCards(workspace);
+			categories = workspace.CategoryList;				
+			var workspaceData = FintracContext.Users
+				.Include(u => u.WorkspaceList)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+			var workspaceAccounts = FintracContext.Users
+				.Include(u => u.WorkspaceList)
+				.ThenInclude(w => w.AccountList)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+			var workspaceCategories = FintracContext.Users
+				.Include(u => u.WorkspaceList)
+				.ThenInclude(w => w.CategoryList)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+			var workspaceExchanges = FintracContext.Users
+				.Include(u => u.WorkspaceList)
+				.ThenInclude(w => w.ExchangeList)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+			var accountsTransactions = FintracContext.Users
+				.Include(u => u.WorkspaceList)
+				.ThenInclude(w => w.AccountList)
+				.ThenInclude(a => a.TransactionList)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+			var workspaceGoals = FintracContext.Users
+				.Include(u => u.WorkspaceList)
+				.ThenInclude(workspace => workspace.GoalList)
+				.ThenInclude(goal => goal.Categories)
+				.FirstOrDefault(u => u.Email == CurrentUser.Email);
+
+
 			expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
 			expenses = expensesReport.ListExpenses();
 			selectedYear = DateTime.Now.Year;
 			selectedMonth = Domain.DataTypes.Month.Enero;
+			creditCards = _workspaceService.GetCreditCards(workspace);
+			personalAccounts = _workspaceService.GetPersonalAccounts(workspace);
 		}
 	}
 
