@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
+@using Microsoft.EntityFrameworkCore;
 @inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
@@ -186,6 +187,10 @@
             exchangeList = workspace.ExchangeList;
             _exchangeService = new ExchangeService(FintracContext);
             newExchange = new Exchange();
+            var user = FintracContext.Users
+            .Include(u => u.WorkspaceList)
+                .ThenInclude(w => w.ExchangeList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
         }
 
     }
