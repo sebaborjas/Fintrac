@@ -2,7 +2,8 @@
 
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@using Microsoft.EntityFrameworkCore;
+@inject FintracContext FintracContext;
 @inject NavigationManager NavigationManager;
 
 @if (_report != null)
@@ -41,13 +42,32 @@ else
 
     protected override void OnInitialized()
     {
+        var users = FintracContext.Users
+            .ToList();
+        var workspaces = FintracContext.Users
+            .Include(u => u.WorkspaceList)
+            .ToList();
+        var workspacesCategories = FintracContext.Users
+           .Include(u => u.WorkspaceList)
+           .ThenInclude(w => w.CategoryList)
+           .ToList();
+        var workspacesGoals = FintracContext.Users
+            .Include(u => u.WorkspaceList)
+            .ThenInclude(w => w.GoalList)
+            .ToList();
+        var accountsTransactions = FintracContext.Users
+            .Include(u => u.WorkspaceList)
+            .ThenInclude(w => w.AccountList)
+            .ThenInclude(a => a.TransactionList)
+            .ToList();
+
         goal = FindGoalByToken(Token);
         _report = GenerateReport();
     }
 
     private Goal FindGoalByToken(string token)
     {
-        List<User> allUsers = MemoryDatabase.Users;
+        List<User> allUsers = FintracContext.Users.ToList();
 
         foreach (var user in allUsers)
         {
