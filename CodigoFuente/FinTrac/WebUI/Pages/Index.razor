@@ -1,6 +1,7 @@
 @page "/"
 @using BusinessLogic
 @using Domain;
+@using Microsoft.EntityFrameworkCore;
 @inject NavigationManager NavigationManager
 @inject ToastService ToastService
 @inject FintracContext FintracContext
@@ -93,6 +94,9 @@
 			user = FintracContext.currentUser;
 			workspaces = FintracContext.currentUser.WorkspaceList;
 			_workspaceService = new WorkspaceService(FintracContext);
+			user = FintracContext.Users
+            .Include(u => u.WorkspaceList)
+            .FirstOrDefault(u => u.Email == user.Email);
 		}
 	}
 
