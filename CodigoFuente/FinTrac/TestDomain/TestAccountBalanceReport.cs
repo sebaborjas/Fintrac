@@ -19,10 +19,10 @@ namespace TestDomain
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             workSpace = new Workspace { UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
-            Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
+            PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
             workSpace.AccountList.Add(account);
 
-            accountBalanceReport = new AccountBalanceReport { Account = (PersonalAccount)account };
+            accountBalanceReport = new AccountBalanceReport { Account = account };
         }
 
         [TestMethod]
