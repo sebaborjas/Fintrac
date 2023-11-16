@@ -88,7 +88,9 @@ namespace Domain
             }
         }
         public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
-        public List<Invitation> RecievedInvitations { get; set; } = new List<Invitation>(); 
+        public List<Invitation> RecievedInvitations { get; set; } = new List<Invitation>();
+
+        public List<UserWorkspace> UserWorkspace { get; set; }
 
         public override bool Equals(object? obj)
         {

@@ -3,7 +3,7 @@ using Domain.Exceptions;
 
 namespace Domain
 {
-    public class Transactions
+    public class Transaction
     {
 
         public int ID { get; set; }
@@ -103,7 +103,7 @@ namespace Domain
 
         public override bool Equals(object? obj)
         {
-            Transactions transaction = (Transactions)obj;
+            Transaction transaction = (Transaction)obj;
             return this.ID == transaction.ID;
         }
     }

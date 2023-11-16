@@ -13,8 +13,8 @@ namespace Domain
             List<Account> accounts = this.WorkSpace.Accounts;
             foreach (Account account in accounts)
             {
-                List<Transactions> transactions = account.Transactions;
-                foreach (Transactions transaction in transactions)
+                List<Transaction> transactions = account.Transactions;
+                foreach (Transaction transaction in transactions)
                 {
                     if (transaction.CreationDate == Date)
                     {

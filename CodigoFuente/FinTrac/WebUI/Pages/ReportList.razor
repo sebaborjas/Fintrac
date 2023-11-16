@@ -443,7 +443,7 @@
     private bool showGoalReport = false;
     private bool showCategoryReportsModal = false;
     private bool showMonthlyReportModal = false;
-    private List<Transactions> expenses;
+    private List<Transaction> expenses;
     private List<Report> reports;
     private string selectedCategory = "";
     private string selectedCreditCard = "";
@@ -468,7 +468,7 @@
     private List<DailyReport> DailyReports;
     private WorkspaceService _workspaceService;
     private AccountService _accountService;
-    private List<Transactions> transactionsCreditCard;
+    private List<Transaction> transactionsCreditCard;
     private Account currentAccount;
 
     protected override void OnInitialized()
@@ -524,9 +524,9 @@
     {
         showExpenseList = false;
     }
-    private List<Transactions> FilterExpenses()
+    private List<Transaction> FilterExpenses()
     {
-        List<Transactions> filteredExpenses = expenses;
+        List<Transaction> filteredExpenses = expenses;
 
         if (!string.IsNullOrEmpty(selectedCategory))
         {

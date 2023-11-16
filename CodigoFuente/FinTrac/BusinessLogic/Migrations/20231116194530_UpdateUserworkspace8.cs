@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BusinessLogic.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateUserWorkspace : Migration
+    public partial class UpdateUserworkspace8 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -157,7 +157,7 @@ namespace BusinessLogic.Migrations
                         column: x => x.UserToInviteId,
                         principalTable: "Users",
                         principalColumn: "Email",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Invitation_Workspace_ID",
                         column: x => x.ID,
@@ -167,26 +167,27 @@ namespace BusinessLogic.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UsersWorkspaces",
+                name: "UserWorkspace",
                 columns: table => new
                 {
-                    UsersEmail = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    WorkspaceListID = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WorkspaceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersWorkspaces", x => new { x.UsersEmail, x.WorkspaceListID });
+                    table.PrimaryKey("PK_UserWorkspace", x => new { x.UserId, x.WorkspaceId });
                     table.ForeignKey(
-                        name: "FK_UsersWorkspaces_Users_UsersEmail",
-                        column: x => x.UsersEmail,
+                        name: "FK_UserWorkspace_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Email");
+                        principalColumn: "Email",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UsersWorkspaces_Workspace_WorkspaceListID",
-                        column: x => x.WorkspaceListID,
+                        name: "FK_UserWorkspace_Workspace_WorkspaceId",
+                        column: x => x.WorkspaceId,
                         principalTable: "Workspace",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -328,9 +329,9 @@ namespace BusinessLogic.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersWorkspaces_WorkspaceListID",
-                table: "UsersWorkspaces",
-                column: "WorkspaceListID");
+                name: "IX_UserWorkspace_WorkspaceId",
+                table: "UserWorkspace",
+                column: "WorkspaceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workspace_UserAdminId",
@@ -360,7 +361,7 @@ namespace BusinessLogic.Migrations
                 name: "Transactions");
 
             migrationBuilder.DropTable(
-                name: "UsersWorkspaces");
+                name: "UserWorkspace");
 
             migrationBuilder.DropTable(
                 name: "Goal");

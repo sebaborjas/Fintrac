@@ -13,7 +13,7 @@ namespace TestDomain
     {
         private CreditCardReport creditCardReport;
         private Workspace workSpace;
-        private List<Transactions> transactionList;
+        private List<Transaction> transactionList;
         CreditCard account;
 
         [TestInitialize]
@@ -30,13 +30,13 @@ namespace TestDomain
             Category categoryCost = new Category { Name = "Egresos", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-59) };
             Category categoryIncome = new Category { Name = "Ingresos", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-7) };
 
-            Transactions firstTransaction = new Transactions { Title = "Gasto panaderia", Amount = 100, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddMonths(-2) };
-            Transactions secondTransaction = new Transactions { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddMonths(-3) };
-            Transactions thirdTransaction = new Transactions { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today };
+            Transaction firstTransaction = new Transaction { Title = "Gasto panaderia", Amount = 100, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddMonths(-2) };
+            Transaction secondTransaction = new Transaction { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddMonths(-3) };
+            Transaction thirdTransaction = new Transaction { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today };
 
-            Transactions fourthRransaction = new Transactions { Title = "Venta remera", Amount = 600, Currency = CurrencyType.UYU, Category = categoryIncome, Account = account, CreationDate = DateTime.Today };
+            Transaction fourthRransaction = new Transaction { Title = "Venta remera", Amount = 600, Currency = CurrencyType.UYU, Category = categoryIncome, Account = account, CreationDate = DateTime.Today };
 
-            transactionList = new List<Transactions> { thirdTransaction };
+            transactionList = new List<Transaction> { thirdTransaction };
 
 
 
@@ -54,7 +54,7 @@ namespace TestDomain
         [TestMethod]
         public void ShowCostsOfMonth() 
         {
-            List<Transactions> costsOfMonth = creditCardReport.CalculateCreditCardReport(account);
+            List<Transaction> costsOfMonth = creditCardReport.CalculateCreditCardReport(account);
 
             CollectionAssert.AreEqual(costsOfMonth, transactionList);
         }

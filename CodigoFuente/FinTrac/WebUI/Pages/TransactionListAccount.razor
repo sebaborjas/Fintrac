@@ -165,19 +165,19 @@
     private WorkspaceService _workspaceService;
     private AccountService _accountService;
     private CategoryService _categoryService;
-    private List<Transactions> transactionList;
+    private List<Transaction> transactionList;
     private bool showEditTransactionModal = false;
     private bool showAddTransactionModal = false;
-    private Transactions newTransaction;
-    private Transactions selectedTransaction;
-    private Transactions editedTransaction;
+    private Transaction newTransaction;
+    private Transaction selectedTransaction;
+    private Transaction editedTransaction;
     private List<Domain.Category> categories;
     private string selectedCategoryName;
     private Account currentAccount;
     private Category selectedCategory;
     private double amountEditTrasaction;
     private string titleEditTrasaction;
-    private Transactions duplicatedTransaction;
+    private Transaction duplicatedTransaction;
 
     private List<User> GuestUsers;
     protected override void OnInitialized()
@@ -190,13 +190,13 @@
             _workspaceService = new WorkspaceService(FintracContext);
             _transactionService = new TransactionService(FintracContext);
             _categoryService = new CategoryService(FintracContext);
-            newTransaction = new Transactions();
+            newTransaction = new Transaction();
             categories = workspace.Categories;
             transactionList = currentAccount.Transactions;
         }
     }
 
-    private void ShowEditTransactionModal(Transactions transaction)
+    private void ShowEditTransactionModal(Transaction transaction)
     {
         showEditTransactionModal = true;
         editedTransaction = transaction;
@@ -231,11 +231,11 @@
         HideEditTransactionModal();
     }
 
-    private void DuplicateTransaction(Transactions transaction)
+    private void DuplicateTransaction(Transaction transaction)
     {
         try
         {
-            duplicatedTransaction = new Transactions
+            duplicatedTransaction = new Transaction
                 {
                     Title = transaction.Title,
                     CreationDate = DateTime.Today,
@@ -296,7 +296,7 @@
                 });
         }
         HideAddTransactionModal();
-        newTransaction = new Transactions();
+        newTransaction = new Transaction();
     }
 
 }

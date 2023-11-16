@@ -12,20 +12,20 @@ namespace TestDomain
     [TestClass]
     public class TestTransaction
     {
-        Transactions transaction;
+        Transaction transaction;
         Category category;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            transaction = new Transactions();
+            transaction = new Transaction();
             category = new Category();
         }
 
         [TestMethod]
         public void EqualsTransaction()
         {
-            Transactions otherTransaction = transaction;
+            Transaction otherTransaction = transaction;
 
             Assert.AreEqual(transaction, transaction);
         }
@@ -33,7 +33,7 @@ namespace TestDomain
         [TestMethod]
         public void NotEqualsTransaction()
         {
-            Transactions otherTransaction = new Transactions { Title = "Test" , ID = 2};
+            Transaction otherTransaction = new Transaction { Title = "Test" , ID = 2};
 
             Assert.AreNotEqual(otherTransaction, transaction);
         }

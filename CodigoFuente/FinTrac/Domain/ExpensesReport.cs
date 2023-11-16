@@ -10,9 +10,9 @@ namespace Domain
 {
 	public class ExpensesReport : Report
 	{
-		public List<Transactions> Expenses()
+		public List<Transaction> Expenses()
 		{
-			List<Transactions> transactions = new List<Transactions>();
+			List<Transaction> transactions = new List<Transaction>();
 			foreach (Account account in WorkSpace.Accounts)
 			{
 				transactions.AddRange(account.Transactions.Where(x => x.Category.Type == CategoryType.Cost));
@@ -20,9 +20,9 @@ namespace Domain
 			return transactions;
 		}
 
-		public List<Transactions> ExpensesByCategory(string categoryName)
+		public List<Transaction> ExpensesByCategory(string categoryName)
 		{
-			List<Transactions> transactions = new List<Transactions>();
+			List<Transaction> transactions = new List<Transaction>();
 			foreach (Account account in WorkSpace.Accounts)
 			{
 				transactions.AddRange(account.Transactions.Where(x => x.Category.Name == categoryName));
@@ -30,13 +30,13 @@ namespace Domain
 			return transactions;
 		}
 
-		public List<Transactions> ExpensesByDate(DateTime fromDate, DateTime toDate)
+		public List<Transaction> ExpensesByDate(DateTime fromDate, DateTime toDate)
 		{
 			if (fromDate > toDate)
 			{
 				throw new InvalidDateException();
 			}
-			List<Transactions> transactions = new List<Transactions>();
+			List<Transaction> transactions = new List<Transaction>();
 			foreach (Account account in WorkSpace.Accounts)
 			{
 				transactions.AddRange(account.Transactions.Where(x => x.CreationDate >= fromDate && x.CreationDate <= toDate));
@@ -44,9 +44,9 @@ namespace Domain
 			return transactions;
 		}
 
-		public List<Transactions> ExpensesByAccount(string accountName)
+		public List<Transaction> ExpensesByAccount(string accountName)
 		{
-			List<Transactions> transactions = new List<Transactions>();
+			List<Transaction> transactions = new List<Transaction>();
 			foreach (Account account in WorkSpace.Accounts)
 			{
 				transactions.AddRange(account.Transactions.Where(x => x.Account.Name == accountName));

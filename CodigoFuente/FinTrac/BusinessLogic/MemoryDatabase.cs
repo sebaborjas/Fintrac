@@ -63,11 +63,11 @@ namespace BusinessLogic
 			defaultWorkspace.Categories.Add(category);
 			defaultWorkspace.Categories.Add(categoryHome);
 
-			List<Transactions> transactionList = new List<Transactions>();
+			List<Transaction> transactionList = new List<Transaction>();
 
-			Transactions firstTransaction = new Transactions { Title = "Gasto 1", Amount = 2000, Account = account, Category = category, Currency = CurrencyType.UYU };
-			Transactions secondTransaction = new Transactions { Title = "Gasto 2", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
-			Transactions thirdTransaction = new Transactions { Title = "Gasto 3", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
+			Transaction firstTransaction = new Transaction { Title = "Gasto 1", Amount = 2000, Account = account, Category = category, Currency = CurrencyType.UYU };
+			Transaction secondTransaction = new Transaction { Title = "Gasto 2", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
+			Transaction thirdTransaction = new Transaction { Title = "Gasto 3", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
 
 			transactionList.Add(firstTransaction);
 			transactionList.Add(secondTransaction);
@@ -77,11 +77,11 @@ namespace BusinessLogic
 
 			defaultWorkspace.Accounts.Add(account);
 
-			List<Transactions> transactionListUSD = new List<Transactions>();
+			List<Transaction> transactionListUSD = new List<Transaction>();
 
-			Transactions firstTransactionUSD = new Transactions { Title = "Gasto 1", Amount = 20, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
-			Transactions secondTransactionUSD = new Transactions { Title = "Gasto 2", Amount = 35, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome, };
-			Transactions thirdTransactionUSD = new Transactions { Title = "Gasto 3", Amount = 40, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
+			Transaction firstTransactionUSD = new Transaction { Title = "Gasto 1", Amount = 20, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
+			Transaction secondTransactionUSD = new Transaction { Title = "Gasto 2", Amount = 35, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome, };
+			Transaction thirdTransactionUSD = new Transaction { Title = "Gasto 3", Amount = 40, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
 
 			transactionListUSD.Add(firstTransactionUSD);
 			transactionListUSD.Add(secondTransactionUSD);
@@ -91,11 +91,11 @@ namespace BusinessLogic
 
 			defaultWorkspace.Accounts.Add(accountUSD);
 
-			List<Transactions> transactionListCreditCard = new List<Transactions>();
+			List<Transaction> transactionListCreditCard = new List<Transaction>();
 
-			Transactions firstTransactionCreditCard = new Transactions { Title = "Gasto 4", Amount = 2000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
-			Transactions secondTransactionCreditCard = new Transactions { Title = "Gasto 5", Amount = 1000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
-			Transactions thirdTransactionCreditCard = new Transactions { Title = "Gasto 6", Amount = 1000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
+			Transaction firstTransactionCreditCard = new Transaction { Title = "Gasto 4", Amount = 2000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
+			Transaction secondTransactionCreditCard = new Transaction { Title = "Gasto 5", Amount = 1000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
+			Transaction thirdTransactionCreditCard = new Transaction { Title = "Gasto 6", Amount = 1000, Account = creditCardAccount, Category = category, Currency = CurrencyType.UYU };
 
 			transactionListCreditCard.Add(firstTransactionCreditCard);
 			transactionListCreditCard.Add(secondTransactionCreditCard);

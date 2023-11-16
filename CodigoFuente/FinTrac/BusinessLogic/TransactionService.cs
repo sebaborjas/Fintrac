@@ -17,7 +17,7 @@ namespace BusinessLogic
             _database = database;
         }
 
-        public void Add(Account account, Transactions transaction)
+        public void Add(Account account, Transaction transaction)
         {
             if (account.Transactions.Contains(transaction))
             {
@@ -49,9 +49,9 @@ namespace BusinessLogic
             _database.SaveChanges();
         }
 
-        public void Duplicate(Account account, Transactions transaction)
+        public void Duplicate(Account account, Transaction transaction)
         {
-            Transactions duplicatedTransaction = new Transactions
+            Transaction duplicatedTransaction = new Transaction
             {
                 Title = transaction.Title,
                 Amount = transaction.Amount,
@@ -64,7 +64,7 @@ namespace BusinessLogic
             _database.SaveChanges();
         }
 
-        public Transactions Get(Account account, int transactionID)
+        public Transaction Get(Account account, int transactionID)
         {
             User user = _database.Users.FirstOrDefault(x => x.Workspaces.Contains(account.WorkSpace));
             if (user == null)
@@ -81,7 +81,7 @@ namespace BusinessLogic
             {
                 return null;
             }
-            Transactions transaction = accountToSearch.Transactions.FirstOrDefault(x => x.ID == transactionID);
+            Transaction transaction = accountToSearch.Transactions.FirstOrDefault(x => x.ID == transactionID);
             if (transaction == null)
             {
                 return null;
@@ -89,9 +89,9 @@ namespace BusinessLogic
             return transaction;
         }
 
-        public void Modify(Transactions transaction, string title, double amount)
+        public void Modify(Transaction transaction, string title, double amount)
         {
-            Transactions transactionToUpdate = Get(transaction.Account, transaction.ID);
+            Transaction transactionToUpdate = Get(transaction.Account, transaction.ID);
             transactionToUpdate.Amount = amount;
             transactionToUpdate.Title = title;
 

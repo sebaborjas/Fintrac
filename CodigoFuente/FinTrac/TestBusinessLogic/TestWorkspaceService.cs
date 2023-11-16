@@ -126,7 +126,7 @@ namespace TestBusinessLogic
                 Type = CategoryType.Income
             };
 
-            Transactions transaction1 = new Transactions
+            Transaction transaction1 = new Transaction
             {
                 Title = "TransactionTest",
                 Account = creditCardAccount,
@@ -136,7 +136,7 @@ namespace TestBusinessLogic
                 Currency = CurrencyType.UYU,
             };
 
-            Transactions transaction2 = new Transactions
+            Transaction transaction2 = new Transaction
             {
                 Title = "TransactionTest",
                 Account = personalAccount,
@@ -152,8 +152,8 @@ namespace TestBusinessLogic
             workspace.Accounts.Add(personalAccount);
             workspace.Categories.Add(category);
 
-            List<Transactions> expected = new List<Transactions> { transaction1, transaction2 };
-            List<Transactions> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
+            List<Transaction> expected = new List<Transaction> { transaction1, transaction2 };
+            List<Transaction> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
             CollectionAssert.AreEqual(expected, transactionList);
 
         }

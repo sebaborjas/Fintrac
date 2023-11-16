@@ -85,7 +85,7 @@ namespace TestBusinessLogic
                 WorkSpace = _workspace
             };
 
-            Transactions transaction = new Transactions
+            Transaction transaction = new Transaction
             {
                 Title = "Test",
                 CreationDate = DateTime.Today,
@@ -127,7 +127,7 @@ namespace TestBusinessLogic
                 Currency = CurrencyType.UYU,
                 WorkSpace = _workspace
             };
-            Transactions transaction = new Transactions
+            Transaction transaction = new Transaction
             {
                 Title = "Test",
                 CreationDate = DateTime.Today,
@@ -161,7 +161,7 @@ namespace TestBusinessLogic
                 Currency = CurrencyType.UYU,
                 WorkSpace = _workspace
             };
-            Transactions transaction = new Transactions
+            Transaction transaction = new Transaction
             {
                 Title = "Test",
                 CreationDate = DateTime.Today,
