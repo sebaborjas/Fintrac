@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.Serialization.Formatters;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 
 namespace Domain
 {
     public class Goal
     {
         public int Id { get; set; }
-
         private string _title;
         private double _maxAmount;
         private Workspace _workspace;
@@ -59,7 +50,6 @@ namespace Domain
 
         public List<Category> Categories { get; set; }
         public List<CategoryGoal> GoalCategory { get; set; }
-
 
         public Workspace Workspace
         {

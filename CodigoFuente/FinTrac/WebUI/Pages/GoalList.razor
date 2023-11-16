@@ -7,9 +7,7 @@
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-
 @if (FintracContext.isLoggedIn)
-
 {
     <PageTitle>Lista de objetivos </PageTitle>
     <div class="nav-item px-3">
@@ -18,7 +16,7 @@
         </NavLink>
     </div>
 
-    @if (goalList.Any())
+    @if (goals.Any())
     {
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
@@ -36,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var goal in goalList)
+                    @foreach (var goal in goals)
                     {
                         <tr>
                             <td>@goal.Title</td>
@@ -50,8 +48,7 @@
                             </td>
                             @if (goal.Token != null && goal.Token != "")
                             {
-                                <td>https://localhost:7180/goal/@goal.Token</td>
-
+                                <td>@baseURL@goal.Token</td>
                             }
                             else
                             {
@@ -67,7 +64,6 @@
                     }
                 </tbody>
             </table>
-
         </div>
     }
     else
@@ -102,7 +98,7 @@
                         </div>
                         <div>
                             <h3>Categorias</h3>
-                            @foreach (var category in workpaceCategoryList)
+                            @foreach (var category in workpaceCategories)
                             {
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="@category.Name" id="flexCheckDefault-@category.Name" @onchange=" eventArgs =>{CheckBoxClicked(category ,eventArgs.Value);}">
@@ -144,7 +140,7 @@
                         </div>
                         <div>
                             <h3>Categorias</h3>
-                            @foreach (var category in workpaceCategoryList)
+                            @foreach (var category in workpaceCategories)
                             {
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="@category.Name" id="flexCheckDefault" @onchange=" eventArgs =>{CheckBoxClicked(category ,eventArgs.Value);}" checked="@IsChecked(category)">
@@ -165,26 +161,22 @@
         </div>
     }
 
-
-
     @code {
     private User CurrentUser;
     private Domain.Workspace workspace;
     private GoalService _goalService;
     private CategoryService _categoryService;
-    private List<Goal> goalList;
-    private List<Domain.Category> workpaceCategoryList;
-    private List<Category> categoryList;
+    private List<Goal> goals;
+    private List<Domain.Category> workpaceCategories;
+    private List<Category> categories;
     private List<Category> selectedCategories;
     private bool showAddGoalModal = false;
     private Goal newGoal;
     private Goal selectedGoal;
-
     private string goalTitle;
     private string goalOldTitle;
-
+    private string baseURL;
     private double goalMaxAmount;
-
     private bool showEditGoalModal = false;
     private double editedDollarValue = 0;
 
@@ -195,30 +187,28 @@
             selectedCategories = new List<Category>();
             CurrentUser = FintracContext.currentUser;
             workspace = FintracContext.currentWorkspace;
-            goalList = workspace.GoalList;
+            goals = workspace.Goals;
             _goalService = new GoalService(FintracContext);
             newGoal = new Goal();
             var user = FintracContext.Users
-                 .Include(u => u.WorkspaceList)
-                    .ThenInclude(workspace => workspace.GoalList)
+                 .Include(u => u.Workspaces)
+                    .ThenInclude(workspace => workspace.Goals)
                     .ThenInclude(goal => goal.Categories)
                     .FirstOrDefault(u => u.Email == CurrentUser.Email);
 
             var workspaceCategories = FintracContext.Users
-                .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.CategoryList)
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Categories)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
 
             var goalCategoriesRelation = FintracContext.Users
-                .Include(u => u.WorkspaceList)
-                   .ThenInclude(workspace => workspace.GoalList)
+                .Include(u => u.Workspaces)
+                   .ThenInclude(workspace => workspace.Goals)
                    .ThenInclude(goal => goal.GoalCategory)
                    .FirstOrDefault(u => u.Email == CurrentUser.Email);
 
-            workpaceCategoryList = workspace.CategoryList.Where(x => x.Type == CategoryType.Cost).ToList();
-
+            workpaceCategories = workspace.Categories.Where(x => x.Type == CategoryType.Cost).ToList();
         }
-
     }
 
     private void SaveGoalValue()
@@ -226,7 +216,7 @@
         try
         {
             _goalService.Update(selectedGoal, newGoal);
-            goalList = workspace.GoalList;
+            goals = workspace.Goals;
             ToastService.Notify(new(ToastType.Success, "Objetivo modificado con exito!"));
         }
         catch (Exception e)
@@ -252,7 +242,7 @@
         {
             Goal newGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
             _goalService.Add(workspace, newGoal);
-            goalList = workspace.GoalList;
+            goals = workspace.Goals;
             ToastService.Notify(new(ToastType.Success, "Objetivo agregado con exito!"));
         }
         catch (Exception e)
@@ -273,6 +263,7 @@
     {
         try
         {
+            baseURL = NavigationManager.BaseUri + "goal/";
             Goal newGoalToken = new Goal();
             newGoalToken.Title = goal.Title;
             newGoalToken.Workspace = goal.Workspace;
@@ -317,9 +308,7 @@
             };
         goalOldTitle = new String(selectedGoal.Title);
         goalTitle = new String(selectedGoal.Title);
-
         goalMaxAmount = selectedGoal.MaxAmount;
-
         showEditGoalModal = true;
     }
 
@@ -337,7 +326,7 @@
 
     private Goal FindGoal(string goalTitle)
     {
-        Goal goalFinded = goalList.Find(x => x.Title.Equals(goalTitle));
+        Goal goalFinded = goals.Find(x => x.Title.Equals(goalTitle));
         return goalFinded;
     }
 
@@ -381,7 +370,7 @@
         try
         {
             _goalService.Delete(workspace, goal);
-            goalList = workspace.GoalList;
+            goals = workspace.Goals;
             ToastService.Notify(new(ToastType.Success, "Objetivo eliminado con exito!"));
         }
         catch (Exception e)

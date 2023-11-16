@@ -114,8 +114,8 @@ namespace TestBusinessLogic
                 Category = category,
                 Account = personalAccount,
             };
-            personalAccount.TransactionList.Add(transaction);
-            _workspace.AccountList.Add(personalAccount);
+            personalAccount.Transactions.Add(transaction);
+            _workspace.Accounts.Add(personalAccount);
             _service.Delete(_exchange.Workspace, _exchange);
 
         }

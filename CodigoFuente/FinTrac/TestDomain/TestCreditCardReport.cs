@@ -40,13 +40,13 @@ namespace TestDomain
 
 
 
-            account.TransactionList.Add(firstTransaction);
-            account.TransactionList.Add(secondTransaction);
-            account.TransactionList.Add(thirdTransaction);
-            account.TransactionList.Add(fourthRransaction);
+            account.Transactions.Add(firstTransaction);
+            account.Transactions.Add(secondTransaction);
+            account.Transactions.Add(thirdTransaction);
+            account.Transactions.Add(fourthRransaction);
 
 
-            workSpace.AccountList.Add(account);
+            workSpace.Accounts.Add(account);
             
             creditCardReport = new CreditCardReport { WorkSpace = workSpace };
         }

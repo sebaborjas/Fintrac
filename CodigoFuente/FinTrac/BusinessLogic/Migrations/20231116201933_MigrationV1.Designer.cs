@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231116012804_UpdateUserWorkspac2")]
-    partial class UpdateUserWorkspac2
+    [Migration("20231116201933_MigrationV1")]
+    partial class MigrationV1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,6 +239,21 @@ namespace BusinessLogic.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Domain.UserWorkspace", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "WorkspaceId");
+
+                    b.HasIndex("WorkspaceId");
+
+                    b.ToTable("UserWorkspace");
+                });
+
             modelBuilder.Entity("Domain.Workspace", b =>
                 {
                     b.Property<int>("ID")
@@ -260,21 +275,6 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("UserAdminId");
 
                     b.ToTable("Workspace");
-                });
-
-            modelBuilder.Entity("UsersWorkspaces", b =>
-                {
-                    b.Property<string>("UsersEmail")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("WorkspaceListID")
-                        .HasColumnType("int");
-
-                    b.HasKey("UsersEmail", "WorkspaceListID");
-
-                    b.HasIndex("WorkspaceListID");
-
-                    b.ToTable("UsersWorkspaces");
                 });
 
             modelBuilder.Entity("Domain.CreditCard", b =>
@@ -311,7 +311,7 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Account", b =>
                 {
                     b.HasOne("Domain.Workspace", "WorkSpace")
-                        .WithMany("AccountList")
+                        .WithMany("Accounts")
                         .HasForeignKey("WorkSpaceID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -322,7 +322,7 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Category", b =>
                 {
                     b.HasOne("Domain.Workspace", "Workspace")
-                        .WithMany("CategoryList")
+                        .WithMany("Categories")
                         .HasForeignKey("WorkspaceID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -352,7 +352,7 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Exchange", b =>
                 {
                     b.HasOne("Domain.Workspace", "Workspace")
-                        .WithMany("ExchangeList")
+                        .WithMany("Exchanges")
                         .HasForeignKey("WorkspaceID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -363,7 +363,7 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Goal", b =>
                 {
                     b.HasOne("Domain.Workspace", "Workspace")
-                        .WithMany("GoalList")
+                        .WithMany("Goals")
                         .HasForeignKey("WorkspaceID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -401,7 +401,7 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.Transactions", b =>
                 {
                     b.HasOne("Domain.Account", "Account")
-                        .WithMany("TransactionList")
+                        .WithMany("Transactions")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -417,6 +417,25 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Domain.UserWorkspace", b =>
+                {
+                    b.HasOne("Domain.User", "User")
+                        .WithMany("UserWorkspace")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Workspace", "Workspace")
+                        .WithMany("UserWorkspace")
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Workspace");
+                });
+
             modelBuilder.Entity("Domain.Workspace", b =>
                 {
                     b.HasOne("Domain.User", "UserAdmin")
@@ -426,21 +445,6 @@ namespace BusinessLogic.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAdmin");
-                });
-
-            modelBuilder.Entity("UsersWorkspaces", b =>
-                {
-                    b.HasOne("Domain.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersEmail")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Workspace", null)
-                        .WithMany()
-                        .HasForeignKey("WorkspaceListID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.CreditCard", b =>
@@ -463,7 +467,7 @@ namespace BusinessLogic.Migrations
 
             modelBuilder.Entity("Domain.Account", b =>
                 {
-                    b.Navigation("TransactionList");
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Domain.Category", b =>
@@ -479,17 +483,21 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("Domain.User", b =>
                 {
                     b.Navigation("RecievedInvitations");
+
+                    b.Navigation("UserWorkspace");
                 });
 
             modelBuilder.Entity("Domain.Workspace", b =>
                 {
-                    b.Navigation("AccountList");
+                    b.Navigation("Accounts");
 
-                    b.Navigation("CategoryList");
+                    b.Navigation("Categories");
 
-                    b.Navigation("ExchangeList");
+                    b.Navigation("Exchanges");
 
-                    b.Navigation("GoalList");
+                    b.Navigation("Goals");
+
+                    b.Navigation("UserWorkspace");
                 });
 #pragma warning restore 612, 618
         }

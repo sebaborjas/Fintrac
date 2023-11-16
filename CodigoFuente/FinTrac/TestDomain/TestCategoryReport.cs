@@ -34,9 +34,9 @@ namespace TestDomain
 				Name = "TestWorkspace"
 			};
 
-			user.WorkspaceList.Add(workSpace);
+			user.Workspaces.Add(workSpace);
 			Exchange exchange = new Exchange { Date = DateTime.Today.AddDays(-5), Currency = CurrencyType.USD, CurrencyValue = 35 };
-			workSpace.ExchangeList.Add(exchange);
+			workSpace.Exchanges.Add(exchange);
 
 			account = new PersonalAccount { Name = "TestPersonalAccount", Currency = CurrencyType.UYU, WorkSpace = workSpace, StartingAmount = 20000 };
 			accountUSD = new PersonalAccount { Name = "TestPersonalAccountUSD", Currency = CurrencyType.USD, WorkSpace = workSpace, StartingAmount = 20000 };
@@ -54,9 +54,9 @@ namespace TestDomain
 			transactionList.Add(secondTransaction);
 			transactionList.Add(thirdTransaction);
 
-			account.TransactionList = transactionList;
+			account.Transactions = transactionList;
 
-			workSpace.AccountList.Add(account);
+			workSpace.Accounts.Add(account);
 
 			transactionListUSD = new List<Transactions>();
 
@@ -68,9 +68,9 @@ namespace TestDomain
 			transactionListUSD.Add(secondTransactionUSD);
 			transactionListUSD.Add(thirdTransactionUSD);
 
-			accountUSD.TransactionList = transactionListUSD;
+			accountUSD.Transactions = transactionListUSD;
 
-			workSpace.AccountList.Add(accountUSD);
+			workSpace.Accounts.Add(accountUSD);
 
 			goal = new Goal { Title = "Ahorro", MaxAmount = 10000, Workspace = workSpace };
 			goal.Categories.Add(category);

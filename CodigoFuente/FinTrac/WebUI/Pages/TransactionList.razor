@@ -7,7 +7,6 @@
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-
 @if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de transacciones</PageTitle>
@@ -22,8 +21,7 @@
             <h3>Lista de Transacciones</h3>
             <button class="btn btn-primary" @onclick="() => ShowAddTransactionModal()">Agregar una transacción</button>
         </div>
-
-        @if (transactionList.Any())
+        @if (transactions.Any())
         {
             <table class="table">
                 <thead>
@@ -38,7 +36,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var transaction in transactionList)
+                    @foreach (var transaction in transactions)
                     {
                         <tr>
                             <td>@transaction.Title</td>
@@ -143,33 +141,33 @@
 
     @if (showEditTransactionModal)
     {
-            <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Editar una transacción</h5>
-                            <button type="button" class="close" aria-label="Close" @onclick="() => HideEditTransactionModal()">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="title">Título</label>
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar una transacción</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideEditTransactionModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="title">Título</label>
                             <input type="text" class="form-control" id="title" @bind="titleEditTrasaction" />
-                            </div>
-                            <div class="form-group">
-                                <label for="amount">Monto</label>
-                            <input type="number" class="form-control" id="amount" @bind="amountEditTrasaction" step="0.01" min="0"  />
-                            </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="() => HideEditTransactionModal()">Cancelar</button>
+                        <div class="form-group">
+                            <label for="amount">Monto</label>
+                            <input type="number" class="form-control" id="amount" @bind="amountEditTrasaction" step="0.01" min="0" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => HideEditTransactionModal()">Cancelar</button>
                         <button type="button" class="btn btn-primary" @onclick="() => EditTransaction(titleEditTrasaction, amountEditTrasaction)">Guardar</button>
-                        </div>
                     </div>
                 </div>
             </div>
-        }
+        </div>
+    }
 }
 
 @code {
@@ -179,7 +177,7 @@
     private WorkspaceService _workspaceService;
     private AccountService _accountService;
     private CategoryService _categoryService;
-    private List<Transactions> transactionList;
+    private List<Transactions> transactions;
     private bool showEditTransactionModal = false;
     private bool showAddTransactionModal = false;
     private Transactions newTransaction;
@@ -194,9 +192,8 @@
     private double amountEditTrasaction;
     private string titleEditTrasaction;
     private Transactions duplicatedTransaction;
-
-
     private List<User> GuestUsers;
+
     protected override void OnInitialized()
     {
         if (FintracContext.isLoggedIn)
@@ -208,32 +205,31 @@
             _accountService = new AccountService(FintracContext);
             _categoryService = new CategoryService(FintracContext);
             newTransaction = new Transactions();
-            categories = workspace.CategoryList;
-            accounts = workspace.AccountList;
+            categories = workspace.Categories;
+            accounts = workspace.Accounts;
             var workspaceData = FintracContext.Users
-                .Include(u => u.WorkspaceList)
+                .Include(u => u.Workspaces)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
             var workspaceAccounts = FintracContext.Users
-                .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.AccountList)
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
             var workspaceCategories = FintracContext.Users
-                .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.CategoryList)
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Categories)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
             var workspaceExchanges = FintracContext.Users
-                .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.ExchangeList)
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Exchanges)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
             var accountsTransactions = FintracContext.Users
-                .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.AccountList)
-                .ThenInclude(a => a.TransactionList)
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
+                .ThenInclude(a => a.Transactions)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
     }
-
 
     private void ShowEditTransactionModal(Transactions transaction)
     {
@@ -257,7 +253,7 @@
                     Type = ToastType.Success,
                     Message = "Transaccion editada con éxito"
                 });
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
@@ -289,8 +285,7 @@
                     Type = ToastType.Success,
                     Message = "Transaccion duplicada con éxito"
                 });
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
-
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
@@ -311,7 +306,6 @@
         showAddTransactionModal = false;
     }
 
-
     private void AddTransaction()
     {
         try
@@ -326,7 +320,7 @@
                     Type = ToastType.Success,
                     Message = "Cuenta agregada con éxito"
                 });
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
@@ -339,6 +333,5 @@
         HideAddTransactionModal();
         newTransaction = new Transactions();
     }
-
 }
 

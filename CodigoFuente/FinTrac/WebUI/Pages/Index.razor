@@ -8,151 +8,143 @@
 
 @if (FintracContext.isLoggedIn)
 {
-	<PageTitle>Home</PageTitle>
+    <PageTitle>Home</PageTitle>
 
 
-	@if (!FintracContext.isLoggedIn)
-	{
-		try
-		{
-			NavigationManager.NavigateTo("/login");
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e);
-		}
-	}
-	@if (FintracContext.isLoggedIn)
-	{
-		<div class="col-12">
-			<h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
-			<div class="d-flex justify-content-between align-items-center">
-				<div class="ms-auto">
-					<button class="btn btn-primary" @onclick="() => ShowAddWorkspaceModal()">Agregar un Workspace</button>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			@foreach (var workspace in workspaces)
-			{
-				<div class="col-sm-12 col-md-6 col-lg-4">
-					<Card Class="m-2" Style="width: auto;" id="@($"card-{workspace.ID}")">
-						<div class="image" Style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 150px;">
-							<i class="fas fa-dollar-sign" style="font-size: 3em; color: black;"></i>
-						</div>
-						<CardBody>
-							<CardTitle>@workspace.Name</CardTitle>
-							<div class="d-flex justify-content-end">
-								<NavLink class="btn btn-primary ml-auto" onclick="@(() => HandleCardClick(workspace))">
-									Ir al workspace
-								</NavLink>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
-			}
-		</div>
+    @if (!FintracContext.isLoggedIn)
+    {
+        try
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+    @if (FintracContext.isLoggedIn)
+    {
+        <div class="col-12">
+            <h3>Bienvenido a tu nueva aplicación de Finanzas Personales</h3>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="ms-auto">
+                    <button class="btn btn-primary" @onclick="() => ShowAddWorkspaceModal()">Agregar un Workspace</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var workspace in workspaces)
+            {
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <Card Class="m-2" Style="width: auto;" id="@($"card-{workspace.ID}")">
+                        <div class="image" Style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 150px;">
+                            <i class="fas fa-dollar-sign" style="font-size: 3em; color: black;"></i>
+                        </div>
+                        <CardBody>
+                            <CardTitle>@workspace.Name</CardTitle>
+                            <div class="d-flex justify-content-end">
+                                <NavLink class="btn btn-primary ml-auto" onclick="@(() => HandleCardClick(workspace))">
+                                    Ir al workspace
+                                </NavLink>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
+            }
+        </div>
 
-		@if (showAddWorkspaceModal)
-		{
-			<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title">Agregar un nuevo Workspace</h5>
-							<button type="button" class="close" aria-label="Close" @onclick="() => HideAddWorkspaceModal()">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<div class="form-group">
-								<label for="workspaceName">Nombre del Workspace</label>
-								<input type="text" class="form-control" id="workspaceName" @bind="nameWorkspace" />
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" @onclick="() => HideAddWorkspaceModal()">Cancelar</button>
-								<button type="button" class="btn btn-primary" @onclick="AddWorkspace">Guardar</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		}
-	}
-	@code {
-	private User user;
-	private bool showAddWorkspaceModal = false;
-	private List<Domain.Workspace> workspaces;
-	private string nameWorkspace = "";
-	private WorkspaceService _workspaceService;
-	private Domain.Workspace newWorkspace;
+        @if (showAddWorkspaceModal)
+        {
+            <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Agregar un nuevo Workspace</h5>
+                            <button type="button" class="close" aria-label="Close" @onclick="() => HideAddWorkspaceModal()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="workspaceName">Nombre del Workspace</label>
+                                <input type="text" class="form-control" id="workspaceName" @bind="nameWorkspace" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" @onclick="() => HideAddWorkspaceModal()">Cancelar</button>
+                                <button type="button" class="btn btn-primary" @onclick="AddWorkspace">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    @code {
+    private User user;
+    private bool showAddWorkspaceModal = false;
+    private List<Domain.Workspace> workspaces;
+    private string nameWorkspace = "";
+    private WorkspaceService _workspaceService;
+    private Domain.Workspace newWorkspace;
 
-	protected override void OnInitialized()
-	{
-		if (FintracContext.isLoggedIn)
-		{
-			user = FintracContext.currentUser;
-			workspaces = FintracContext.currentUser.WorkspaceList;
-			_workspaceService = new WorkspaceService(FintracContext);
-			user = FintracContext.Users
-            .Include(u => u.WorkspaceList)
+    protected override void OnInitialized()
+    {
+        if (FintracContext.isLoggedIn)
+        {
+            user = FintracContext.currentUser;
+            workspaces = FintracContext.currentUser.Workspaces;
+            _workspaceService = new WorkspaceService(FintracContext);
+            user = FintracContext.Users
+            .Include(u => u.Workspaces)
             .FirstOrDefault(u => u.Email == user.Email);
-		}
-	}
+        }
+    }
 
-	private void HandleCardClick(Domain.Workspace workspace)
-	{
-		FintracContext.currentWorkspace = workspace;
-		NavigationManager.NavigateTo("/workspace");
+    private void HandleCardClick(Domain.Workspace workspace)
+    {
+        FintracContext.currentWorkspace = workspace;
+        NavigationManager.NavigateTo("/workspace");
+    }
 
-	}
+    private void ShowAddWorkspaceModal()
+    {
+        showAddWorkspaceModal = true;
+    }
 
-	private void ShowAddWorkspaceModal()
-	{
-		showAddWorkspaceModal = true;
-	}
+    private void HideAddWorkspaceModal()
+    {
+        showAddWorkspaceModal = false;
+    }
 
-	private void HideAddWorkspaceModal()
-	{
-		showAddWorkspaceModal = false;
-	}
+    private void AddWorkspace()
+    {
+        try
+        {
+            if (nameWorkspace != "")
+            {
+                User currentUser = user;
+                newWorkspace = new Domain.Workspace { UserAdmin = user, Name = nameWorkspace };
+                currentUser.Workspaces.Add(newWorkspace);
+                workspaces = FintracContext.currentUser.Workspaces;
 
-	private void AddWorkspace()
-	{
-		try
-		{
-			if (nameWorkspace != "")
-			{
-				User currentUser = user;
-				newWorkspace = new Domain.Workspace { UserAdmin = user, Name = nameWorkspace };
-				currentUser.WorkspaceList.Add(newWorkspace);
-				workspaces = FintracContext.currentUser.WorkspaceList;
-
-				ToastService.Notify(new(ToastType.Success, "Workspace agregado correctamente."));
-			}else
-			{
-				ToastService.Notify(new(ToastType.Danger, "El nombre no puede estar vacio"));
-			}
-		}
-		catch (Exception e)
-		{
-			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
-		}
-		HideAddWorkspaceModal();
-		NavigationManager.NavigateTo("/");
-	}
-
+                ToastService.Notify(new(ToastType.Success, "Workspace agregado correctamente."));
+            }
+            else
+            {
+                ToastService.Notify(new(ToastType.Danger, "El nombre no puede estar vacio"));
+            }
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        HideAddWorkspaceModal();
+        NavigationManager.NavigateTo("/");
+    }
 }
 }
 else
 {
-	try
-	{
-		NavigationManager.NavigateTo("/login");
-	}
-	catch
-	{
-
-	}
+    NavigationManager.NavigateTo("/login");
 }
 

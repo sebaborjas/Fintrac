@@ -12,7 +12,6 @@ namespace BusinessLogic
     public class CategoryService
     {
         private readonly FintracContext _database;
-
         public CategoryService(FintracContext database)
         {
             _database = database;
@@ -20,63 +19,57 @@ namespace BusinessLogic
 
         public void Add(Workspace workspace, Category category)
         {
-            if (workspace.CategoryList.Contains(category))
+            if (workspace.Categories.Contains(category))
             {
                 throw new CategoryAlreadyExistsException();
             }
             try
             {
-                workspace.CategoryList.Add(category);
+                workspace.Categories.Add(category);
             }
             catch (Exception exception)
             {
                 throw exception;
             }
-
             _database.SaveChanges();
         }
 
         public Category Get(Workspace workspace, string name)
         {
-            User user = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>();
+            User user = _database.Users.Where(x => x.Workspaces.Contains(workspace)).FirstOrDefault<User>();
 
             if (user == null)
             {
                 return null;
             }
-
-            Workspace workspaceToFind = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
-
+            Workspace workspaceToFind = user.Workspaces.FirstOrDefault(x => x.ID == workspace.ID);
             if (workspaceToFind == null)
             {
                 return null;
             }
-
-            Category category = workspaceToFind.CategoryList.FirstOrDefault(x => x.Name == name);
-
+            Category category = workspaceToFind.Categories.FirstOrDefault(x => x.Name == name);
             if (category == null)
             {
                 return null;
             }
-
             return category;
         }
 
         public void Delete(Workspace workspace, Category category)
         {
-            var user = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>();
+            var user = _database.Users.Where(x => x.Workspaces.Contains(workspace)).FirstOrDefault<User>();
             if (user == null)
             {
                 throw new ArgumentNullException();
             }
-            var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
+            var targetWorkspace = user.Workspaces.Find(x => x.ID == workspace.ID);
             if (targetWorkspace == null)
             {
                 throw new ArgumentNullException();
             }
-            foreach (var account in targetWorkspace.AccountList.Where(a => a.TransactionList.Count > 0))
+            foreach (var account in targetWorkspace.Accounts.Where(a => a.Transactions.Count > 0))
             {
-                var transaction = account.TransactionList.Find(x => x.Category == category);
+                var transaction = account.Transactions.Find(x => x.Category == category);
                 if (transaction != null)
                 {
                     throw new CategoryHasTransactionsException();
@@ -84,13 +77,12 @@ namespace BusinessLogic
             }
             try
             {
-                workspace.CategoryList.Remove(category);
+                workspace.Categories.Remove(category);
             }
             catch (Exception exception)
             {
                 throw exception;
             }
-
             _database.SaveChanges();
         }
 
@@ -108,25 +100,25 @@ namespace BusinessLogic
                 }
                 else
                 {
-                    var user = _database.Users.Where(x => x.WorkspaceList.Contains(workspace)).FirstOrDefault<User>();
+                    var user = _database.Users.Where(x => x.Workspaces.Contains(workspace)).FirstOrDefault<User>();
                     if (user == null)
                     {
                         throw new ArgumentNullException();
                     }
-                    var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
+                    var targetWorkspace = user.Workspaces.Find(x => x.ID == workspace.ID);
                     if (targetWorkspace == null)
                     {
                         throw new ArgumentNullException();
                     }
-                    var accountWithTransactions = targetWorkspace.AccountList.Find(x => x.TransactionList.Count > 0);
+                    var accountWithTransactions = targetWorkspace.Accounts.Find(x => x.Transactions.Count > 0);
                     if (accountWithTransactions == null)
                     {
-                        targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
+                        targetWorkspace.Categories.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
                         return;
                     }
-                    foreach (var account in targetWorkspace.AccountList.Where(a => a.TransactionList.Count > 0))
+                    foreach (var account in targetWorkspace.Accounts.Where(a => a.Transactions.Count > 0))
                     {
-                        var transaction = account.TransactionList.Find(x => x.Category == updatedCategory);
+                        var transaction = account.Transactions.Find(x => x.Category.Name == updatedCategory.Name);
                         if (transaction != null)
                         {
                             if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
@@ -135,7 +127,7 @@ namespace BusinessLogic
                             }
                             else
                             {
-                                targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
+                                targetWorkspace.Categories.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
                             }
                         }
                     }

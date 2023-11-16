@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.DataTypes;
-
+﻿using Domain.DataTypes;
 namespace Domain
 {
 	public class CategoryReport : Report
@@ -17,19 +11,18 @@ namespace Domain
 
 		public string PercentageAboutTotal { get; set; } = "0";
 
-		public string CalculateReport() 
+		public string CalculateReport()
 		{
 			string categoryName = this.Category.Name;
 			double totalSpent = 0;
 			double categorySpent = 0;
-
-			List<Account> accounts = this.WorkSpace.AccountList;
+			List<Account> accounts = this.WorkSpace.Accounts;
 			foreach (Account account in accounts)
 			{
-				List<Transactions> transactions = account.TransactionList;
+				List<Transactions> transactions = account.Transactions;
 				foreach (Transactions transaction in transactions)
 				{
-					if((Month)transaction.CreationDate.Month == this.Month) 
+					if ((Month)transaction.CreationDate.Month == this.Month)
 					{
 						if (transaction.Currency == CurrencyType.UYU)
 						{
@@ -38,7 +31,6 @@ namespace Domain
 							{
 								categorySpent += transaction.Amount;
 							}
-
 						}
 						else
 						{
@@ -51,22 +43,16 @@ namespace Domain
 							}
 						}
 					}
-
-					
-                    
-                }
+				}
 			}
 			double percentage = 0;
-
 			if (totalSpent != 0)
 			{
 				percentage = Math.Round(categorySpent * 100 / totalSpent);
 			}
-
 			string reportFormatOutput = $"{categoryName}: {categorySpent} => {percentage} %";
 
 			return reportFormatOutput;
 		}
-
 	}
 }

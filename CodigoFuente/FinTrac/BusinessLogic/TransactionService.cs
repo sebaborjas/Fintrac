@@ -12,7 +12,6 @@ namespace BusinessLogic
     public class TransactionService
     {
         private readonly FintracContext _database;
-
         public TransactionService(FintracContext database)
         {
             _database = database;
@@ -20,28 +19,28 @@ namespace BusinessLogic
 
         public void Add(Account account, Transactions transaction)
         {
-            if (account.TransactionList.Contains(transaction))
+            if (account.Transactions.Contains(transaction))
             {
                 throw new TransactionAlreadyExistsException();
             }
-            var user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(account.WorkSpace));
+            var user = _database.Users.FirstOrDefault(x => x.Workspaces.Contains(account.WorkSpace));
             if (user == null)
             {
                 throw new ArgumentNullException();
             }
-            var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
+            var targetWorkspace = user.Workspaces.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
             if (targetWorkspace == null)
             {
                 throw new ArgumentNullException();
             }
-            var exchange = targetWorkspace.ExchangeList.Find(x => x.Date <= transaction.CreationDate && x.Currency == transaction.Currency);
+            var exchange = targetWorkspace.Exchanges.Find(x => x.Date <= transaction.CreationDate && x.Currency == transaction.Currency);
             if (exchange == null && transaction.Currency != CurrencyType.UYU)
             {
                 throw new ExchangeNotFoundException();
             }
             try
             {
-                account.TransactionList.Add(transaction);
+                account.Transactions.Add(transaction);
             }
             catch (Exception exception)
             {
@@ -61,28 +60,28 @@ namespace BusinessLogic
                 Category = transaction.Category,
                 Account = transaction.Account
             };
-            account.TransactionList.Add(duplicatedTransaction);
+            account.Transactions.Add(duplicatedTransaction);
             _database.SaveChanges();
         }
 
         public Transactions Get(Account account, int transactionID)
         {
-            User user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(account.WorkSpace));
+            User user = _database.Users.FirstOrDefault(x => x.Workspaces.Contains(account.WorkSpace));
             if (user == null)
             {
                 return null;
             }
-            Workspace workspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
+            Workspace workspace = user.Workspaces.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
             if (workspace == null)
             {
                 return null;
             }
-            Account accountToSearch = workspace.AccountList.FirstOrDefault(x => x == account);
+            Account accountToSearch = workspace.Accounts.FirstOrDefault(x => x == account);
             if (accountToSearch == null)
             {
                 return null;
             }
-            Transactions transaction = accountToSearch.TransactionList.FirstOrDefault(x => x.ID == transactionID);
+            Transactions transaction = accountToSearch.Transactions.FirstOrDefault(x => x.ID == transactionID);
             if (transaction == null)
             {
                 return null;

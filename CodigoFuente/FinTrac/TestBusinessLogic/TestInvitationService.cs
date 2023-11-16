@@ -90,7 +90,7 @@ namespace TestBusinessLogic
                 Admin = _useradmin,
                 UserToInvite = _userToInvite,
             };
-            _userToInvite.WorkspaceList.Add(_workspace);
+            _userToInvite.Workspaces.Add(_workspace);
             _userService.Add(_userToInvite);
             _service.Add(_invitation);
         }
@@ -136,7 +136,7 @@ namespace TestBusinessLogic
             _userService.Add(_userToInvite);
             _service.Add(_invitation);
             _service.AcceptInvitation(_invitation.ID);
-            Assert.IsTrue(_userToInvite.WorkspaceList.Contains(_workspace));
+            Assert.IsTrue(_userToInvite.Workspaces.Contains(_workspace));
         }
     }
 }

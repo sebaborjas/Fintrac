@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,43 +10,57 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BusinessLogic
 {
+    [ExcludeFromCodeCoverage]
     public class FintracContext : DbContext
     {
         public bool isLoggedIn { get; set; } = false;
-
         public DbSet<User> Users { get; set; }
-
         public User currentUser { get; set; }
-
         public Account currentAccount { get; set; }
-
         public Workspace currentWorkspace { get; set; }
-
         public FintracContext(DbContextOptions<FintracContext> options) : base(options)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             modelBuilder.Ignore<Report>();
-
             modelBuilder.Entity<Account>().ToTable("Accounts");
             modelBuilder.Entity<CreditCard>().ToTable("CreditCards");
             modelBuilder.Entity<PersonalAccount>().ToTable("PersonalAccounts");
 
-
             modelBuilder.Entity<User>().HasKey(x => x.Email);
+            modelBuilder.Entity<Workspace>().HasKey(x => x.ID);
 
-            modelBuilder.Entity<User>()
-            .HasMany(u => u.WorkspaceList)
-            .WithMany(w => w.Users)
-            .UsingEntity<Dictionary<string, object>>(
-            "UsersWorkspaces",
-            j => j.HasOne<Workspace>().WithMany().OnDelete(DeleteBehavior.Cascade),
-            j => j.HasOne<User>().WithMany().OnDelete(DeleteBehavior.ClientCascade));
+            modelBuilder.Entity<UserWorkspace>().HasKey(uw => new { uw.UserId, uw.WorkspaceId });
+
+            modelBuilder.Entity<UserWorkspace>()
+                .HasOne(uw => uw.User)
+                .WithMany(u => u.UserWorkspace)
+                .HasForeignKey(uw => uw.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserWorkspace>()
+                .HasOne(uw => uw.Workspace)
+                .WithMany(w => w.UserWorkspace)
+                .HasForeignKey(uw => uw.WorkspaceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Workspace>()
+                .HasMany(w => w.Users)
+                .WithMany(u => u.Workspaces)
+                .UsingEntity<UserWorkspace>(
+                    j => j.HasOne(uw => uw.User)
+                          .WithMany(u => u.UserWorkspace)
+                          .HasForeignKey(uw => uw.UserId)
+                          .OnDelete(DeleteBehavior.Restrict),
+                    j => j.HasOne(uw => uw.Workspace)
+                          .WithMany(w => w.UserWorkspace)
+                          .HasForeignKey(uw => uw.WorkspaceId)
+                          .OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasKey(uw => new { uw.UserId, uw.WorkspaceId })
+                );
 
             modelBuilder.Entity<Workspace>()
                 .HasOne(workspace => workspace.UserAdmin);
@@ -73,7 +88,7 @@ namespace BusinessLogic
 
             modelBuilder.Entity<Transactions>()
                 .HasOne(t => t.Account)
-                .WithMany(a => a.TransactionList)
+                .WithMany(a => a.Transactions)
                 .HasForeignKey(t => t.AccountId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -93,7 +108,8 @@ namespace BusinessLogic
                 .HasOne(cg => cg.Goal)
                 .WithMany(g => g.GoalCategory)
                 .HasForeignKey(cg => cg.GoalId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Goal>()
                 .HasMany(g => g.Categories)
                 .WithMany(c => c.Goals)
@@ -105,10 +121,9 @@ namespace BusinessLogic
                     j => j.HasOne(cg => cg.Goal)
                           .WithMany(g => g.GoalCategory)
                           .HasForeignKey(cg => cg.GoalId)
-                          .OnDelete(DeleteBehavior.Cascade), 
+                          .OnDelete(DeleteBehavior.Cascade),
                     j => j.HasKey(cg => new { cg.CategoryId, cg.GoalId })
                 );
-
         }
     }
 }
