@@ -25,19 +25,20 @@ namespace BusinessLogic
                 throw new TransactionAlreadyExistsException();
             }
             var user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(account.WorkSpace));
-            if (user != null)
+            if (user == null)
             {
-                var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
-                if (targetWorkspace != null)
-                {
-                    var exchange = targetWorkspace.ExchangeList.Find(x => x.Date <= transaction.CreationDate && x.Currency == transaction.Currency);
-                    if (exchange == null && transaction.Currency != CurrencyType.UYU)
-                    {
-                        throw new ExchangeNotFoundException();
-                    }
-                }
+                throw new ArgumentNullException();
             }
-
+            var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
+            if (targetWorkspace == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var exchange = targetWorkspace.ExchangeList.Find(x => x.Date <= transaction.CreationDate && x.Currency == transaction.Currency);
+            if (exchange == null && transaction.Currency != CurrencyType.UYU)
+            {
+                throw new ExchangeNotFoundException();
+            }
             try
             {
                 account.TransactionList.Add(transaction);
@@ -66,7 +67,27 @@ namespace BusinessLogic
 
         public Transactions Get(Account account, int transactionID)
         {
-            return _database.Users.ToList().Find(x => x.WorkspaceList.Contains(account.WorkSpace)).WorkspaceList.Find(x => x.ID == account.WorkSpace.ID).AccountList.Find(x => x == account).TransactionList.Find(x => x.ID == transactionID);
+            User user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(account.WorkSpace));
+            if (user == null)
+            {
+                return null;
+            }
+            Workspace workspace = user.WorkspaceList.FirstOrDefault(x => x.ID == account.WorkSpace.ID);
+            if (workspace == null)
+            {
+                return null;
+            }
+            Account accountToSearch = workspace.AccountList.FirstOrDefault(x => x == account);
+            if (accountToSearch == null)
+            {
+                return null;
+            }
+            Transactions transaction = accountToSearch.TransactionList.FirstOrDefault(x => x.ID == transactionID);
+            if (transaction == null)
+            {
+                return null;
+            }
+            return transaction;
         }
 
         public void Modify(Transactions transaction, string title, double amount)
