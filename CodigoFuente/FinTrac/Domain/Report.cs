@@ -29,9 +29,9 @@ namespace Domain
             }
         }
 
-        protected Double GetExchangeValueOfDay(DateTime date)
+        protected double GetExchangeValueOfDay(DateTime date, CurrencyType currency)
         {
-            Exchange exchange = WorkSpace.ExchangeList.MaxBy(x => x.Date <= date);
+            Exchange exchange = this.WorkSpace.ExchangeList.MaxBy(x => x.Date <= date && x.Currency == currency );
             return exchange.CurrencyValue;
         }
     }

@@ -28,12 +28,10 @@ namespace Domain
                 this._account = value;
             } 
         }
-
         public double CalculateBalance()
         {
             double ingresos = 0;
             double costos = 0;
-
             double balance = 0;
 
             foreach (var transaction in Account.TransactionList)
@@ -55,26 +53,18 @@ namespace Domain
                 {
                     if (transaction.Category.Type == CategoryType.Income)
                     {
-                        ingresos += transaction.Amount * this.GetCurrencyVallueOfDay(transaction.CreationDate);
+                        ingresos += transaction.Amount * base.GetExchangeValueOfDay(transaction.CreationDate, transaction.Currency);
                     }
                     else
                     {
-                        costos += transaction.Amount * this.GetCurrencyVallueOfDay(transaction.CreationDate);
+                        costos += transaction.Amount * base.GetExchangeValueOfDay(transaction.CreationDate, transaction.Currency);
                     }
-                    balance = this.Account.StartingAmount * this.GetCurrencyVallueOfDay(Account.CreationDate) + ingresos - costos;
+                    balance = this.Account.StartingAmount * base.GetExchangeValueOfDay(Account.CreationDate, Account.Currency) + ingresos - costos;
 
                 }
                 
             }
             return balance;
-        }
-
-        private Double GetCurrencyVallueOfDay(DateTime date)
-        {
-        
-            Exchange exchange = Account.WorkSpace.ExchangeList.MaxBy(x => x.Date <= date && x.Currency == Currency);
-
-            return exchange.CurrencyValue;
-        }
+        }        
     }
 }

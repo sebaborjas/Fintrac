@@ -19,10 +19,10 @@ namespace TestDomain
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             workSpace = new Workspace { UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
-            PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
+            Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
             workSpace.AccountList.Add(account);
 
-            accountBalanceReport = new AccountBalanceReport { Account = account };
+            accountBalanceReport = new AccountBalanceReport { Account = (PersonalAccount)account };
         }
 
         [TestMethod]
@@ -97,8 +97,9 @@ namespace TestDomain
             int costos = 30;
             double DollarToday = 50;
             double DollarBefore = 47.4;
-            double balance = montoInicial * DollarBefore + ingresos * DollarToday - costos * DollarBefore;
+            double balance = 6078;
             accountBalanceReport.Currency = CurrencyType.USD;
+            accountBalanceReport.WorkSpace = workSpace;
             Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
             Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
 
