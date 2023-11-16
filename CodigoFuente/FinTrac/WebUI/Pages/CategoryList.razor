@@ -149,17 +149,14 @@
     private bool showAddCategoryModal = false;
     private Category newCategory;
     private Category selectedCategory;
-
     private DateTime initialDate = DateTime.Today;
     private string categoryName;
     private CategoryType categoryType;
     private CategoryStatus categoryStatus;
-
     private bool showEditCategoryModal = false;
     private string newCategoryName;
     private CategoryType newCategoryType;
     private CategoryStatus newCategoryStatus;
-
 
     private void HideEditCategoryModal()
     {
@@ -186,7 +183,6 @@
         }
         HideEditCategoryModal();
         NavigationManager.NavigateTo("/workspace/CategoryList");
-
     }
 
     private void ShowAddCategoryModal()
@@ -222,7 +218,6 @@
                .ThenInclude(a => a.Transactions)
                .FirstOrDefault(u => u.Email == CurrentUser.Email);
         }
-
     }
 
     private void AddCategory()

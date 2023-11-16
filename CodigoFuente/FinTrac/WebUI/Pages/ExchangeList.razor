@@ -46,7 +46,6 @@
                     }
                 </tbody>
             </table>
-
         </div>
     }
     else
@@ -192,7 +191,6 @@
                 .ThenInclude(w => w.Exchanges)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
         }
-
     }
 
     private void AddExchange()
@@ -200,7 +198,7 @@
         try
         {
             HideAddExchangeModal();
-            Exchange newExchange = new Exchange { Workspace = workspace, Date = initialDate, Currency = newCurrencyType ,CurrencyValue = currencyValue };
+            Exchange newExchange = new Exchange { Workspace = workspace, Date = initialDate, Currency = newCurrencyType, CurrencyValue = currencyValue };
             _exchangeService.Add(workspace, newExchange);
             exchanges = workspace.Exchanges;
             ToastService.Notify(new(ToastType.Success, "Tipo de cambio agregado con exito!"));

@@ -9,7 +9,6 @@
 
 @if (FintracContext.isLoggedIn)
 {
-
     <PageTitle>Notificaciones</PageTitle>
     <div class="nav-item px-3">
         <NavLink class="nav-link" href="/">
@@ -53,9 +52,7 @@
     else
     {
         <p>No hay notificaciones pendientes.</p>
-
     }
-
 
     @code {
     private InvitationService _invitationService;
@@ -94,7 +91,6 @@
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
-
     }
 
     void DeclineInvitation(Invitation invitationDeclined)
@@ -109,19 +105,10 @@
         {
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
-
     }
-
 	}
 }
 else
 {
-    try
-    {
-        NavigationManager.NavigateTo("/login");
-    }
-    catch
-    {
-
-    }
+    NavigationManager.NavigateTo("/login");
 }

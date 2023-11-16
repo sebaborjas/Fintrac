@@ -10,7 +10,6 @@
 {
     <PageTitle>Objetivo: @goal.Title</PageTitle>
     <h3 class="mb-3">@goal.Title</h3>
-
     <div>
         <strong>Categorías:</strong>
         <ul class="list-unstyled">
@@ -29,7 +28,6 @@ else
     <p>Goal not found. Redirecting to error page...</p>
     Task.Delay(2000);
     NavigationManager.NavigateTo("/error");
-
 }
 
 @code {
@@ -38,7 +36,6 @@ else
     private Goal goal;
     private Domain.Workspace _workspace;
     private Domain.GoalsReport _report;
-
 
     protected override void OnInitialized()
     {
@@ -67,7 +64,6 @@ else
                 .ThenInclude(goal => goal.GoalCategory)
                 .ToList();
 
-
         goal = FindGoalByToken(Token);
         _report = GenerateReport();
     }
@@ -75,7 +71,6 @@ else
     private Goal FindGoalByToken(string token)
     {
         List<User> allUsers = FintracContext.Users.ToList();
-
         foreach (var user in allUsers)
         {
             foreach (var workspace in user.Workspaces)
@@ -109,5 +104,4 @@ else
             return null;
         }
     }
-
 }

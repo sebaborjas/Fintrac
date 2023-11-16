@@ -6,7 +6,6 @@
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-
 @if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de transacciones para la cuenta @currentAccount.Name</PageTitle>
@@ -117,8 +116,6 @@
                             <input type="text" class="form-control" id="account" value="@currentAccount.Name" readonly />
                         </div>
 
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @onclick="() => HideAddTransactionModal()">Cancelar</button>
@@ -189,18 +186,15 @@
         {
             CurrentUser = FintracContext.currentUser;
             currentAccount = FintracContext.currentAccount;
-
             workspace = FintracContext.currentWorkspace;
             _workspaceService = new WorkspaceService(FintracContext);
             _transactionService = new TransactionService(FintracContext);
-
             _categoryService = new CategoryService(FintracContext);
             newTransaction = new Transactions();
             categories = workspace.Categories;
             transactionList = currentAccount.Transactions;
         }
     }
-
 
     private void ShowEditTransactionModal(Transactions transaction)
     {
@@ -277,7 +271,6 @@
     {
         showAddTransactionModal = false;
     }
-
 
     private void AddTransaction()
     {

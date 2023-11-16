@@ -7,9 +7,7 @@
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-
 @if (FintracContext.isLoggedIn)
-
 {
     <PageTitle>Lista de objetivos </PageTitle>
     <div class="nav-item px-3">
@@ -50,8 +48,7 @@
                             </td>
                             @if (goal.Token != null && goal.Token != "")
                             {
-                                <td>https://localhost:7180/goal/@goal.Token</td>
-
+                                <td>@baseURL@goal.Token</td>
                             }
                             else
                             {
@@ -67,7 +64,6 @@
                     }
                 </tbody>
             </table>
-
         </div>
     }
     else
@@ -165,8 +161,6 @@
         </div>
     }
 
-
-
     @code {
     private User CurrentUser;
     private Domain.Workspace workspace;
@@ -179,12 +173,10 @@
     private bool showAddGoalModal = false;
     private Goal newGoal;
     private Goal selectedGoal;
-
     private string goalTitle;
     private string goalOldTitle;
-
+    private string baseURL;
     private double goalMaxAmount;
-
     private bool showEditGoalModal = false;
     private double editedDollarValue = 0;
 
@@ -216,9 +208,7 @@
                    .FirstOrDefault(u => u.Email == CurrentUser.Email);
 
             workpaceCategories = workspace.Categories.Where(x => x.Type == CategoryType.Cost).ToList();
-
         }
-
     }
 
     private void SaveGoalValue()
@@ -273,6 +263,7 @@
     {
         try
         {
+            baseURL = NavigationManager.BaseUri + "goal/";
             Goal newGoalToken = new Goal();
             newGoalToken.Title = goal.Title;
             newGoalToken.Workspace = goal.Workspace;
@@ -317,9 +308,7 @@
             };
         goalOldTitle = new String(selectedGoal.Title);
         goalTitle = new String(selectedGoal.Title);
-
         goalMaxAmount = selectedGoal.MaxAmount;
-
         showEditGoalModal = true;
     }
 
