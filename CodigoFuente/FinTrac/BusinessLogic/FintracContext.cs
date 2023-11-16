@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BusinessLogic
 {
+    [ExcludeFromCodeCoverage]
     public class FintracContext : DbContext
     {
         public bool isLoggedIn { get; set; } = false;
@@ -43,7 +45,7 @@ namespace BusinessLogic
                 .HasOne(uw => uw.Workspace)
                 .WithMany(w => w.UserWorkspace)
                 .HasForeignKey(uw => uw.WorkspaceId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Workspace>()
                 .HasMany(w => w.Users)
@@ -56,7 +58,7 @@ namespace BusinessLogic
                     j => j.HasOne(uw => uw.Workspace)
                           .WithMany(w => w.UserWorkspace)
                           .HasForeignKey(uw => uw.WorkspaceId)
-                          .OnDelete(DeleteBehavior.Restrict),
+                          .OnDelete(DeleteBehavior.Cascade),
                     j => j.HasKey(uw => new { uw.UserId, uw.WorkspaceId })
                 );
 
