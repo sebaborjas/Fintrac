@@ -332,13 +332,13 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.Category", "Category")
                         .WithMany("GoalCategory")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Goal", "Goal")
                         .WithMany("GoalCategory")
                         .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231115234046_UpdateGoalCategory7")]
-    partial class UpdateGoalCategory7
+    [Migration("20231116004250_UpdateGoalCategory8")]
+    partial class UpdateGoalCategory8
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -335,13 +335,13 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.Category", "Category")
                         .WithMany("GoalCategory")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Goal", "Goal")
                         .WithMany("GoalCategory")
                         .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");

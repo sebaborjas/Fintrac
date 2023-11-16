@@ -93,8 +93,7 @@ namespace BusinessLogic
                 .HasOne(cg => cg.Goal)
                 .WithMany(g => g.GoalCategory)
                 .HasForeignKey(cg => cg.GoalId)
-                .OnDelete(DeleteBehavior.Restrict); // Cambiado a Restrict para evitar eliminación en cascada
-
+                .OnDelete(DeleteBehavior.Restrict); 
             modelBuilder.Entity<Goal>()
                 .HasMany(g => g.Categories)
                 .WithMany(c => c.Goals)
@@ -102,11 +101,11 @@ namespace BusinessLogic
                     j => j.HasOne(cg => cg.Category)
                           .WithMany(c => c.GoalCategory)
                           .HasForeignKey(cg => cg.CategoryId)
-                          .OnDelete(DeleteBehavior.Cascade),
+                          .OnDelete(DeleteBehavior.Restrict),
                     j => j.HasOne(cg => cg.Goal)
                           .WithMany(g => g.GoalCategory)
                           .HasForeignKey(cg => cg.GoalId)
-                          .OnDelete(DeleteBehavior.Restrict), // Cambiado a Restrict para evitar eliminación en cascada
+                          .OnDelete(DeleteBehavior.Cascade), 
                     j => j.HasKey(cg => new { cg.CategoryId, cg.GoalId })
                 );
 
