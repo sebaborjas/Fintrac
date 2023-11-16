@@ -45,23 +45,27 @@ namespace BusinessLogic
         public void Delete(Workspace workspace, Exchange exchange)
         {
             var user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(workspace));
-            if (user != null)
+            if (user == null)
             {
-                var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
-                if (targetWorkspace != null)
-                {
-                    var accountWithTransactions = targetWorkspace.AccountList.FirstOrDefault(x => x.TransactionList.Count > 0 && x.Currency == exchange.Currency);
-                    if (accountWithTransactions != null)
-                    {
-                        var transaction = accountWithTransactions.TransactionList.FirstOrDefault(x => x.CreationDate >= exchange.Date && x.Currency == exchange.Currency);
-                        if (transaction != null)
-                        {
-                            throw new ExchangeHasTransactionsException();
-                        }
-                    }
-                }
+                throw new ExchangeNotFoundException();
             }
+            var targetWorkspace = user.WorkspaceList.FirstOrDefault(x => x.ID == workspace.ID);
+            if (targetWorkspace == null)
+            {
+                throw new ExchangeNotFoundException();
 
+            }
+            var accountWithTransactions = targetWorkspace.AccountList.FirstOrDefault(x => x.TransactionList.Count > 0 && x.Currency == exchange.Currency);
+            if (accountWithTransactions == null)
+            {
+                workspace.ExchangeList.Remove(exchange);
+                return;
+            }
+            var transaction = accountWithTransactions.TransactionList.FirstOrDefault(x => x.CreationDate >= exchange.Date && x.Currency == exchange.Currency);
+            if (transaction != null)
+            {
+                throw new ExchangeHasTransactionsException();
+            }
             try
             {
                 workspace.ExchangeList.Remove(exchange);
@@ -77,21 +81,23 @@ namespace BusinessLogic
         public Exchange Get(ExchangeQueryParameters exchange)
         {
             Workspace workspace = exchange.Workspace;
-
-			User user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(workspace));
-
-
-            if (user != null)
+            User user = _database.Users.FirstOrDefault(x => x.WorkspaceList.Contains(workspace));
+            if (user == null)
             {
-                var workspaceFounded = user.WorkspaceList.FirstOrDefault(w => w.ID == exchange.Workspace.ID);
-
-                if (workspace != null)
-                {
-                    return workspace.ExchangeList.FirstOrDefault(x => x.Date == exchange.Date && x.Currency == exchange.CurrencyType);
-                }
+                return null;
             }
+            var workspaceFounded = user.WorkspaceList.FirstOrDefault(w => w.ID == exchange.Workspace.ID);
 
-            return null;
+            if (workspace == null)
+            {
+                return null;
+            }
+            Exchange exchangeToReturn = workspace.ExchangeList.FirstOrDefault(x => x.Date == exchange.Date && x.Currency == exchange.CurrencyType);
+            if (exchangeToReturn == null)
+            {
+                return null;
+            }
+            return exchangeToReturn;
         }
 
         public void Update(Workspace workspace, Exchange exchange, double newCurrencyValue)

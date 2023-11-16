@@ -48,7 +48,6 @@
                     }
                 </tbody>
             </table>
-
         </div>
     }
     else
@@ -140,20 +139,16 @@
                 </div>
             </div>
         </div>
-
     }
-
-
 
     @code {
     private User CurrentUser;
     private Domain.Workspace workspace;
     private CategoryService _categoryService;
-    private List<Category> categoryList;
+    private List<Domain.Category> categoryList;
     private bool showAddCategoryModal = false;
     private Category newCategory;
     private Category selectedCategory;
-    private Category updatedCategory;
 
     private DateTime initialDate = DateTime.Today;
     private string categoryName;
@@ -178,7 +173,7 @@
 
     private void SaveCategoryValue()
     {
-        updatedCategory = new Category { Name = newCategoryName, CreationDate = selectedCategory.CreationDate, Status = newCategoryStatus, Type = newCategoryType };
+        Category updatedCategory = new Category { Workspace = workspace, Name = newCategoryName, CreationDate = selectedCategory.CreationDate, Status = newCategoryStatus, Type = newCategoryType };
         try
         {
             _categoryService.Update(workspace, selectedCategory.Name, updatedCategory);
@@ -217,6 +212,15 @@
             .Include(u => u.WorkspaceList)
                 .ThenInclude(w => w.CategoryList)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceAccounts = FintracContext.Users
+            .Include(u => u.WorkspaceList)
+                .ThenInclude(w => w.AccountList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var accountsTransactions = FintracContext.Users
+               .Include(u => u.WorkspaceList)
+               .ThenInclude(w => w.AccountList)
+               .ThenInclude(a => a.TransactionList)
+               .FirstOrDefault(u => u.Email == CurrentUser.Email);
         }
 
     }
@@ -225,7 +229,7 @@
     {
         try
         {
-            Category newCategory = new Category { CreationDate = initialDate, Name = categoryName, Type = categoryType, Status = categoryStatus };
+            newCategory = new Category { CreationDate = initialDate, Name = categoryName, Type = categoryType, Status = categoryStatus };
             _categoryService.Add(workspace, newCategory);
             categoryList = workspace.CategoryList;
             ToastService.Notify(new(ToastType.Success, "Categoría agregada con exito!"));
