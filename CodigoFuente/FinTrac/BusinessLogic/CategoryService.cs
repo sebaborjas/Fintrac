@@ -129,14 +129,19 @@ namespace BusinessLogic
                         var transaction = account.TransactionList.Find(x => x.Category == updatedCategory);
                         if (transaction != null)
                         {
-                            throw new CategoryHasTransactionsException();
+                            if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
+                            {
+                                throw new CategoryHasTransactionsException("No se puede cambiar el tipo ni el estado a una categoría que tiene transacciones");
+                            }
+                            else
+                            {
+                                targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
+                            }
                         }
                     }
-                    if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
-                    {
-                        throw new CategoryHasTransactionsException("No se puede cambiar el tipo ni el estado a una categoría que tiene transacciones");
-                    }
-                    targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
+                    Category category = Get(workspace, updatedCategory.Name);
+                    category.Status = updatedCategory.Status;
+                    category.Type = updatedCategory.Type;
                 }
             }
             catch (Exception exception)
