@@ -121,7 +121,7 @@
 						@if (newAccount.Type == "PersonalAccount")
 						{
 							<div class="form-group">
-								<label for="startingAmount.ToString(" N2")">Monto Inicial</label>
+								<label for="startingAmount">Monto Inicial</label>
 								<input type="number" class="form-control" id="startingAmount" @bind="newAccount.StartingAmount" min="0" />
 							</div>
 						}
@@ -197,7 +197,7 @@
 
 							<div class="row mb-2 mx-0">
 								<div class="col-2"><i class="oi oi-media-record"></i></div>
-								<div class="col-10"><p>Monto inicial: @((selectedAccount as PersonalAccount).StartingAmount).ToString("N2")</p></div>
+								<div class="col-10"><p>Monto inicial: @((selectedAccount as PersonalAccount).StartingAmount.ToString())</p></div>
 							</div>
 						}
 						<div class="row mb-2 mx-0">
