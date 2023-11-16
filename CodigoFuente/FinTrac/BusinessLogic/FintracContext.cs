@@ -54,7 +54,7 @@ namespace BusinessLogic
                 .HasMany(u => u.RecievedInvitations)
                 .WithOne(i => i.UserToInvite)
                 .HasForeignKey(i => i.UserToInviteId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Invitation>()
                 .HasOne(i => i.Workspace)

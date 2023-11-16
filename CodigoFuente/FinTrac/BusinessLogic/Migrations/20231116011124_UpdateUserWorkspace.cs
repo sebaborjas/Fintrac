@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BusinessLogic.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateGoalCategory8 : Migration
+    public partial class UpdateUserWorkspace : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

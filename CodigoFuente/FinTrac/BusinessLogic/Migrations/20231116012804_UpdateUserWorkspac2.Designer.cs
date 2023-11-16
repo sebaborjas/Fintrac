@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231116004250_UpdateGoalCategory8")]
-    partial class UpdateGoalCategory8
+    [Migration("20231116012804_UpdateUserWorkspac2")]
+    partial class UpdateUserWorkspac2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -388,7 +388,7 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.User", "UserToInvite")
                         .WithMany("RecievedInvitations")
                         .HasForeignKey("UserToInviteId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
