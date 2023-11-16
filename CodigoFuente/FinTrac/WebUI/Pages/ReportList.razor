@@ -482,37 +482,37 @@
 			workspace = FintracContext.currentWorkspace;
 			_workspaceService = new WorkspaceService(FintracContext);
 			_accountService = new AccountService(FintracContext);
-			accounts = workspace.AccountList;
-			categories = workspace.CategoryList;				
+			accounts = workspace.Accounts;
+			categories = workspace.Categories;				
 			var workspaceData = FintracContext.Users
-				.Include(u => u.WorkspaceList)
+				.Include(u => u.Workspaces)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 			var workspaceAccounts = FintracContext.Users
-				.Include(u => u.WorkspaceList)
-				.ThenInclude(w => w.AccountList)
+				.Include(u => u.Workspaces)
+				.ThenInclude(w => w.Accounts)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 			var workspaceCategories = FintracContext.Users
-				.Include(u => u.WorkspaceList)
-				.ThenInclude(w => w.CategoryList)
+				.Include(u => u.Workspaces)
+				.ThenInclude(w => w.Categories)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 			var workspaceExchanges = FintracContext.Users
-				.Include(u => u.WorkspaceList)
-				.ThenInclude(w => w.ExchangeList)
+				.Include(u => u.Workspaces)
+				.ThenInclude(w => w.Exchanges)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 			var accountsTransactions = FintracContext.Users
-				.Include(u => u.WorkspaceList)
-				.ThenInclude(w => w.AccountList)
-				.ThenInclude(a => a.TransactionList)
+				.Include(u => u.Workspaces)
+				.ThenInclude(w => w.Accounts)
+				.ThenInclude(a => a.Transactions)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 			var workspaceGoals = FintracContext.Users
-				.Include(u => u.WorkspaceList)
-				.ThenInclude(workspace => workspace.GoalList)
+				.Include(u => u.Workspaces)
+				.ThenInclude(workspace => workspace.Goals)
 				.ThenInclude(goal => goal.Categories)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 
 
 			expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
-			expenses = expensesReport.ListExpenses();
+			expenses = expensesReport.Expenses();
 			selectedYear = DateTime.Now.Year;
 			selectedMonth = Domain.DataTypes.Month.Enero;
 			creditCards = _workspaceService.GetCreditCards(workspace);
@@ -569,7 +569,7 @@
 		if (selectedCreditCard != "")
 		{
 			currentAccount = _accountService.Get(workspace, selectedCreditCard);
-			transactionsCreditCard = currentAccount.TransactionList;
+			transactionsCreditCard = currentAccount.Transactions;
 			showCreditCardTransactions = true;
 		}
 		else

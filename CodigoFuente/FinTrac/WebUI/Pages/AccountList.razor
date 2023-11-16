@@ -22,7 +22,7 @@
 		<button class="btn btn-primary" @onclick="() => ShowAddAccountModal()">Agregar una Cuenta</button>
 	</div>
 
-	@if (accountList.Any())
+	@if (accounts.Any())
 	{
 		<div class="table-responsive table-responsive-lg table-responsive-xl">
 			<table class="table w-100" style="width: 100% !important;">
@@ -35,7 +35,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var account in accountList)
+					@foreach (var account in accounts)
 					{
 						<tr>
 							<td>@account.Name</td>
@@ -284,7 +284,7 @@
 	@code {
 	private User CurrentUser;
 	private Domain.Workspace workspace;
-	private List<Account> accountList;
+	private List<Account> accounts;
 	private AccountService _accountService;
 	private Account selectedAccount;
 	private Account modifiedAccount;
@@ -350,7 +350,7 @@
 		try
 		{
 			_accountService.Modify(selectedAccount.Name, modifiedAccount);
-			accountList = workspace.AccountList;
+			accounts = workspace.Accounts;
 			ToastService.Notify(new ToastMessage
 				{
 					Type = ToastType.Success,
@@ -372,10 +372,10 @@
 	private void DeleteAccount()
 	{
 
-		if (selectedAccount.TransactionList.Count == 0)
+		if (selectedAccount.Transactions.Count == 0)
 		{
 			_accountService.Delete(workspace, selectedAccount.Name);
-			accountList = workspace.AccountList;
+			accounts = workspace.Accounts;
 		}
 		else
 		{
@@ -393,11 +393,11 @@
 		{
 			CurrentUser = FintracContext.currentUser;
 			workspace = FintracContext.currentWorkspace;
-			accountList = workspace.AccountList;
+			accounts = workspace.Accounts;
 			_accountService = new AccountService(FintracContext);
 			var user = FintracContext.Users
-			.Include(u => u.WorkspaceList)
-				.ThenInclude(w => w.AccountList)
+			.Include(u => u.Workspaces)
+				.ThenInclude(w => w.Accounts)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 		}
 	}
@@ -436,7 +436,7 @@
 					};
 
 				_accountService.Add(workspace, creditCard);
-				accountList = workspace.AccountList;
+				accounts = workspace.Accounts;
 				ToastService.Notify(new(ToastType.Success, "Tarjeta de Credito agregada con exito!"));
 			}
 			else if (newAccount.Type == "PersonalAccount")
@@ -452,7 +452,7 @@
 
 
 				_accountService.Add(workspace, personalAccount);
-				accountList = workspace.AccountList;
+				accounts = workspace.Accounts;
 				ToastService.Notify(new(ToastType.Success, "Cuenta Personal agregada con exito!"));
 			}
 			else

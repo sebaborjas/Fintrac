@@ -28,11 +28,11 @@ namespace BusinessLogic
 			};
 
 			Workspace defaultWorkspace = new Workspace{UserAdmin = user, Name = $"{user.Name} {user.LastName}"};
-			user.WorkspaceList.Add(defaultWorkspace);
+			user.Workspaces.Add(defaultWorkspace);
 			Users.Add(user);
 
 			Exchange exchange = new Exchange { Workspace = defaultWorkspace, Date = DateTime.Today.AddDays(-5),Currency = CurrencyType.USD, CurrencyValue = 35 };
-			defaultWorkspace.ExchangeList.Add(exchange);
+			defaultWorkspace.Exchanges.Add(exchange);
 
 			Account account = new PersonalAccount { Name = "TestPersonalAccount", Currency = CurrencyType.UYU, WorkSpace = defaultWorkspace, StartingAmount = 20000 };
 			Account accountUSD = new PersonalAccount { Name = "TestPersonalAccountUSD", Currency = CurrencyType.USD, WorkSpace = defaultWorkspace, StartingAmount = 20000 };
@@ -60,8 +60,8 @@ namespace BusinessLogic
 
 			Category category = new Category { Name = "Cosas personales", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = defaultWorkspace };
 			Category categoryHome = new Category { Name = "Hogar", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = defaultWorkspace };
-			defaultWorkspace.CategoryList.Add(category);
-			defaultWorkspace.CategoryList.Add(categoryHome);
+			defaultWorkspace.Categories.Add(category);
+			defaultWorkspace.Categories.Add(categoryHome);
 
 			List<Transactions> transactionList = new List<Transactions>();
 
@@ -73,9 +73,9 @@ namespace BusinessLogic
 			transactionList.Add(secondTransaction);
 			transactionList.Add(thirdTransaction);
 
-			account.TransactionList = transactionList;
+			account.Transactions = transactionList;
 
-			defaultWorkspace.AccountList.Add(account);
+			defaultWorkspace.Accounts.Add(account);
 
 			List<Transactions> transactionListUSD = new List<Transactions>();
 
@@ -87,9 +87,9 @@ namespace BusinessLogic
 			transactionListUSD.Add(secondTransactionUSD);
 			transactionListUSD.Add(thirdTransactionUSD);
 
-			accountUSD.TransactionList = transactionListUSD;
+			accountUSD.Transactions = transactionListUSD;
 
-			defaultWorkspace.AccountList.Add(accountUSD);
+			defaultWorkspace.Accounts.Add(accountUSD);
 
 			List<Transactions> transactionListCreditCard = new List<Transactions>();
 
@@ -101,24 +101,24 @@ namespace BusinessLogic
 			transactionListCreditCard.Add(secondTransactionCreditCard);
 			transactionListCreditCard.Add(thirdTransactionCreditCard);
 
-			creditCardAccount.TransactionList = transactionListCreditCard;
+			creditCardAccount.Transactions = transactionListCreditCard;
 
 
-			defaultWorkspace.AccountList.Add(creditCardAccount);
-			defaultWorkspace.AccountList.Add(creditCardAccount2);
+			defaultWorkspace.Accounts.Add(creditCardAccount);
+			defaultWorkspace.Accounts.Add(creditCardAccount2);
 
 			Goal goal = new Goal { Title = "Ahorro", MaxAmount = 10000, Workspace = defaultWorkspace };
 			goal.Categories.Add(category);
 			goal.Categories.Add(categoryHome);
-			defaultWorkspace.GoalList.Add(goal);
+			defaultWorkspace.Goals.Add(goal);
 
 			Goal goal2 = new Goal { Title = "Gastos", MaxAmount = 15000, Workspace = defaultWorkspace };
 			goal2.Categories.Add(categoryHome);
-			defaultWorkspace.GoalList.Add(goal2);
+			defaultWorkspace.Goals.Add(goal2);
 
 			Goal goal3 = new Goal { Title = "Comida", MaxAmount = 5000, Workspace = defaultWorkspace };
 			goal3.Categories.Add(category);
-			defaultWorkspace.GoalList.Add(goal3);
+			defaultWorkspace.Goals.Add(goal3);
 		}
 
 

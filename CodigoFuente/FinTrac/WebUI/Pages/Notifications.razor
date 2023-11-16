@@ -77,7 +77,7 @@
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
 
             var workspace = FintracContext.Users
-                .Include(u => u.WorkspaceList)
+                .Include(u => u.Workspaces)
                 .ToList();
         }
     }

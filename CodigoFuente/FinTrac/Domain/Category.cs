@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Domain.DataTypes;
+﻿using Domain.DataTypes;
 using Domain.Exceptions;
 
 namespace Domain
@@ -16,7 +10,6 @@ namespace Domain
 		private DateTime _creationDate = DateTime.Today;
 		private CategoryType _type;
 		private CategoryStatus _status;
-
 		public string Name
 		{
 			get
@@ -30,10 +23,11 @@ namespace Domain
 					throw new EmptyFieldException();
 				}
 				_name = value;
-				
+
 			}
 		}
-		public DateTime CreationDate {
+		public DateTime CreationDate
+		{
 			get
 			{
 				return _creationDate;
@@ -71,14 +65,13 @@ namespace Domain
 			}
 		}
 		public Workspace Workspace { get; set; }
+		public List<Goal> Goals { get; set; }
+		public List<CategoryGoal> GoalCategory { get; set; }
 
-        public List<Goal> Goals { get; set; }
-        public List<CategoryGoal> GoalCategory { get; set; }
-
-        public override bool Equals(object? obj)
-        {
+		public override bool Equals(object? obj)
+		{
 			Category category = (Category)obj;
 			return this.Name == category.Name;
-        }
-    }
+		}
+	}
 }

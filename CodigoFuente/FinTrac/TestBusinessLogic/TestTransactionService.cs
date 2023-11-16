@@ -82,7 +82,7 @@ namespace TestBusinessLogic
 			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
 			_service.Add(_account, _transaction);
             _service.Duplicate(_account, _transaction);
-            Assert.IsTrue(_account.TransactionList.Count == 2);
+            Assert.IsTrue(_account.Transactions.Count == 2);
         }
 
         [TestMethod]

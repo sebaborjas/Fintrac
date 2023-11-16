@@ -94,8 +94,8 @@ namespace TestBusinessLogic
                 Category = _category,
                 Account = personalAccount,
             };
-            personalAccount.TransactionList.Add(transaction);
-            _workspace.AccountList.Add(personalAccount);
+            personalAccount.Transactions.Add(transaction);
+            _workspace.Accounts.Add(personalAccount);
             _service.Delete(_category.Workspace, _category);
         }
 
@@ -136,8 +136,8 @@ namespace TestBusinessLogic
                 Category = _category,
                 Account = personalAccount,
             };
-            personalAccount.TransactionList.Add(transaction);
-            _workspace.AccountList.Add(personalAccount);
+            personalAccount.Transactions.Add(transaction);
+            _workspace.Accounts.Add(personalAccount);
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),
@@ -170,8 +170,8 @@ namespace TestBusinessLogic
                 Category = _category,
                 Account = personalAccount,
             };
-            personalAccount.TransactionList.Add(transaction);
-            _workspace.AccountList.Add(personalAccount);
+            personalAccount.Transactions.Add(transaction);
+            _workspace.Accounts.Add(personalAccount);
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),

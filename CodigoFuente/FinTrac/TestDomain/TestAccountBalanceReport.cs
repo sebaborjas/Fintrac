@@ -20,7 +20,7 @@ namespace TestDomain
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
             workSpace = new Workspace { UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
-            workSpace.AccountList.Add(account);
+            workSpace.Accounts.Add(account);
 
             accountBalanceReport = new AccountBalanceReport { Account = account };
         }
@@ -83,8 +83,8 @@ namespace TestDomain
             };
 
             accountBalanceReport.Account.StartingAmount = montoInicial;
-            accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
-            accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
+            accountBalanceReport.Account.Transactions.Add(trasaccionIngreso);
+            accountBalanceReport.Account.Transactions.Add(trasaccionCosto);
 
             Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
         }
@@ -123,12 +123,12 @@ namespace TestDomain
             Exchange exchangeToday = new Exchange { Currency = CurrencyType.USD, CurrencyValue = DollarToday, Date = DateTime.Today, Workspace = accountBalanceReport.WorkSpace };
             Exchange exchangeYesterday = new Exchange { Currency = CurrencyType.USD, CurrencyValue = DollarBefore, Date = DateTime.Today.AddDays(-5), Workspace = accountBalanceReport.WorkSpace };
 
-            workSpace.ExchangeList.Add(exchangeToday);
-            workSpace.ExchangeList.Add(exchangeYesterday);
+            workSpace.Exchanges.Add(exchangeToday);
+            workSpace.Exchanges.Add(exchangeYesterday);
 
             accountBalanceReport.Account.StartingAmount = montoInicial;
-            accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
-            accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
+            accountBalanceReport.Account.Transactions.Add(trasaccionIngreso);
+            accountBalanceReport.Account.Transactions.Add(trasaccionCosto);
 
             Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
         }

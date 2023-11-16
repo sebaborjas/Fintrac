@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Domain.DataTypes;
+﻿using Domain.DataTypes;
 using Domain.Exceptions;
 
 namespace Domain
@@ -69,7 +61,6 @@ namespace Domain
                 }
             }
         }
-
         public CurrencyType Currency { get; set; }
 
         public Category Category
@@ -85,13 +76,10 @@ namespace Domain
                 {
                     throw new InactiveCategoryException();
                 }
-
                 _category = value;
                 CategoryId = value.Id;
             }
-
         }
-
         public Account Account
         {
             get

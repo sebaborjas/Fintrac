@@ -15,7 +15,7 @@
             <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
         </NavLink>
     </div>
-    @if (exchangeList.Any())
+    @if (exchanges.Any())
     {
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
@@ -32,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var exchange in exchangeList)
+                    @foreach (var exchange in exchanges)
                     {
                         <tr>
                             <td>@exchange.Date.ToShortDateString()</td>
@@ -128,7 +128,7 @@
     private User CurrentUser;
     private Domain.Workspace workspace;
     private ExchangeService _exchangeService;
-    private List<Exchange> exchangeList;
+    private List<Exchange> exchanges;
     private bool showAddExchangeModal = false;
     private Exchange newExchange;
     private CurrencyType newCurrencyType;
@@ -156,7 +156,7 @@
         try
         {
             _exchangeService.Update(this.workspace, selectedExchange, editedCurrencyValue);
-            exchangeList = workspace.ExchangeList;
+            exchanges = workspace.Exchanges;
             HideEditExchangeModal();
             ToastService.Notify(new(ToastType.Success, "Tipo de cambio modificado con exito!"));
         }
@@ -184,12 +184,12 @@
         {
             CurrentUser = FintracContext.currentUser;
             workspace = FintracContext.currentWorkspace;
-            exchangeList = workspace.ExchangeList;
+            exchanges = workspace.Exchanges;
             _exchangeService = new ExchangeService(FintracContext);
             newExchange = new Exchange();
             var user = FintracContext.Users
-            .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.ExchangeList)
+            .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Exchanges)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
         }
 
@@ -202,7 +202,7 @@
             HideAddExchangeModal();
             Exchange newExchange = new Exchange { Workspace = workspace, Date = initialDate, Currency = newCurrencyType ,CurrencyValue = currencyValue };
             _exchangeService.Add(workspace, newExchange);
-            exchangeList = workspace.ExchangeList;
+            exchanges = workspace.Exchanges;
             ToastService.Notify(new(ToastType.Success, "Tipo de cambio agregado con exito!"));
         }
         catch (Exception e)
@@ -218,7 +218,7 @@
         {
             HideEditExchangeModal();
             _exchangeService.Delete(workspace, exchange);
-            exchangeList = workspace.ExchangeList;
+            exchanges = workspace.Exchanges;
             ToastService.Notify(new(ToastType.Success, "Tipo de cambio eliminado con exito!"));
         }
         catch (Exception e)

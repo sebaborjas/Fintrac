@@ -92,10 +92,10 @@
 		if (FintracContext.isLoggedIn)
 		{
 			user = FintracContext.currentUser;
-			workspaces = FintracContext.currentUser.WorkspaceList;
+			workspaces = FintracContext.currentUser.Workspaces;
 			_workspaceService = new WorkspaceService(FintracContext);
 			user = FintracContext.Users
-            .Include(u => u.WorkspaceList)
+            .Include(u => u.Workspaces)
             .FirstOrDefault(u => u.Email == user.Email);
 		}
 	}
@@ -125,8 +125,8 @@
 			{
 				User currentUser = user;
 				newWorkspace = new Domain.Workspace { UserAdmin = user, Name = nameWorkspace };
-				currentUser.WorkspaceList.Add(newWorkspace);
-				workspaces = FintracContext.currentUser.WorkspaceList;
+				currentUser.Workspaces.Add(newWorkspace);
+				workspaces = FintracContext.currentUser.Workspaces;
 
 				ToastService.Notify(new(ToastType.Success, "Workspace agregado correctamente."));
 			}else

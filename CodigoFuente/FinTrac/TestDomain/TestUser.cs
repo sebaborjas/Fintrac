@@ -132,7 +132,7 @@ namespace TestDomain
         [TestMethod]
         public void NotNullWorkspaceList()
         {
-            Assert.IsNotNull(user.WorkspaceList);
+            Assert.IsNotNull(user.Workspaces);
         }
 
         [TestMethod]

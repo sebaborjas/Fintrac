@@ -124,7 +124,7 @@
 			_workspaceService = new WorkspaceService(FintracContext);
 			guestUsers = _workspaceService.ListGuestUsers(workspace);
 			var user = FintracContext.Users
-				.Include(u => u.WorkspaceList)
+				.Include(u => u.Workspaces)
 				.FirstOrDefault(u => u.Email == CurrentUser.Email);
 
 		}

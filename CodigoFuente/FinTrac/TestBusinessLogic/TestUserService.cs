@@ -94,7 +94,7 @@ namespace TestBusinessLogic
 
 			_service.LeaveWorkspace(guestUser, workspace);
 
-			Assert.IsFalse(guestUser.WorkspaceList.Contains(workspace));
+			Assert.IsFalse(guestUser.Workspaces.Contains(workspace));
 		}
 
 	}

@@ -45,25 +45,25 @@ else
         var users = FintracContext.Users
             .ToList();
         var workspaces = FintracContext.Users
-            .Include(u => u.WorkspaceList)
+            .Include(u => u.Workspaces)
             .ToList();
         var workspacesCategories = FintracContext.Users
-           .Include(u => u.WorkspaceList)
-           .ThenInclude(w => w.CategoryList)
+           .Include(u => u.Workspaces)
+           .ThenInclude(w => w.Categories)
            .ToList();
         var workspacesGoals = FintracContext.Users
-            .Include(u => u.WorkspaceList)
-            .ThenInclude(w => w.GoalList)
+            .Include(u => u.Workspaces)
+            .ThenInclude(w => w.Goals)
             .ToList();
         var accountsTransactions = FintracContext.Users
-            .Include(u => u.WorkspaceList)
-            .ThenInclude(w => w.AccountList)
-            .ThenInclude(a => a.TransactionList)
+            .Include(u => u.Workspaces)
+            .ThenInclude(w => w.Accounts)
+            .ThenInclude(a => a.Transactions)
             .ToList();
 
         var goalCategoriesRelation = FintracContext.Users
-                .Include(u => u.WorkspaceList)
-                .ThenInclude(workspace => workspace.GoalList)
+                .Include(u => u.Workspaces)
+                .ThenInclude(workspace => workspace.Goals)
                 .ThenInclude(goal => goal.GoalCategory)
                 .ToList();
 
@@ -78,9 +78,9 @@ else
 
         foreach (var user in allUsers)
         {
-            foreach (var workspace in user.WorkspaceList)
+            foreach (var workspace in user.Workspaces)
             {
-                var goal = workspace.GoalList.FirstOrDefault(g => g.Token == token);
+                var goal = workspace.Goals.FirstOrDefault(g => g.Token == token);
 
                 if (goal != null)
                 {

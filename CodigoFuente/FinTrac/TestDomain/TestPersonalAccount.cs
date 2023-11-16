@@ -101,7 +101,7 @@ namespace TestDomain
 		[TestMethod]
         public void NotNullListOfTransactions()
 		{
-            Assert.IsNotNull(account.TransactionList);
+            Assert.IsNotNull(account.Transactions);
         }
 	}
 }

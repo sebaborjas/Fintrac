@@ -27,7 +27,7 @@ namespace TestBusinessLogic
 
             _userService.Add(useradmin);
             _service.Add(useradmin, workspace);
-            Assert.AreEqual(workspace, useradmin.WorkspaceList.First(x => x == workspace));
+            Assert.AreEqual(workspace, useradmin.Workspaces.First(x => x == workspace));
 
         }
         [TestMethod]
@@ -146,11 +146,11 @@ namespace TestBusinessLogic
                 Currency = CurrencyType.UYU,
             };
 
-            creditCardAccount.TransactionList.Add(transaction1);
-            personalAccount.TransactionList.Add(transaction2);
-            workspace.AccountList.Add(creditCardAccount);
-            workspace.AccountList.Add(personalAccount);
-            workspace.CategoryList.Add(category);
+            creditCardAccount.Transactions.Add(transaction1);
+            personalAccount.Transactions.Add(transaction2);
+            workspace.Accounts.Add(creditCardAccount);
+            workspace.Accounts.Add(personalAccount);
+            workspace.Categories.Add(category);
 
             List<Transactions> expected = new List<Transactions> { transaction1, transaction2 };
             List<Transactions> transactionList = _service.ListAllTransactionsAllAcounts(workspace);
@@ -234,9 +234,9 @@ namespace TestBusinessLogic
 				WorkSpace = workspace
 			};
 
-			workspace.AccountList.Add(creditCardAccount);
-			workspace.AccountList.Add(personalAccount);
-			workspace.AccountList.Add(creditCardAccount2);
+			workspace.Accounts.Add(creditCardAccount);
+			workspace.Accounts.Add(personalAccount);
+			workspace.Accounts.Add(creditCardAccount2);
 
 			List<Account> expected = new List<Account> { creditCardAccount, creditCardAccount2 };
 			List<CreditCard> creditCardList = _service.GetCreditCards(workspace);
@@ -286,9 +286,9 @@ namespace TestBusinessLogic
 				WorkSpace = workspace
 			};
 
-			workspace.AccountList.Add(personalAccount);
-			workspace.AccountList.Add(personalAccount2);
-			workspace.AccountList.Add(creditCardAccount);
+			workspace.Accounts.Add(personalAccount);
+			workspace.Accounts.Add(personalAccount2);
+			workspace.Accounts.Add(creditCardAccount);
 
 			List<Account> expected = new List<Account> { personalAccount, personalAccount2 };
 			List<PersonalAccount> personalAccounts = _service.GetPersonalAccounts(workspace);
@@ -345,8 +345,8 @@ namespace TestBusinessLogic
 			};
 			goal2.Categories.Add(category1);
 
-			workspace.GoalList.Add(goal1);
-			workspace.GoalList.Add(goal2);
+			workspace.Goals.Add(goal1);
+			workspace.Goals.Add(goal2);
 
 			List<GoalsReport> goalsReport = _service.GenerateGoalsReport(workspace);
 			Assert.IsTrue(goalsReport.Count == 2);
@@ -363,8 +363,8 @@ namespace TestBusinessLogic
 
 			Category category1 = new Category { Name = "Category 1", Workspace = workspace };
 			Category category2 = new Category { Name = "Category 2", Workspace = workspace };
-			workspace.CategoryList.Add(category1);
-			workspace.CategoryList.Add(category2);
+			workspace.Categories.Add(category1);
+			workspace.Categories.Add(category2);
 
 			List<CategoryReport> categoryReports = _service.GenerateCategoryReports(workspace, Month.Noviembre);
 

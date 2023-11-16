@@ -74,32 +74,25 @@ namespace TestDomain
         [TestMethod]
         public void AccountListNotNull()
         {
-            Assert.IsNotNull(workspace.AccountList);
-        }
-
-        [TestMethod]
-        public void ReportListNotNull()
-        {
-            Assert.IsNotNull(workspace.ReportList);
-
+            Assert.IsNotNull(workspace.Accounts);
         }
 
         [TestMethod]
         public void ExchangeListNotNull()
         {
-            Assert.IsNotNull(workspace.ExchangeList);
+            Assert.IsNotNull(workspace.Exchanges);
         }
 
         [TestMethod]
         public void CategoryListNotNull()
         {
-            Assert.IsNotNull(workspace.CategoryList);
+            Assert.IsNotNull(workspace.Categories);
         }
 
         [TestMethod]
         public void GoalListNotNull()
         {
-            Assert.IsNotNull(workspace.GoalList);
+            Assert.IsNotNull(workspace.Goals);
         }
     }
 }

@@ -15,7 +15,7 @@
             <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
         </NavLink>
     </div>
-    @if (categoryList.Any())
+    @if (categories.Any())
     {
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
@@ -32,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var category in categoryList)
+                    @foreach (var category in categories)
                     {
                         <tr>
                             <td>@category.CreationDate.ToShortDateString()</td>
@@ -145,7 +145,7 @@
     private User CurrentUser;
     private Domain.Workspace workspace;
     private CategoryService _categoryService;
-    private List<Domain.Category> categoryList;
+    private List<Domain.Category> categories;
     private bool showAddCategoryModal = false;
     private Category newCategory;
     private Category selectedCategory;
@@ -177,7 +177,7 @@
         try
         {
             _categoryService.Update(workspace, selectedCategory.Name, updatedCategory);
-            categoryList = workspace.CategoryList;
+            categories = workspace.Categories;
             ToastService.Notify(new(ToastType.Success, "Categoría modificada con exito!"));
         }
         catch (Exception e)
@@ -205,21 +205,21 @@
         {
             CurrentUser = FintracContext.currentUser;
             workspace = FintracContext.currentWorkspace;
-            categoryList = workspace.CategoryList;
+            categories = workspace.Categories;
             _categoryService = new CategoryService(FintracContext);
             newCategory = new Category();
             var user = FintracContext.Users
-            .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.CategoryList)
+            .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Categories)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
             var workspaceAccounts = FintracContext.Users
-            .Include(u => u.WorkspaceList)
-                .ThenInclude(w => w.AccountList)
+            .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
                 .FirstOrDefault(u => u.Email == CurrentUser.Email);
             var accountsTransactions = FintracContext.Users
-               .Include(u => u.WorkspaceList)
-               .ThenInclude(w => w.AccountList)
-               .ThenInclude(a => a.TransactionList)
+               .Include(u => u.Workspaces)
+               .ThenInclude(w => w.Accounts)
+               .ThenInclude(a => a.Transactions)
                .FirstOrDefault(u => u.Email == CurrentUser.Email);
         }
 
@@ -231,7 +231,7 @@
         {
             newCategory = new Category { CreationDate = initialDate, Name = categoryName, Type = categoryType, Status = categoryStatus };
             _categoryService.Add(workspace, newCategory);
-            categoryList = workspace.CategoryList;
+            categories = workspace.Categories;
             ToastService.Notify(new(ToastType.Success, "Categoría agregada con exito!"));
         }
         catch (Exception e)
@@ -247,7 +247,7 @@
         try
         {
             _categoryService.Delete(workspace, category);
-            categoryList = workspace.CategoryList;
+            categories = workspace.Categories;
             ToastService.Notify(new(ToastType.Success, "Categoría eliminada con exito!"));
         }
         catch (Exception e)

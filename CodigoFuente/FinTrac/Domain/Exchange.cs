@@ -1,5 +1,4 @@
-﻿using Domain;
-using Domain.DataTypes;
+﻿using Domain.DataTypes;
 
 namespace Domain
 {
@@ -45,9 +44,7 @@ namespace Domain
                 }
             }
         }
-
         public CurrencyType Currency { get; set;}
-
         public Workspace Workspace { get; set; }
 
         public override bool Equals(object? obj)
@@ -55,6 +52,5 @@ namespace Domain
             Exchange exchange = (Exchange)obj;
             return this.Date == exchange.Date && this.Currency == exchange.Currency;
         }
-
     }
 }

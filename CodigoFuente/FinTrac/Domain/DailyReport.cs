@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.DataTypes;
+﻿using Domain.DataTypes;
 
 namespace Domain
 {
@@ -15,10 +10,10 @@ namespace Domain
         public double Expenses { get; set; }
         public void CalculateReport()
         {
-            List<Account> accounts = this.WorkSpace.AccountList;
+            List<Account> accounts = this.WorkSpace.Accounts;
             foreach (Account account in accounts)
             {
-                List<Transactions> transactions = account.TransactionList;
+                List<Transactions> transactions = account.Transactions;
                 foreach (Transactions transaction in transactions)
                 {
                     if (transaction.CreationDate == Date)
