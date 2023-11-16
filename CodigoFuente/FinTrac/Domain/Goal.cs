@@ -58,7 +58,7 @@ namespace Domain
         }
 
         public List<Category> Categories { get; set; }
-
+        public List<CategoryGoal> GoalCategory { get; set; }
 
 
         public Workspace Workspace

@@ -61,6 +61,13 @@ else
             .ThenInclude(a => a.TransactionList)
             .ToList();
 
+        var goalCategoriesRelation = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                .ThenInclude(workspace => workspace.GoalList)
+                .ThenInclude(goal => goal.GoalCategory)
+                .ToList();
+
+
         goal = FindGoalByToken(Token);
         _report = GenerateReport();
     }

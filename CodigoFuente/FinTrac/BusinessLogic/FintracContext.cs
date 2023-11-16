@@ -50,7 +50,6 @@ namespace BusinessLogic
             modelBuilder.Entity<Workspace>()
                 .HasOne(workspace => workspace.UserAdmin);
 
-
             modelBuilder.Entity<User>()
                 .HasMany(u => u.RecievedInvitations)
                 .WithOne(i => i.UserToInvite)
@@ -78,7 +77,38 @@ namespace BusinessLogic
                 .HasForeignKey(t => t.AccountId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Category>().HasKey(c => c.Id);
+            modelBuilder.Entity<Goal>().HasKey(g => g.Id);
 
+            modelBuilder.Entity<CategoryGoal>()
+                .HasKey(cg => new { cg.CategoryId, cg.GoalId });
+
+            modelBuilder.Entity<CategoryGoal>()
+                .HasOne(cg => cg.Category)
+                .WithMany(c => c.GoalCategory)
+                .HasForeignKey(cg => cg.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CategoryGoal>()
+                .HasOne(cg => cg.Goal)
+                .WithMany(g => g.GoalCategory)
+                .HasForeignKey(cg => cg.GoalId)
+                .OnDelete(DeleteBehavior.Restrict); // Cambiado a Restrict para evitar eliminación en cascada
+
+            modelBuilder.Entity<Goal>()
+                .HasMany(g => g.Categories)
+                .WithMany(c => c.Goals)
+                .UsingEntity<CategoryGoal>(
+                    j => j.HasOne(cg => cg.Category)
+                          .WithMany(c => c.GoalCategory)
+                          .HasForeignKey(cg => cg.CategoryId)
+                          .OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne(cg => cg.Goal)
+                          .WithMany(g => g.GoalCategory)
+                          .HasForeignKey(cg => cg.GoalId)
+                          .OnDelete(DeleteBehavior.Restrict), // Cambiado a Restrict para evitar eliminación en cascada
+                    j => j.HasKey(cg => new { cg.CategoryId, cg.GoalId })
+                );
 
         }
     }
