@@ -31,7 +31,7 @@ namespace Domain
                             }
                             else
                             {
-                                double currencyValue = this.GetExchangeValueOfDay(transaction.CreationDate);
+                                double currencyValue = this.GetExchangeValueOfDay(transaction.CreationDate, transaction.Currency);
                                 double transactionAmountInUYU = transaction.Amount * currencyValue;
                                 Expenses += transactionAmountInUYU;
                             }
@@ -44,7 +44,7 @@ namespace Domain
                             }
                             else
                             {
-                                double currencyValue = this.GetExchangeValueOfDay(transaction.CreationDate);
+                                double currencyValue = this.GetExchangeValueOfDay(transaction.CreationDate, transaction.Currency);
                                 double transactionAmountInUYU = transaction.Amount * currencyValue;
                                 Income += transactionAmountInUYU;
                             }

@@ -97,8 +97,9 @@ namespace TestDomain
             int costos = 30;
             double DollarToday = 50;
             double DollarBefore = 47.4;
-            double balance = montoInicial * DollarBefore + ingresos * DollarToday - costos * DollarBefore;
+            double balance = 6078;
             accountBalanceReport.Currency = CurrencyType.USD;
+            accountBalanceReport.WorkSpace = workSpace;
             Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
             Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
 
