@@ -196,7 +196,6 @@
             CurrentUser = FintracContext.currentUser;
             workspace = FintracContext.currentWorkspace;
             goalList = workspace.GoalList;
-            workpaceCategoryList = workspace.CategoryList.Where(x => x.Type == CategoryType.Cost).ToList();
             _goalService = new GoalService(FintracContext);
             newGoal = new Goal();
             var user = FintracContext.Users
@@ -204,6 +203,20 @@
                     .ThenInclude(workspace => workspace.GoalList)
                     .ThenInclude(goal => goal.Categories)
                     .FirstOrDefault(u => u.Email == CurrentUser.Email);
+
+            var workspaceCategories = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                .ThenInclude(w => w.CategoryList)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+
+            var goalCategoriesRelation = FintracContext.Users
+                .Include(u => u.WorkspaceList)
+                   .ThenInclude(workspace => workspace.GoalList)
+                   .ThenInclude(goal => goal.GoalCategory)
+                   .FirstOrDefault(u => u.Email == CurrentUser.Email);
+
+            workpaceCategoryList = workspace.CategoryList.Where(x => x.Type == CategoryType.Cost).ToList();
+
         }
 
     }
@@ -227,6 +240,7 @@
     private void ShowAddGoalModal()
     {
         showAddGoalModal = true;
+        selectedGoal = null;
     }
     private void HideAddGoalModal()
     {
@@ -236,7 +250,6 @@
     {
         try
         {
-            Console.WriteLine(selectedCategories.Count);
             Goal newGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
             _goalService.Add(workspace, newGoal);
             goalList = workspace.GoalList;
@@ -247,6 +260,7 @@
             ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
         }
         HideAddGoalModal();
+        selectedCategories = new List<Category>(newGoal.Categories);
         NavigationManager.NavigateTo("/workspace/GoalList");
     }
 
@@ -294,7 +308,7 @@
 
     private void ShowEditGoalModal(Goal goal)
     {
-
+        selectedCategories = new List<Category>(goal.Categories);
         selectedGoal = new Goal
             {
                 Title = goal.Title,
@@ -349,7 +363,6 @@
     {
         try
         {
-
             Goal updatedGoal = new Goal { Title = goalTitle, MaxAmount = goalMaxAmount, Categories = selectedCategories };
             Goal oldGoal = FindGoal(selectedGoal.Title);
             _goalService.Update(oldGoal, updatedGoal);

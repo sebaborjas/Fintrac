@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BusinessLogic.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class UpdateUserWorkspace : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,6 +63,29 @@ namespace BusinessLogic.Migrations
                     table.ForeignKey(
                         name: "FK_Accounts_Workspace_WorkSpaceID",
                         column: x => x.WorkSpaceID,
+                        principalTable: "Workspace",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Category",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    WorkspaceID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Category", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Category_Workspace_WorkspaceID",
+                        column: x => x.WorkspaceID,
                         principalTable: "Workspace",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
@@ -206,35 +229,6 @@ namespace BusinessLogic.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Category",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    WorkspaceID = table.Column<int>(type: "int", nullable: false),
-                    GoalId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Category", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Category_Goal_GoalId",
-                        column: x => x.GoalId,
-                        principalTable: "Goal",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Category_Workspace_WorkspaceID",
-                        column: x => x.WorkspaceID,
-                        principalTable: "Workspace",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Transactions",
                 columns: table => new
                 {
@@ -264,20 +258,44 @@ namespace BusinessLogic.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "CategoryGoal",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    GoalId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryGoal", x => new { x.CategoryId, x.GoalId });
+                    table.ForeignKey(
+                        name: "FK_CategoryGoal_Category_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CategoryGoal_Goal_GoalId",
+                        column: x => x.GoalId,
+                        principalTable: "Goal",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_WorkSpaceID",
                 table: "Accounts",
                 column: "WorkSpaceID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Category_GoalId",
-                table: "Category",
-                column: "GoalId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Category_WorkspaceID",
                 table: "Category",
                 column: "WorkspaceID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryGoal_GoalId",
+                table: "CategoryGoal",
+                column: "GoalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Exchange_WorkspaceID",
@@ -324,6 +342,9 @@ namespace BusinessLogic.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "CategoryGoal");
+
+            migrationBuilder.DropTable(
                 name: "CreditCards");
 
             migrationBuilder.DropTable(
@@ -342,13 +363,13 @@ namespace BusinessLogic.Migrations
                 name: "UsersWorkspaces");
 
             migrationBuilder.DropTable(
+                name: "Goal");
+
+            migrationBuilder.DropTable(
                 name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "Category");
-
-            migrationBuilder.DropTable(
-                name: "Goal");
 
             migrationBuilder.DropTable(
                 name: "Workspace");

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231114235923_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20231116012804_UpdateUserWorkspac2")]
+    partial class UpdateUserWorkspac2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,9 +66,6 @@ namespace BusinessLogic.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("GoalId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -84,11 +81,24 @@ namespace BusinessLogic.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GoalId");
-
                     b.HasIndex("WorkspaceID");
 
                     b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("Domain.CategoryGoal", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GoalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CategoryId", "GoalId");
+
+                    b.HasIndex("GoalId");
+
+                    b.ToTable("CategoryGoal");
                 });
 
             modelBuilder.Entity("Domain.Exchange", b =>
@@ -311,10 +321,6 @@ namespace BusinessLogic.Migrations
 
             modelBuilder.Entity("Domain.Category", b =>
                 {
-                    b.HasOne("Domain.Goal", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("GoalId");
-
                     b.HasOne("Domain.Workspace", "Workspace")
                         .WithMany("CategoryList")
                         .HasForeignKey("WorkspaceID")
@@ -322,6 +328,25 @@ namespace BusinessLogic.Migrations
                         .IsRequired();
 
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("Domain.CategoryGoal", b =>
+                {
+                    b.HasOne("Domain.Category", "Category")
+                        .WithMany("GoalCategory")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Goal", "Goal")
+                        .WithMany("GoalCategory")
+                        .HasForeignKey("GoalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Goal");
                 });
 
             modelBuilder.Entity("Domain.Exchange", b =>
@@ -363,7 +388,7 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.User", "UserToInvite")
                         .WithMany("RecievedInvitations")
                         .HasForeignKey("UserToInviteId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
@@ -441,9 +466,14 @@ namespace BusinessLogic.Migrations
                     b.Navigation("TransactionList");
                 });
 
+            modelBuilder.Entity("Domain.Category", b =>
+                {
+                    b.Navigation("GoalCategory");
+                });
+
             modelBuilder.Entity("Domain.Goal", b =>
                 {
-                    b.Navigation("Categories");
+                    b.Navigation("GoalCategory");
                 });
 
             modelBuilder.Entity("Domain.User", b =>

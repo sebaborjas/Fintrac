@@ -72,7 +72,8 @@ namespace Domain
 		}
 		public Workspace Workspace { get; set; }
 
-
+        public List<Goal> Goals { get; set; }
+        public List<CategoryGoal> GoalCategory { get; set; }
 
         public override bool Equals(object? obj)
         {
