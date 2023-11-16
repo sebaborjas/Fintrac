@@ -45,8 +45,12 @@ namespace Domain
             {
                 string pattern = @"^\d{4}$";
                 Regex regex = new(pattern, RegexOptions.IgnoreCase);
+				if (string.IsNullOrWhiteSpace(value))
+				{
+					throw new ArgumentException("Ingrese los últimos 4 dígitos");
+				}
 
-                if (!regex.IsMatch(value))
+				if (!regex.IsMatch(value))
                 {
                     throw new ArgumentException("Ingrese los últimos 4 dígitos");
                 }
