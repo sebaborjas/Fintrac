@@ -24,7 +24,7 @@ namespace TestBusinessLogic
         private User _user;
         private Account _account;
         private Category _category;
-        private Transaction _transaction;
+        private Transactions _transaction;
         private Exchange _exchange;
 
         [TestInitialize]
@@ -61,7 +61,7 @@ namespace TestBusinessLogic
         [TestMethod]
         public void AddTransactionFoundExchange()
         {
-			_transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
+			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
 			_service.Add(_account, _transaction);
             Assert.AreEqual(_transaction, _service.Get(_account, _transaction.ID));
         }
@@ -70,7 +70,7 @@ namespace TestBusinessLogic
         [ExpectedException(typeof(ExchangeNotFoundException))]
         public void AddTransactionNotFoundExchange()
         {
-			_transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.USD, Title = "Test" };
+			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.USD, Title = "Test" };
 			_exchangeService.Delete(_workspace, _exchange);
             _service.Add(_account, _transaction);
             Assert.AreEqual(_transaction, _service.Get(_account, _transaction.ID));
@@ -79,7 +79,7 @@ namespace TestBusinessLogic
         [TestMethod]
         public void DuplicateTransaction()
         {
-			_transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
+			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
 			_service.Add(_account, _transaction);
             _service.Duplicate(_account, _transaction);
             Assert.IsTrue(_account.Transactions.Count == 2);
@@ -88,7 +88,7 @@ namespace TestBusinessLogic
         [TestMethod]
         public void ModifyTransaction()
         {
-			_transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
+			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
 			_service.Add(_account, _transaction);
             string newTitle = "Transaccion editada";
             double newAmount = 200;
@@ -101,7 +101,7 @@ namespace TestBusinessLogic
         [TestMethod]
         public void GetTransaction()
         {
-			_transaction = new Transaction { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
+			_transaction = new Transactions { Account = _account, Amount = 100, Category = _category, Currency = CurrencyType.UYU, Title = "Test" };
 			_service.Add(_account, _transaction);
             Assert.AreEqual(_transaction, _service.Get(_account, _transaction.ID));
         }

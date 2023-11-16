@@ -81,12 +81,12 @@ namespace BusinessLogic
                 .WithMany().HasForeignKey(i => i.AdminId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Transaction>()
+            modelBuilder.Entity<Transactions>()
                 .HasOne(t => t.Category)
                 .WithMany().HasForeignKey(c => c.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Transaction>()
+            modelBuilder.Entity<Transactions>()
                 .HasOne(t => t.Account)
                 .WithMany(a => a.Transactions)
                 .HasForeignKey(t => t.AccountId)

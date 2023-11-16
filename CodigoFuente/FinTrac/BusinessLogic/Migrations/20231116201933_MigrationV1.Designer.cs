@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(FintracContext))]
-    [Migration("20231116194530_UpdateUserworkspace8")]
-    partial class UpdateUserworkspace8
+    [Migration("20231116201933_MigrationV1")]
+    partial class MigrationV1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -428,7 +428,7 @@ namespace BusinessLogic.Migrations
                     b.HasOne("Domain.Workspace", "Workspace")
                         .WithMany("UserWorkspace")
                         .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");

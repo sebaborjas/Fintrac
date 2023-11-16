@@ -15,8 +15,8 @@ namespace TestDomain
 		private CategoryReport categoryReportUYU; 
 		private CategoryReport categoryReportUSD;
 		private Workspace workSpace;
-		private List<Transaction> transactionList;
-		private List<Transaction> transactionListUSD;
+		private List<Transactions> transactionList;
+		private List<Transactions> transactionListUSD;
 		private Account account;
 		private Account accountUSD;
 		private Category category;
@@ -44,11 +44,11 @@ namespace TestDomain
 			category = new Category { Name = "Cosas personales", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = workSpace };
 			categoryHome = new Category { Name = "Hogar", Status = CategoryStatus.Active, Type = CategoryType.Cost, Workspace = workSpace };
 
-			transactionList = new List<Transaction>();
+			transactionList = new List<Transactions>();
 
-			Transaction firstTransaction = new Transaction { Title = "Gasto 1", Amount = 2000, Account = account, Category = category, Currency = CurrencyType.UYU };
-			Transaction secondTransaction = new Transaction { Title = "Gasto 2", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
-			Transaction thirdTransaction = new Transaction { Title = "Gasto 3", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
+			Transactions firstTransaction = new Transactions { Title = "Gasto 1", Amount = 2000, Account = account, Category = category, Currency = CurrencyType.UYU };
+			Transactions secondTransaction = new Transactions { Title = "Gasto 2", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
+			Transactions thirdTransaction = new Transactions { Title = "Gasto 3", Amount = 1000, Account = account, Category = category, Currency = CurrencyType.UYU };
 
 			transactionList.Add(firstTransaction);
 			transactionList.Add(secondTransaction);
@@ -58,11 +58,11 @@ namespace TestDomain
 
 			workSpace.Accounts.Add(account);
 
-			transactionListUSD = new List<Transaction>();
+			transactionListUSD = new List<Transactions>();
 
-			Transaction firstTransactionUSD = new Transaction { Title = "Gasto 1", Amount = 20, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
-			Transaction secondTransactionUSD = new Transaction { Title = "Gasto 2", Amount = 35, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome, };
-			Transaction thirdTransactionUSD = new Transaction { Title = "Gasto 3", Amount = 40, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
+			Transactions firstTransactionUSD = new Transactions { Title = "Gasto 1", Amount = 20, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
+			Transactions secondTransactionUSD = new Transactions { Title = "Gasto 2", Amount = 35, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome, };
+			Transactions thirdTransactionUSD = new Transactions { Title = "Gasto 3", Amount = 40, Currency = CurrencyType.USD, Account = accountUSD, Category = categoryHome };
 
 			transactionListUSD.Add(firstTransactionUSD);
 			transactionListUSD.Add(secondTransactionUSD);

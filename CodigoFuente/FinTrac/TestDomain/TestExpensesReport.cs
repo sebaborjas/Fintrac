@@ -15,7 +15,7 @@ namespace TestDomain
         ExpensesReport expensesReport;
         Workspace workSpace;
 
-        List<Transaction> transactionList;
+        List<Transactions> transactionList;
         
         [TestInitialize]
         public void SetUp() 
@@ -31,12 +31,12 @@ namespace TestDomain
             Category categoryCost = new Category { Name = "Egresos", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-10) };
             Category categoryIncome = new Category { Name = "Ingresos", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-7) };
 
-            Transaction firstTransaction = new Transaction { Title = "Gasto panaderia", Amount = 100, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddDays(-6) };
-            Transaction secondTransaction = new Transaction { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddDays(-5) };
+            Transactions firstTransaction = new Transactions { Title = "Gasto panaderia", Amount = 100, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddDays(-6) };
+            Transactions secondTransaction = new Transactions { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddDays(-5) };
 
-            Transaction thirdRransaction = new Transaction { Title = "Venta remera", Amount = 600, Currency = CurrencyType.UYU, Category = categoryIncome, Account = commerceAccount, CreationDate = DateTime.Today.AddDays(-2) };
+            Transactions thirdRransaction = new Transactions { Title = "Venta remera", Amount = 600, Currency = CurrencyType.UYU, Category = categoryIncome, Account = commerceAccount, CreationDate = DateTime.Today.AddDays(-2) };
 
-            transactionList = new List<Transaction> { firstTransaction, secondTransaction };
+            transactionList = new List<Transactions> { firstTransaction, secondTransaction };
 
             
 
@@ -71,7 +71,7 @@ namespace TestDomain
         [TestMethod]
         public void ListExpenses()
         {
-            List<Transaction> transactionListsFromMethod = expensesReport.Expenses();
+            List<Transactions> transactionListsFromMethod = expensesReport.Expenses();
 
 
             CollectionAssert.AreEqual(transactionList, transactionListsFromMethod);
@@ -83,9 +83,9 @@ namespace TestDomain
 
             string categoryName = "Egresos";
 
-            List<Transaction> transactionListsFromMethod = expensesReport.ExpensesByCategory(categoryName);
+            List<Transactions> transactionListsFromMethod = expensesReport.ExpensesByCategory(categoryName);
 
-            List<Transaction> transactionListEgresos = transactionList.Where(transaction => transaction.Category.Name == categoryName).ToList();
+            List<Transactions> transactionListEgresos = transactionList.Where(transaction => transaction.Category.Name == categoryName).ToList();
 
 
             CollectionAssert.AreEqual(transactionListEgresos, transactionListsFromMethod);
@@ -97,7 +97,7 @@ namespace TestDomain
 
             string categoryName = "Gastos Mayo";
 
-            List<Transaction> transactionListsFromMethod = expensesReport.ExpensesByCategory(categoryName);
+            List<Transactions> transactionListsFromMethod = expensesReport.ExpensesByCategory(categoryName);
 
 
             Assert.AreEqual(0,transactionListsFromMethod.Count);
@@ -111,9 +111,9 @@ namespace TestDomain
             DateTime secondDate = DateTime.Today.AddDays(-4);
 
 
-            List<Transaction> transactionListsFromMethod = expensesReport.ExpensesByDate(firstDate, secondDate);
+            List<Transactions> transactionListsFromMethod = expensesReport.ExpensesByDate(firstDate, secondDate);
 
-            List<Transaction> transactionListEgresos = transactionList.Where(transaction => transaction.CreationDate >= firstDate && transaction.CreationDate <= secondDate).ToList();
+            List<Transactions> transactionListEgresos = transactionList.Where(transaction => transaction.CreationDate >= firstDate && transaction.CreationDate <= secondDate).ToList();
 
 
             CollectionAssert.AreEqual(transactionListsFromMethod, transactionListEgresos);
@@ -128,7 +128,7 @@ namespace TestDomain
             DateTime secondDate = DateTime.Today.AddDays(-6);
 
 
-            List<Transaction> transactionListsFromMethod = expensesReport.ExpensesByDate(firstDate, secondDate);
+            List<Transactions> transactionListsFromMethod = expensesReport.ExpensesByDate(firstDate, secondDate);
         }
 
         [TestMethod]
@@ -137,9 +137,9 @@ namespace TestDomain
 
             string accountName = "Cuenta Personal";
 
-            List<Transaction> transactionListsFromMethod = expensesReport.ExpensesByAccount(accountName);
+            List<Transactions> transactionListsFromMethod = expensesReport.ExpensesByAccount(accountName);
 
-            List<Transaction> transactionsPersonalAccount = transactionList.Where(transaction => transaction.Account.Name == accountName).ToList();
+            List<Transactions> transactionsPersonalAccount = transactionList.Where(transaction => transaction.Account.Name == accountName).ToList();
 
 
             CollectionAssert.AreEqual(transactionListsFromMethod, transactionsPersonalAccount);
@@ -151,7 +151,7 @@ namespace TestDomain
 
             string accountName = "Cuenta Personal";
 
-            List<Transaction> transactionListsFromMethod = expensesReport.ExpensesByAccount(accountName);
+            List<Transactions> transactionListsFromMethod = expensesReport.ExpensesByAccount(accountName);
 
 
             Assert.AreEqual(0,transactionListsFromMethod.Count);

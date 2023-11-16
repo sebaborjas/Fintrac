@@ -55,7 +55,7 @@ namespace Domain
 				_workSpace = value;
 			}
 		}
-		public List<Transaction> Transactions { get; set; } = new List<Transaction>();
+		public List<Transactions> Transactions { get; set; } = new List<Transactions>();
 		public abstract void Update(Account account);
 
 		public override bool Equals(object obj)
