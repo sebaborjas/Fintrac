@@ -1,0 +1,660 @@
+﻿@page "/workspace/ReportList"
+@using System.Text.Json
+@using Domain
+@using Domain.DataTypes
+@using Microsoft.EntityFrameworkCore;
+@inject FintracContext FintracContext
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (FintracContext.isLoggedIn)
+{
+    <PageTitle>Reportes</PageTitle>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/workspace">
+            <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+        </NavLink>
+    </div>
+    <h3>Reportes</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Seleccione el reporte que desea generar:</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td> <button class="btn btn-primary btn-block" @onclick="() => ShowGoalReportModal()">Reporte de Objetivos de Gastos</button></td>
+            </tr>
+            <tr>
+                <td> <button class="btn btn-primary btn-block" @onclick="() => ShowCategoryReportsModal()">Reporte de Gastos por Categoría</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-primary btn-block" @onclick="() => ShowExpenseListModal()">Listado de Gastos</button></td>
+            </tr>
+            <tr>
+                <td><button class="btn btn-primary btn-block" @onclick="ShowCreditCardModal">Reporte de Gastos por Tarjeta</button></td>
+            </tr>
+            <tr>
+                <td> <button class="btn btn-primary btn-block" @onclick="ShowAccountBalanceModal">Balance de Cuentas</button></td>
+            </tr>
+            <tr>
+                <td> <button class="btn btn-primary btn-block" @onclick="ShowMonthlyReportModal">Reporte Mensual</button></td>
+            </tr>
+        </tbody>
+    </table>
+    @if (showExpenseList)
+    {
+        @if (expenses.Any())
+        {
+            <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Listado de Gastos</h5>
+                            <button type="button" class="close" @onclick="HideExpenseListModal">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="categoryFilter">Categoría:</label>
+                                    <select class="form-control" id="categoryFilter" @bind="selectedCategory">
+                                        <option value="">Todas</option>
+                                        @foreach (var category in categories)
+                                        {
+                                            <option value="@category.Name">@category.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="accountFilter">Cuenta:</label>
+                                    <select class="form-control" id="accountFilter" @bind="selectedAccountExpensesName">
+                                        <option value="">Todas</option>
+                                        @foreach (var account in accounts)
+                                        {
+                                            <option value="@account.Name">@account.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="startDateFilter">Fecha Inicial:</label>
+                                    <input type="date" class="form-control" id="startDateFilter" @bind="startDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="endDateFilter">Fecha Final:</label>
+                                    <input type="date" class="form-control" id="endDateFilter" @bind="endDate" min="@startDate.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                </div>
+                            </div>
+
+                            <table class="table mt-3">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Categoría</th>
+                                        <th>Monto</th>
+                                        <th>Cuenta</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var expense in FilterExpenses())
+                                    {
+                                        <tr>
+                                            <td>@expense.CreationDate.ToShortDateString()</td>
+                                            <td>@expense.Category.Name</td>
+                                            <td>@expense.Amount.ToString("N2")</td>
+                                            <td>@expense.Account.Name</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="HideExpenseListModal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Listado de Gastos</h5>
+                            <button type="button" class="close" @onclick="HideExpenseListModal">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>No hay gastos para mostrar</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="HideExpenseListModal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    @if (showCreditCardModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Seleccionar Tarjeta</h5>
+                        <button type="button" class="close" @onclick="HideCreditCardModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <select class="form-control" @bind="selectedCreditCard">
+                            <option disabled value="">Seleccione una tarjeta</option>
+                            @foreach (var creditCard in creditCards)
+                            {
+                                <option value="@creditCard.Name">@creditCard.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="HideCreditCardModal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" @onclick="GenerateReportByCreditCard">Generar Reporte</button>
+                    </div>
+
+                    <div class="mx-1">
+                        @if (showCreditCardTransactions)
+                        {
+                            @if (transactionsCreditCard.Count > 0)
+                            {
+                                <p class="mx-1" style="font-weight: bold; font-size: 1.2em;">Transacciones registradas en @DateTime.Now.ToString("MMMM"):</p>
+
+                                <div class="table-responsive-md">
+                                    <table class="table table-md table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Título</th>
+                                                <th>Fecha</th>
+                                                <th>Monto</th>
+                                                <th>Moneda</th>
+                                                <th>Cuenta</th>
+                                                <th>Categoría</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var transaction in transactionsCreditCard)
+                                            {
+                                                <tr>
+                                                    <td>@transaction.Title</td>
+                                                    <td>@transaction.CreationDate.ToShortDateString()</td>
+                                                    <td>@transaction.Amount.ToString("N2")</td>
+                                                    <td>@transaction.Currency</td>
+                                                    <td>@transaction.Account.Name</td>
+                                                    <td>@transaction.Category.Name</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="mx-3" style="font-weight: bold; font-size: 1.2em;">No hay transacciones registradas en @DateTime.Now.ToString("MMMM")!</p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (showAccountBalance)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Balance de Cuentas</h5>
+                        <button type="button" class="close" @onclick="HideAccountBalanceModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <select class="form-control" @bind="selectedAccountName">
+                            <option disabled value="">Seleccione una cuenta</option>
+                            @foreach (var account in personalAccounts)
+                            {
+                                <option value="@account.Name">@account.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="HideAccountBalanceModal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" @onclick="GetSelectedAccountBalance">Generar Reporte</button>
+                    </div>
+
+                    <div class="mx-2">
+                        @if (selectedAccount != null)
+                        {
+                            @if (onChangeSelectedCreditCard == selectedAccountName && accountBalance > 0)
+                            {
+                                <p class="mx-2" style="font-size: 1.2em;">Saldo de la cuenta @selectedAccountName:</p>
+                                <p class="mx-2">$ UYU : @accountBalance</p>
+                            }
+                            else
+                            {
+                                <p p class="mx-2">Debe generar el reporte para ver el saldo de la cuenta seleccionada!</p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    @if (showGoalReport)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reporte de Objetivos de Gastos</h5>
+                        <button type="button" class="close" @onclick="HideGoalReportModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @if (goalsReports.Any())
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Objetivo</th>
+                                        <th>Monto Definido</th>
+                                        <th>Monto Gastado</th>
+                                        <th>Objetivo Cumplido</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var report in goalsReports)
+                                    {
+                                        <tr style="background-color: @(report.GoalAchieved ? "#DFF0D8" : "#F2DEDE")">
+                                            <td>@report.Goal.Title</td>
+                                            <td>UYU: @report.Goal.MaxAmount.ToString("N2")</td>
+                                            <td>UYU: @report.AmountSpent.ToString("N2")</td>
+                                            <td>@(report.GoalAchieved ? "Sí" : "No")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>No hay objetivos definidos para mostrar.</p>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="HideGoalReportModal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    @if (showCategoryReportsModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reportModalLabel">Generar reporte de Categorias</h5>
+                        <button type="button" class="close" @onclick="HideCategoryReportsModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="selectMonth">Seleccionar Mes:</label>
+                            <select class="form-control" @bind="selectedMonth">
+                                <option disabled value="">Seleccione un mes</option>
+                                @foreach (Domain.DataTypes.Month month in Enum.GetValues(typeof(Domain.DataTypes.Month)))
+                                {
+                                    <option value="@month">@month</option>
+                                }
+                            </select>
+                        </div>
+                        @if (categoryReports != null)
+                        {
+                            <div class="m-2">
+                                <p style="font-weight: bold; font-size: 1.2em;">Para el mes de @selectedMonth:</p>
+                                @if (categoryReports != null && categoryReports.Any())
+                                {
+                                    <table class="table">
+                                        <tbody>
+                                            @foreach (var report in categoryReports)
+                                            {
+                                                <tr>
+                                                    <td>@report.CalculateReport()</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                                else
+                                {
+                                    <p>No hay datos disponibles para mostrar.</p>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="HideCategoryReportsModal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" @onclick="GenerateCategoryReports">Generar Informes</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+    @if (showMonthlyReportModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reportModalLabel">Generar reporte Mensual</h5>
+                        <button type="button" class="close" @onclick="HideMonthlyReportModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="selectMonth">Seleccionar Mes:</label>
+                            <select class="form-control" @bind="selectedMonth">
+                                <option disabled value="">Seleccione un mes</option>
+                                @foreach (Domain.DataTypes.Month month in Enum.GetValues(typeof(Domain.DataTypes.Month)))
+                                {
+                                    <option value="@month">@month</option>
+                                }
+                            </select>
+                            <label for="inputYear">Ingresar Año:</label>
+                            <select class="form-control" @bind="selectedYear">
+                                <option disabled value="">Seleccione un año</option>
+                                @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 50; year--)
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                        </div>
+
+                        @if (DailyReports != null)
+                        {
+                            <div class="m-2">
+                                <p style="font-weight: bold; font-size: 1.2em;">Para el mes de @selectedMonth:</p>
+                                @if (DailyReports != null && DailyReports.Any())
+                                {
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Día</th>
+                                                <th>Ingreso</th>
+                                                <th>Egreso</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var report in DailyReports)
+                                            {
+                                                <tr>
+                                                    <td>@report.Date.Day</td>
+                                                    <td>@report.Income</td>
+                                                    <td>@report.Expenses</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                                else
+                                {
+                                    <p>No hay datos disponibles para mostrar.</p>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="HideMonthlyReportModal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" @onclick="GenerateMonthlyReport">Generar Informes</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+    @code {
+    private User CurrentUser;
+    private Domain.Workspace workspace;
+    private bool showExpenseList = false;
+    private bool showCreditCardModal = false;
+    private bool showCreditCardTransactions = false;
+    private bool showAccountBalance = false;
+    private bool showGoalReport = false;
+    private bool showCategoryReportsModal = false;
+    private bool showMonthlyReportModal = false;
+    private List<Transactions> expenses;
+    private List<Report> reports;
+    private string selectedCategory = "";
+    private string selectedCreditCard = "";
+    private string onChangeSelectedCreditCard = "";
+    private string selectedAccountExpensesName = "";
+    private Domain.DataTypes.Month selectedMonth;
+    private int selectedYear;
+    private DateTime startDate = DateTime.Today;
+    private DateTime endDate = DateTime.Today;
+    private string selectedAccountName = "";
+    private PersonalAccount selectedAccount;
+    private ExpensesReport expensesReport;
+    private User selectedAccountExpenses;
+    private AccountBalanceReport accountBalanceReport;
+    private double accountBalance = 0;
+    private List<Category> categories;
+    private List<Account> accounts;
+    private List<CreditCard> creditCards;
+    private List<PersonalAccount> personalAccounts;
+    private List<GoalsReport> goalsReports;
+    private List<CategoryReport> categoryReports;
+    private List<DailyReport> DailyReports;
+    private WorkspaceService _workspaceService;
+    private AccountService _accountService;
+    private List<Transactions> transactionsCreditCard;
+    private Account currentAccount;
+
+    protected override void OnInitialized()
+    {
+        if (FintracContext.isLoggedIn)
+        {
+            CurrentUser = FintracContext.currentUser;
+            workspace = FintracContext.currentWorkspace;
+            _workspaceService = new WorkspaceService(FintracContext);
+            _accountService = new AccountService(FintracContext);
+            accounts = workspace.Accounts;
+            categories = workspace.Categories;
+            var workspaceData = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceAccounts = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceCategories = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Categories)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceExchanges = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Exchanges)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var accountsTransactions = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
+                .ThenInclude(a => a.Transactions)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceGoals = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(workspace => workspace.Goals)
+                .ThenInclude(goal => goal.Categories)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+
+            expensesReport = new ExpensesReport { WorkSpace = workspace, Currency = CurrencyType.UYU };
+            expenses = expensesReport.Expenses();
+            selectedYear = DateTime.Now.Year;
+            selectedMonth = Domain.DataTypes.Month.Enero;
+            creditCards = _workspaceService.GetCreditCards(workspace);
+            personalAccounts = _workspaceService.GetPersonalAccounts(workspace);
+        }
+    }
+
+    private void ShowExpenseListModal()
+    {
+        showExpenseList = true;
+    }
+    private void HideExpenseListModal()
+    {
+        showExpenseList = false;
+    }
+    private List<Transactions> FilterExpenses()
+    {
+        List<Transactions> filteredExpenses = expenses;
+
+        if (!string.IsNullOrEmpty(selectedCategory))
+        {
+            filteredExpenses = filteredExpenses
+                .Where(t => t.Category.Name == selectedCategory)
+                .ToList();
+        }
+        if (!string.IsNullOrEmpty(selectedAccountExpensesName))
+        {
+            filteredExpenses = filteredExpenses
+                .Where(t => t.Account.Name == selectedAccountExpensesName)
+                .ToList();
+        }
+        if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+        {
+            filteredExpenses = filteredExpenses
+                .Where(t => t.CreationDate >= startDate && t.CreationDate <= endDate)
+                .ToList();
+        }
+        return filteredExpenses;
+    }
+
+    private void ShowCreditCardModal()
+    {
+        showCreditCardModal = true;
+    }
+    private void HideCreditCardModal()
+    {
+        showCreditCardModal = false;
+    }
+    private void GenerateReportByCreditCard()
+    {
+        if (selectedCreditCard != "")
+        {
+            currentAccount = _accountService.Get(workspace, selectedCreditCard);
+            transactionsCreditCard = currentAccount.Transactions;
+            showCreditCardTransactions = true;
+        }
+        else
+        {
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Message = "Selecione una Terjeta de Crédito"
+                });
+        }
+    }
+
+    private void ShowAccountBalanceModal()
+    {
+        personalAccounts = _workspaceService.GetPersonalAccounts(workspace);
+        showAccountBalance = true;
+    }
+    private void HideAccountBalanceModal()
+    {
+        showAccountBalance = false;
+    }
+    private void GetSelectedAccountBalance()
+    {
+        if (!string.IsNullOrEmpty(selectedAccountName))
+        {
+            onChangeSelectedCreditCard = new String(selectedAccountName);
+            selectedAccount = (PersonalAccount)_accountService.Get(workspace, selectedAccountName);
+            accountBalanceReport = new AccountBalanceReport { WorkSpace = workspace, Account = selectedAccount };
+            accountBalance = accountBalanceReport.CalculateBalance();
+        }
+    }
+
+    private void ShowGoalReportModal()
+    {
+        goalsReports = _workspaceService.GenerateGoalsReport(workspace);
+        showGoalReport = true;
+    }
+    private void HideGoalReportModal()
+    {
+        showGoalReport = false;
+    }
+
+    private void ShowCategoryReportsModal()
+    {
+        showCategoryReportsModal = true;
+    }
+    private void HideCategoryReportsModal()
+    {
+        showCategoryReportsModal = false;
+    }
+    private void GenerateCategoryReports()
+    {
+        if (selectedMonth != 0)
+        {
+            categoryReports = _workspaceService.GenerateCategoryReports(workspace, selectedMonth);
+        }
+        else
+        {
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Message = "Seleccione un mes."
+                });
+        }
+    }
+    private void ShowMonthlyReportModal()
+    {
+        showMonthlyReportModal = true;
+    }
+    private void HideMonthlyReportModal()
+    {
+        showMonthlyReportModal = false;
+    }
+
+    private void GenerateMonthlyReport()
+    {
+        if (selectedMonth != 0)
+        {
+            DailyReports = _workspaceService.GenerateMonthlyReport(workspace, selectedMonth, selectedYear);
+        }
+        else
+        {
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Message = "Seleccione un mes."
+                });
+        }
+    }
+}
+}
+else
+{
+    NavigationManager.NavigateTo("/login");
+}

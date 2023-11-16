@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using Domain.Exceptions;
 
 namespace Domain
 {
     public class User
     {
+
         private string _name;
         private string _lastName;
         private string _email;
@@ -92,10 +87,10 @@ namespace Domain
                 _password = value;
             }
         }
+        public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
+        public List<Invitation> RecievedInvitations { get; set; } = new List<Invitation>();
 
-        public List<Workspace> WorkspaceList { get; set; } = new List<Workspace>();
-
-        public List<Invitation> RecievedInvitations { get; set; } = new List<Invitation>(); 
+        public List<UserWorkspace> UserWorkspace { get; set; }
 
         public override bool Equals(object? obj)
         {

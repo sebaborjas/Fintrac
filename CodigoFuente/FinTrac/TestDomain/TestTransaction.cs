@@ -12,28 +12,28 @@ namespace TestDomain
     [TestClass]
     public class TestTransaction
     {
-        Transaction transaction;
+        Transactions transaction;
         Category category;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            transaction = new Transaction();
+            transaction = new Transactions();
             category = new Category();
         }
 
         [TestMethod]
         public void EqualsTransaction()
         {
-            Transaction otherTransaction = transaction;
+            Transactions otherTransaction = transaction;
 
             Assert.AreEqual(transaction, transaction);
         }
 
         [TestMethod]
-        public void NotEqualsUsers()
+        public void NotEqualsTransaction()
         {
-            Transaction otherTransaction = new Transaction { Title = "Test" };
+            Transactions otherTransaction = new Transactions { Title = "Test" , ID = 2};
 
             Assert.AreNotEqual(otherTransaction, transaction);
         }
@@ -102,13 +102,6 @@ namespace TestDomain
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
-        public void TestCurrencyInvalid()
-        {
-            transaction.Currency = (CurrencyType)3;
-        }
-
-        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestAccountNull()
         {
@@ -119,7 +112,7 @@ namespace TestDomain
         public void TestPersonalAccount()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
             transaction.Account = account;
             Assert.AreEqual(account, transaction.Account);
@@ -129,7 +122,7 @@ namespace TestDomain
         public void TestCreditCardAccount()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new CreditCard
             {
                 BankName = "Test",
@@ -171,7 +164,7 @@ namespace TestDomain
         public void TestTransactionCurrencyEqualsAccountCurrency()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
 
             transaction.Account = account;
@@ -186,7 +179,7 @@ namespace TestDomain
         public void TestTransactionCurrencyNotEqualsAccountCurrency()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            Workspace workSpace = new Workspace(newUser, "Test");
+            Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             Account account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU };
 
             transaction.Currency = CurrencyType.USD;

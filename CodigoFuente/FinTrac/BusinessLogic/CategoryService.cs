@@ -11,61 +11,79 @@ namespace BusinessLogic
 {
     public class CategoryService
     {
-        private readonly MemoryDatabase _memoryDatabase;
-
-        public CategoryService(MemoryDatabase memoryDatabase)
+        private readonly FintracContext _database;
+        public CategoryService(FintracContext database)
         {
-            _memoryDatabase = memoryDatabase;
+            _database = database;
         }
 
         public void Add(Workspace workspace, Category category)
         {
-            if (workspace.CategoryList.Contains(category))
+            if (workspace.Categories.Contains(category))
             {
                 throw new CategoryAlreadyExistsException();
             }
             try
             {
-                workspace.CategoryList.Add(category);
+                workspace.Categories.Add(category);
             }
             catch (Exception exception)
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
 
         public Category Get(Workspace workspace, string name)
         {
-            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.Find(x => x.ID == workspace.ID).CategoryList.Find(x => x.Name == name);
+            User user = _database.Users.Where(x => x.Workspaces.Contains(workspace)).FirstOrDefault<User>();
+
+            if (user == null)
+            {
+                return null;
+            }
+            Workspace workspaceToFind = user.Workspaces.FirstOrDefault(x => x.ID == workspace.ID);
+            if (workspaceToFind == null)
+            {
+                return null;
+            }
+            Category category = workspaceToFind.Categories.FirstOrDefault(x => x.Name == name);
+            if (category == null)
+            {
+                return null;
+            }
+            return category;
         }
 
         public void Delete(Workspace workspace, Category category)
         {
-            var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
-            if (user != null)
+            var user = _database.Users.Where(x => x.Workspaces.Contains(workspace)).FirstOrDefault<User>();
+            if (user == null)
             {
-                var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
-                if (targetWorkspace != null)
+                throw new ArgumentNullException();
+            }
+            var targetWorkspace = user.Workspaces.Find(x => x.ID == workspace.ID);
+            if (targetWorkspace == null)
+            {
+                throw new ArgumentNullException();
+            }
+            foreach (var account in targetWorkspace.Accounts.Where(a => a.Transactions.Count > 0))
+            {
+                var transaction = account.Transactions.Find(x => x.Category == category);
+                if (transaction != null)
                 {
-                    var accountWithTransactions = targetWorkspace.AccountList.Find(x => x.TransactionList.Count > 0);
-                    if (accountWithTransactions != null)
-                    {
-                        var transaction = accountWithTransactions.TransactionList.Find(x => x.Category == category);
-                        if (transaction != null)
-                        {
-                            throw new CategoryHasTransactionsException();
-                        }
-                    }
+                    throw new CategoryHasTransactionsException();
                 }
             }
             try
             {
-                workspace.CategoryList.Remove(category);
+                workspace.Categories.Remove(category);
             }
             catch (Exception exception)
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
 
         public void Update(Workspace workspace, string categoryToUpdate, Category updatedCategory)
@@ -82,35 +100,47 @@ namespace BusinessLogic
                 }
                 else
                 {
-                    var user = _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace));
-                    if (user != null)
+                    var user = _database.Users.Where(x => x.Workspaces.Contains(workspace)).FirstOrDefault<User>();
+                    if (user == null)
                     {
-                        var targetWorkspace = user.WorkspaceList.Find(x => x.ID == workspace.ID);
-                        if (targetWorkspace != null)
+                        throw new ArgumentNullException();
+                    }
+                    var targetWorkspace = user.Workspaces.Find(x => x.ID == workspace.ID);
+                    if (targetWorkspace == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    var accountWithTransactions = targetWorkspace.Accounts.Find(x => x.Transactions.Count > 0);
+                    if (accountWithTransactions == null)
+                    {
+                        targetWorkspace.Categories.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
+                        return;
+                    }
+                    foreach (var account in targetWorkspace.Accounts.Where(a => a.Transactions.Count > 0))
+                    {
+                        var transaction = account.Transactions.Find(x => x.Category.Name == updatedCategory.Name);
+                        if (transaction != null)
                         {
-                            var accountWithTransactions = targetWorkspace.AccountList.Find(x => x.TransactionList.Count > 0);
-                            if (accountWithTransactions != null)
+                            if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
                             {
-                                var transaction = accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate));
-                                if (transaction != null)
-                                {
-                                    if (Get(workspace, categoryToUpdate).Status != updatedCategory.Status || Get(workspace, categoryToUpdate).Type != updatedCategory.Type)
-                                    {
-                                        throw new CategoryHasTransactionsException("No se puede cambiar el tipo ni el estado a una categoría que tiene transacciones");
-                                    }
-                                    accountWithTransactions.TransactionList.Find(x => x.Category == Get(workspace, categoryToUpdate)).Category = updatedCategory;
-                                }
+                                throw new CategoryHasTransactionsException("No se puede cambiar el tipo ni el estado a una categoría que tiene transacciones");
+                            }
+                            else
+                            {
+                                targetWorkspace.Categories.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
                             }
                         }
-                        targetWorkspace.CategoryList.Find(x => x.Name == categoryToUpdate).Name = updatedCategory.Name;
                     }
+                    Category category = Get(workspace, updatedCategory.Name);
+                    category.Status = updatedCategory.Status;
+                    category.Type = updatedCategory.Type;
                 }
             }
-
             catch (Exception exception)
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
     }
 }

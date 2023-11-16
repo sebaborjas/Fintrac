@@ -18,7 +18,7 @@ namespace TestDomain
         {
             admin = new User();
             userToInvite = new User();
-            workspace = new Workspace(admin, "Test");
+            workspace = new Workspace{ UserAdmin = admin, Name = $"Espacio personal de {admin.Name} {admin.LastName}" };
         }
 
         [TestMethod]

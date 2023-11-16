@@ -2,14 +2,20 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@using Microsoft.EntityFrameworkCore;
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de cambios </PageTitle>
-    @if (exchangeList.Any())
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/workspace">
+            <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+        </NavLink>
+    </div>
+    @if (exchanges.Any())
     {
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
@@ -20,16 +26,18 @@
                 <thead>
                     <tr>
                         <th>Fecha</th>
-                        <th>Valor del dolar</th>
+                        <th>Moneda</th>
+                        <th>Valor de la moneda</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var exchange in exchangeList)
+                    @foreach (var exchange in exchanges)
                     {
                         <tr>
                             <td>@exchange.Date.ToShortDateString()</td>
-                            <td>@exchange.DollarValue</td>
+                            <td>@exchange.Currency</td>
+                            <td>@exchange.CurrencyValue</td>
                             <td>
                                 <button class="btn btn-primary" @onclick="() => ShowEditExchangeModal(exchange)">Editar</button>
                                 <button class="btn btn-danger" @onclick="() => DeleteExchange(exchange)">Eliminar</button>
@@ -38,7 +46,6 @@
                     }
                 </tbody>
             </table>
-
         </div>
     }
     else
@@ -68,8 +75,18 @@
                             <input type="date" class="form-control" id="creationDate" @bind="initialDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
                         </div>
                         <div class="form-group">
-                            <label for="availableCredit">Valor del Dolar</label>
-                            <input type="number" class="form-control" id="dollarValue" @bind="dollarValue" />
+                            <label for="currency">Moneda</label>
+                            <select class="form-control" id="currency" @bind="newCurrencyType">
+                                <option value="" disabled selected>Seleccionar</option>
+                                @foreach (var value in Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>().Where(c => c != CurrencyType.UYU))
+                                {
+                                    <option value="@value">@value</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="availableCredit">Valor de la moneda</label>
+                            <input type="number" class="form-control" id="dollarValue" @bind="currencyValue" />
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @onclick="() => HideAddExchangeModal()">Cancelar</button>
@@ -93,13 +110,13 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="dollarValue">Valor del Dolar</label>
-                            <input type="number" class="form-control" id="dollarValue" @bind="editedDollarValue" />
+                            <label for="dollarValue">Valor de la moneda</label>
+                            <input type="number" class="form-control" id="dollarValue" @bind="editedCurrencyValue" />
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @onclick="() => HideEditExchangeModal()">Cancelar</button>
-                        <button type="button" class="btn btn-primary" @onclick="() =>SaveExchangeValue(editedDollarValue)">Guardar</button>
+                        <button type="button" class="btn btn-primary" @onclick="() =>SaveExchangeValue(editedCurrencyValue)">Guardar</button>
                     </div>
                 </div>
             </div>
@@ -110,16 +127,17 @@
     private User CurrentUser;
     private Domain.Workspace workspace;
     private ExchangeService _exchangeService;
-    private List<Exchange> exchangeList;
+    private List<Exchange> exchanges;
     private bool showAddExchangeModal = false;
     private Exchange newExchange;
+    private CurrencyType newCurrencyType;
     private Exchange selectedExchange;
 
     private DateTime initialDate = DateTime.Today;
-    private double dollarValue = 0;
+    private double currencyValue = 0;
 
     private bool showEditExchangeModal = false;
-    private double editedDollarValue = 0;
+    private double editedCurrencyValue = 0;
 
     private void HideEditExchangeModal()
     {
@@ -128,15 +146,16 @@
     private void ShowEditExchangeModal(Exchange exchange)
     {
         selectedExchange = exchange;
+        selectedExchange.Workspace = exchange.Workspace;
         showEditExchangeModal = true;
     }
 
-    private void SaveExchangeValue(double editedDollarValue)
+    private void SaveExchangeValue(double editedCurrencyValue)
     {
         try
         {
-            _exchangeService.Update(workspace, selectedExchange, editedDollarValue);
-            exchangeList = workspace.ExchangeList;
+            _exchangeService.Update(this.workspace, selectedExchange, editedCurrencyValue);
+            exchanges = workspace.Exchanges;
             HideEditExchangeModal();
             ToastService.Notify(new(ToastType.Success, "Tipo de cambio modificado con exito!"));
         }
@@ -160,15 +179,18 @@
 
     protected override void OnInitialized()
     {
-        if (MemoryDatabase.isLoggedIn)
+        if (FintracContext.isLoggedIn)
         {
-            CurrentUser = MemoryDatabase.currentUser;
-            workspace = MemoryDatabase.currentWorkspace;
-            exchangeList = workspace.ExchangeList;
-            _exchangeService = new ExchangeService(MemoryDatabase);
+            CurrentUser = FintracContext.currentUser;
+            workspace = FintracContext.currentWorkspace;
+            exchanges = workspace.Exchanges;
+            _exchangeService = new ExchangeService(FintracContext);
             newExchange = new Exchange();
+            var user = FintracContext.Users
+            .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Exchanges)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
         }
-
     }
 
     private void AddExchange()
@@ -176,9 +198,9 @@
         try
         {
             HideAddExchangeModal();
-            Exchange newExchange = new Exchange { Date = initialDate, DollarValue = dollarValue };
+            Exchange newExchange = new Exchange { Workspace = workspace, Date = initialDate, Currency = newCurrencyType, CurrencyValue = currencyValue };
             _exchangeService.Add(workspace, newExchange);
-            exchangeList = workspace.ExchangeList;
+            exchanges = workspace.Exchanges;
             ToastService.Notify(new(ToastType.Success, "Tipo de cambio agregado con exito!"));
         }
         catch (Exception e)
@@ -194,7 +216,7 @@
         {
             HideEditExchangeModal();
             _exchangeService.Delete(workspace, exchange);
-            exchangeList = workspace.ExchangeList;
+            exchanges = workspace.Exchanges;
             ToastService.Notify(new(ToastType.Success, "Tipo de cambio eliminado con exito!"));
         }
         catch (Exception e)

@@ -23,12 +23,12 @@ namespace TestBusinessLogic
         [TestInitialize]
         public void SetUp()
         {
-            MemoryDatabase _database = new MemoryDatabase();
-            _service = new CategoryService(_database);
+			FintracContext _database = TestContextFactory.CreateContext();
+			_service = new CategoryService(_database);
             _workspaceService = new WorkspaceService(_database);
             _userService = new UserService(_database);
             _user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
-            _workspace = new Workspace(_user, "Test");
+            _workspace = new Workspace{ UserAdmin = _user, Name = $"Espacio personal de {_user.Name} {_user.LastName}" };
             _userService.Add(_user);
             _workspaceService.Add(_user, _workspace);
             _category = new Category
@@ -85,7 +85,7 @@ namespace TestBusinessLogic
                 WorkSpace = _workspace
             };
 
-            Transaction transaction = new Transaction
+            Transactions transaction = new Transactions
             {
                 Title = "Test",
                 CreationDate = DateTime.Today,
@@ -94,8 +94,8 @@ namespace TestBusinessLogic
                 Category = _category,
                 Account = personalAccount,
             };
-            personalAccount.TransactionList.Add(transaction);
-            _workspace.AccountList.Add(personalAccount);
+            personalAccount.Transactions.Add(transaction);
+            _workspace.Accounts.Add(personalAccount);
             _service.Delete(_category.Workspace, _category);
         }
 
@@ -127,7 +127,7 @@ namespace TestBusinessLogic
                 Currency = CurrencyType.UYU,
                 WorkSpace = _workspace
             };
-            Transaction transaction = new Transaction
+            Transactions transaction = new Transactions
             {
                 Title = "Test",
                 CreationDate = DateTime.Today,
@@ -136,8 +136,8 @@ namespace TestBusinessLogic
                 Category = _category,
                 Account = personalAccount,
             };
-            personalAccount.TransactionList.Add(transaction);
-            _workspace.AccountList.Add(personalAccount);
+            personalAccount.Transactions.Add(transaction);
+            _workspace.Accounts.Add(personalAccount);
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),
@@ -161,7 +161,7 @@ namespace TestBusinessLogic
                 Currency = CurrencyType.UYU,
                 WorkSpace = _workspace
             };
-            Transaction transaction = new Transaction
+            Transactions transaction = new Transactions
             {
                 Title = "Test",
                 CreationDate = DateTime.Today,
@@ -170,8 +170,8 @@ namespace TestBusinessLogic
                 Category = _category,
                 Account = personalAccount,
             };
-            personalAccount.TransactionList.Add(transaction);
-            _workspace.AccountList.Add(personalAccount);
+            personalAccount.Transactions.Add(transaction);
+            _workspace.Accounts.Add(personalAccount);
             Category categoryModified = new Category
             {
                 CreationDate = DateTime.Today.AddDays(-5),

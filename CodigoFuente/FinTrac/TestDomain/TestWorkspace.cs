@@ -24,7 +24,7 @@ namespace TestDomain
                 Password = "1234567891",
                 Email = "test@test.com"
             };
-            workspace = new Workspace(admin, "Test");
+            workspace = new Workspace{ UserAdmin = admin, Name = $"Espacio personal de {admin.Name} {admin.LastName}", ID = 1 };
         }
         [TestMethod]
         public void EqualsWorkspace()
@@ -37,7 +37,7 @@ namespace TestDomain
         [TestMethod]
         public void NotEqualsWorkspace()
         {
-            Workspace otherWorkspace = new Workspace(admin, "Test");
+            Workspace otherWorkspace = new Workspace { UserAdmin = admin, Name = "Nuevo workspace", ID = 2};
 
             Assert.AreNotEqual(otherWorkspace, workspace);
         }
@@ -74,32 +74,25 @@ namespace TestDomain
         [TestMethod]
         public void AccountListNotNull()
         {
-            Assert.IsNotNull(workspace.AccountList);
-        }
-
-        [TestMethod]
-        public void ReportListNotNull()
-        {
-            Assert.IsNotNull(workspace.ReportList);
-
+            Assert.IsNotNull(workspace.Accounts);
         }
 
         [TestMethod]
         public void ExchangeListNotNull()
         {
-            Assert.IsNotNull(workspace.ExchangeList);
+            Assert.IsNotNull(workspace.Exchanges);
         }
 
         [TestMethod]
         public void CategoryListNotNull()
         {
-            Assert.IsNotNull(workspace.CategoryList);
+            Assert.IsNotNull(workspace.Categories);
         }
 
         [TestMethod]
         public void GoalListNotNull()
         {
-            Assert.IsNotNull(workspace.GoalList);
+            Assert.IsNotNull(workspace.Goals);
         }
     }
 }

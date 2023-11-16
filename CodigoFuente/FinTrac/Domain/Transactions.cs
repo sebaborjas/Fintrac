@@ -1,33 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Domain.DataTypes;
+﻿using Domain.DataTypes;
 using Domain.Exceptions;
 
 namespace Domain
 {
-    public class Transaction
+    public class Transactions
     {
 
-        private static int nextId = 1;
-        public int ID { get; private set; }
+        public int ID { get; set; }
         private string _title;
         private DateTime _creationDate = DateTime.Today;
         private double _amount;
-        private CurrencyType _currency;
         private Category _category;
         private Account _account;
 
-        public Transaction()
-        {
-            ID = nextId;
-            nextId++;
-        }
+        public int AccountId {  get; private set; }
+        public int CategoryId { get; private set; }
+
         public string Title
         {
             get => _title;
@@ -73,20 +61,7 @@ namespace Domain
                 }
             }
         }
-
-        public CurrencyType Currency
-        {
-            get => _currency;
-            set
-            {
-                if (value != CurrencyType.UYU && value != CurrencyType.USD)
-                {
-                    throw new Exception();
-                }
-                _currency = value;
-
-            }
-        }
+        public CurrencyType Currency { get; set; }
 
         public Category Category
         {
@@ -101,12 +76,10 @@ namespace Domain
                 {
                     throw new InactiveCategoryException();
                 }
-
                 _category = value;
+                CategoryId = value.Id;
             }
-
         }
-
         public Account Account
         {
             get
@@ -124,12 +97,13 @@ namespace Domain
                     throw new InvalidTransactionCurrencyException();
                 }
                 _account = value;
+                AccountId = value.Id;
             }
         }
 
         public override bool Equals(object? obj)
         {
-            Transaction transaction = (Transaction)obj;
+            Transactions transaction = (Transactions)obj;
             return this.ID == transaction.ID;
         }
     }

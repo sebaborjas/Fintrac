@@ -118,7 +118,7 @@ namespace TestDomain
                 Password = "1234123412",
                 Email = "test@test.com"
             };
-            Workspace workspace = new Workspace(userAdmin, "Personal");
+            Workspace workspace = new Workspace { UserAdmin = userAdmin, Name = $"Espacio personal de {userAdmin.Name} {userAdmin.LastName}" };
             category.Workspace = workspace;
             Assert.IsNotNull(category.Workspace);
         }

@@ -3,6 +3,7 @@ using Domain;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebUI
 {
@@ -16,7 +17,10 @@ namespace WebUI
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
 			builder.Services.AddBlazorBootstrap();
-			builder.Services.AddSingleton<MemoryDatabase>();
+            builder.Services.AddDbContext<FintracContext>(
+            
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))    
+            );
 
             var app = builder.Build();
 

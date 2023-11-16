@@ -2,22 +2,26 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@using Microsoft.EntityFrameworkCore;
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de transacciones</PageTitle>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/workspace">
+            <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+        </NavLink>
+    </div>
 
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
             <h3>Lista de Transacciones</h3>
             <button class="btn btn-primary" @onclick="() => ShowAddTransactionModal()">Agregar una transacción</button>
         </div>
-
-        @if (transactionList.Any())
+        @if (transactions.Any())
         {
             <table class="table">
                 <thead>
@@ -32,12 +36,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var transaction in transactionList)
+                    @foreach (var transaction in transactions)
                     {
                         <tr>
                             <td>@transaction.Title</td>
                             <td>@transaction.CreationDate.ToShortDateString()</td>
-                            <td>@transaction.Amount</td>
+                            <td>@transaction.Amount.ToString("N2")</td>
                             <td>@transaction.Currency</td>
                             <td>@transaction.Account.Name</td>
                             <td>@transaction.Category.Name</td>
@@ -137,33 +141,33 @@
 
     @if (showEditTransactionModal)
     {
-            <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Editar una transacción</h5>
-                            <button type="button" class="close" aria-label="Close" @onclick="() => HideEditTransactionModal()">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="title">Título</label>
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar una transacción</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideEditTransactionModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="title">Título</label>
                             <input type="text" class="form-control" id="title" @bind="titleEditTrasaction" />
-                            </div>
-                            <div class="form-group">
-                                <label for="amount">Monto</label>
-                            <input type="number" class="form-control" id="amount" @bind="amountEditTrasaction" step="0.01" min="0"  />
-                            </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="() => HideEditTransactionModal()">Cancelar</button>
+                        <div class="form-group">
+                            <label for="amount">Monto</label>
+                            <input type="number" class="form-control" id="amount" @bind="amountEditTrasaction" step="0.01" min="0" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => HideEditTransactionModal()">Cancelar</button>
                         <button type="button" class="btn btn-primary" @onclick="() => EditTransaction(titleEditTrasaction, amountEditTrasaction)">Guardar</button>
-                        </div>
                     </div>
                 </div>
             </div>
-        }
+        </div>
+    }
 }
 
 @code {
@@ -173,12 +177,12 @@
     private WorkspaceService _workspaceService;
     private AccountService _accountService;
     private CategoryService _categoryService;
-    private List<Transaction> transactionList;
+    private List<Transactions> transactions;
     private bool showEditTransactionModal = false;
     private bool showAddTransactionModal = false;
-    private Transaction newTransaction;
-    private Transaction selectedTransaction;
-    private Transaction editedTransaction;
+    private Transactions newTransaction;
+    private Transactions selectedTransaction;
+    private Transactions editedTransaction;
     private List<Domain.Category> categories;
     private List<Domain.Account> accounts;
     private string selectedCategoryName;
@@ -187,29 +191,47 @@
     private Category selectedCategory;
     private double amountEditTrasaction;
     private string titleEditTrasaction;
-    private Transaction duplicatedTransaction;
-
-
+    private Transactions duplicatedTransaction;
     private List<User> GuestUsers;
+
     protected override void OnInitialized()
     {
-        if (MemoryDatabase.isLoggedIn)
+        if (FintracContext.isLoggedIn)
         {
-            CurrentUser = MemoryDatabase.currentUser;
-            workspace = MemoryDatabase.currentWorkspace;
-            _workspaceService = new WorkspaceService(MemoryDatabase);
-            _transactionService = new TransactionService(MemoryDatabase);
-            _accountService = new AccountService(MemoryDatabase);
-            _categoryService = new CategoryService(MemoryDatabase);
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
-            newTransaction = new Transaction();
-            categories = workspace.CategoryList;
-            accounts = workspace.AccountList;
+            CurrentUser = FintracContext.currentUser;
+            workspace = FintracContext.currentWorkspace;
+            _workspaceService = new WorkspaceService(FintracContext);
+            _transactionService = new TransactionService(FintracContext);
+            _accountService = new AccountService(FintracContext);
+            _categoryService = new CategoryService(FintracContext);
+            newTransaction = new Transactions();
+            categories = workspace.Categories;
+            accounts = workspace.Accounts;
+            var workspaceData = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceAccounts = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceCategories = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Categories)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var workspaceExchanges = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Exchanges)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            var accountsTransactions = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
+                .ThenInclude(a => a.Transactions)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
     }
 
-
-    private void ShowEditTransactionModal(Transaction transaction)
+    private void ShowEditTransactionModal(Transactions transaction)
     {
         showEditTransactionModal = true;
         editedTransaction = transaction;
@@ -231,25 +253,24 @@
                     Type = ToastType.Success,
                     Message = "Transaccion editada con éxito"
                 });
-            HideEditTransactionModal();
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
-            HideEditTransactionModal();
             ToastService.Notify(new ToastMessage
                 {
                     Type = ToastType.Danger,
                     Message = $"Error: {e.Message}"
                 });
         }
+        HideEditTransactionModal();
     }
 
-    private void DuplicateTransaction(Transaction transaction)
+    private void DuplicateTransaction(Transactions transaction)
     {
         try
         {
-            duplicatedTransaction = new Transaction
+            duplicatedTransaction = new Transactions
                 {
                     Title = transaction.Title,
                     CreationDate = DateTime.Today,
@@ -264,8 +285,7 @@
                     Type = ToastType.Success,
                     Message = "Transaccion duplicada con éxito"
                 });
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
-
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
@@ -286,7 +306,6 @@
         showAddTransactionModal = false;
     }
 
-
     private void AddTransaction()
     {
         try
@@ -301,20 +320,18 @@
                     Type = ToastType.Success,
                     Message = "Cuenta agregada con éxito"
                 });
-                HideAddTransactionModal();
-            transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
+            transactions = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
-            HideAddTransactionModal();
             ToastService.Notify(new ToastMessage
                 {
                     Type = ToastType.Danger,
                     Message = $"Error: {e.Message}"
                 });
         }
-        newTransaction = new Transaction();
+        HideAddTransactionModal();
+        newTransaction = new Transactions();
     }
-
 }
 

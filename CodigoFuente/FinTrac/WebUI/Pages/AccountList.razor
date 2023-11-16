@@ -2,493 +2,492 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes;
-@inject MemoryDatabase MemoryDatabase
+@using Microsoft.EntityFrameworkCore;
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
 
-	<PageTitle>Administrar Cuentas</PageTitle>
+    <PageTitle>Administrar Cuentas</PageTitle>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/workspace">
+            <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+        </NavLink>
+    </div>
 
-	<div class="d-flex justify-content-between align-items-center">
-		<h3>Cuentas</h3>
-		<button class="btn btn-primary" @onclick="() => ShowAddAccountModal()">Agregar una Cuenta</button>
-	</div>
+    <div class="d-flex justify-content-between align-items-center">
+        <h3>Cuentas</h3>
+        <button class="btn btn-primary" @onclick="() => ShowAddAccountModal()">Agregar una Cuenta</button>
+    </div>
 
-	@if (accountList.Any())
-	{
-		<div class="table-responsive table-responsive-lg table-responsive-xl">
-			<table class="table w-100" style="width: 100% !important;">
-				<thead class="thead-dark">
-					<tr>
-						<th>Nombre</th>
-						<th>Fecha de Creación</th>
-						<th>Moneda</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var account in accountList)
-					{
-						<tr>
-							<td>@account.Name</td>
-							<td>@account.CreationDate.ToShortDateString()</td>
-							<td>@account.Currency</td>
-							<td>
-								<button class="btn btn-success" @onclick="() => ShowSelectedAccountModal(account)">Ver mas</button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-	}
-	else
-	{
-		<p>No hay cuentas monetarias registradas.</p>
+    @if (accounts.Any())
+    {
+        <div class="table-responsive table-responsive-lg table-responsive-xl">
+            <table class="table w-100" style="width: 100% !important;">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Fecha de Creación</th>
+                        <th>Moneda</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var account in accounts)
+                    {
+                        <tr>
+                            <td>@account.Name</td>
+                            <td>@account.CreationDate.ToShortDateString()</td>
+                            <td>@account.Currency</td>
+                            <td>
+                                <button class="btn btn-success" @onclick="() => ShowSelectedAccountModal(account)">Ver mas</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p>No hay cuentas monetarias registradas.</p>
 
-	}
-	@if (showAddAccountModal)
-	{
-		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Agregar una Cuenta</h5>
-						<button type="button" class="close" aria-label="Close" @onclick="() => HideAddAccountModal()">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label for="accountName">Nombre</label>
-							<input type="text" class="form-control" id="accountName" @bind="newAccount.Name" />
-						</div>
-						<div class="form-group">
-							<label for="creationDate">Fecha de Creación</label>
-							<input type="date" class="form-control" id="creationDate" @bind="newAccount.CreationDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
-						</div>
-						<div class="form-group">
-							<label for="currency">Moneda</label>
-							<select class="form-control" id="currency" @bind="newAccount.Currency">
-								<option value="" disabled selected>Seleccionar</option>
-								@foreach (var value in Enum.GetValues(typeof(CurrencyType)))
-								{
-									<option value="@value">@value</option>
-								}
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="workspace">Workspace</label>
-							<input type="text" class="form-control" id="workspace" value="@workspace.Name" disabled />
-						</div>
-						<div class="form-group">
-							<label for="accountType">Tipo de Cuenta</label>
-							<select class="form-control" id="accountType" @bind="newAccount.Type">
-								<option value="" disabled selected>Seleccionar</option>
-								<option value="PersonalAccount">Cuenta Personal</option>
-								<option value="CreditCard">Tarjeta de Crédito</option>
-							</select>
-						</div>
+    }
+    @if (showAddAccountModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar una Cuenta</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideAddAccountModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="accountName">Nombre</label>
+                            <input type="text" class="form-control" id="accountName" @bind="newAccount.Name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="creationDate">Fecha de Creación</label>
+                            <input type="date" class="form-control" id="creationDate" @bind="newAccount.CreationDate" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Moneda</label>
+                            <select class="form-control" id="currency" @bind="newAccount.Currency">
+                                <option value="" disabled selected>Seleccionar</option>
+                                @foreach (var value in Enum.GetValues(typeof(CurrencyType)))
+                                {
+                                    <option value="@value">@value</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="workspace">Workspace</label>
+                            <input type="text" class="form-control" id="workspace" value="@workspace.Name" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="accountType">Tipo de Cuenta</label>
+                            <select class="form-control" id="accountType" @bind="newAccount.Type">
+                                <option value="" disabled selected>Seleccionar</option>
+                                <option value="PersonalAccount">Cuenta Personal</option>
+                                <option value="CreditCard">Tarjeta de Crédito</option>
+                            </select>
+                        </div>
 
-						@if (newAccount.Type == "CreditCard")
-						{
-							<div class="form-group">
-								<label for="bankName">Nombre del Banco</label>
-								<input type="text" class="form-control" id="bankName" @bind="newAccount.BankName" />
-							</div>
-							<div class="form-group">
-								<label for="lastDigits">Últimos 4 dígitos</label>
-								<input type="text" class="form-control" id="lastDigits" @bind="newAccount.LastDigits" />
-							</div>
-							<div class="form-group">
-								<label for="availableCredit">Crédito Disponible</label>
-								<input type="number" class="form-control" id="availableCredit" @bind="newAccount.AvailableCredit" />
-							</div>
-							<div class="form-group">
-								<label for="deadline">Fecha de Cierre</label>
-								<input type="number" class="form-control" id="deadline" @bind="newAccount.Deadline" min="1" max="28" />
-							</div>
-						}
+                        @if (newAccount.Type == "CreditCard")
+                        {
+                            <div class="form-group">
+                                <label for="bankName">Nombre del Banco</label>
+                                <input type="text" class="form-control" id="bankName" @bind="newAccount.BankName" />
+                            </div>
+                            <div class="form-group">
+                                <label for="lastDigits">Últimos 4 dígitos</label>
+                                <input type="text" class="form-control" id="lastDigits" @bind="newAccount.LastDigits" />
+                            </div>
+                            <div class="form-group">
+                                <label for="availableCredit">Crédito Disponible</label>
+                                <input type="number" class="form-control" id="availableCredit" @bind="newAccount.AvailableCredit" />
+                            </div>
+                            <div class="form-group">
+                                <label for="deadline">Fecha de Cierre</label>
+                                <input type="number" class="form-control" id="deadline" @bind="newAccount.Deadline" min="1" max="28" />
+                            </div>
+                        }
 
-						@if (newAccount.Type == "PersonalAccount")
-						{
-							<div class="form-group">
-								<label for="startingAmount">Monto Inicial</label>
-								<input type="number" class="form-control" id="startingAmount" @bind="newAccount.StartingAmount" min="0" />
-							</div>
-						}
+                        @if (newAccount.Type == "PersonalAccount")
+                        {
+                            <div class="form-group">
+                                <label for="startingAmount">Monto Inicial</label>
+                                <input type="number" class="form-control" id="startingAmount" @bind="newAccount.StartingAmount" min="0" />
+                            </div>
+                        }
 
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @onclick="() => HideAddAccountModal()">Cancelar</button>
-						<button type="button" class="btn btn-primary" @onclick="AddAccount">Guardar</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	}
-	@if (showSelectedAccountModal)
-	{
-		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">
-							Detalles de la Cuenta:
-							@if (selectedAccount is CreditCard)
-							{
-								<strong>Tarjeta de Crédito</strong>
-							}
-							@if (selectedAccount is PersonalAccount)
-							{
-								<strong>Cuenta Personal</strong>
-							}
-						</h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => HideAddAccountModal()">Cancelar</button>
+                        <button type="button" class="btn btn-primary" @onclick="AddAccount">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (showSelectedAccountModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Detalles de la Cuenta:
+                            @if (selectedAccount is CreditCard)
+                            {
+                                <strong>Tarjeta de Crédito</strong>
+                            }
+                            @if (selectedAccount is PersonalAccount)
+                            {
+                                <strong>Cuenta Personal</strong>
+                            }
+                        </h5>
 
-						<button type="button" class="close" aria-label="Close" @onclick="() => HideSelectedAccountModal()">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="row mb-2 mx-0">
-							<div class="col-2"><i class="oi oi-person"></i></div>
-							<div class="col-10"><p>Nombre: @selectedAccount.Name</p></div>
-						</div>
-						<div class="row mb-2 mx-0">
-							<div class="col-2"><i class="oi oi-calendar"></i></div>
-							<div class="col-10"><p>Fecha de Creación: @selectedAccount.CreationDate.ToShortDateString()</p></div>
-						</div>
-						<div class="row mb-2 mx-0">
-							<div class="col-2"><i class="oi oi-dollar"></i></div>
-							<div class="col-10"><p>Moneda: @selectedAccount.Currency</p></div>
-						</div>
-
-
-						@if (selectedAccount is CreditCard)
-						{
-							<div class="row mb-2 mx-0">
-								<div class="col-2"><i class="oi oi-briefcase"></i></div>
-								<div class="col-10"><p>Banco emisor: @((selectedAccount as CreditCard).BankName)</p></div>
-							</div>
-							<div class="row mb-2 mx-0">
-								<div class="col-2"><i class="oi oi-credit-card"></i></div>
-								<div class="col-10"><p>Últimos 4 dígitos: @((selectedAccount as CreditCard).LastDigits)</p></div>
-							</div>
-							<div class="row mb-2 mx-0">
-								<div class="col-2"><i class="oi oi-media-record"></i></div>
-								<div class="col-10"><p>Credito disponible: @((selectedAccount as CreditCard).AvailableCredit)</p></div>
-							</div>
-							<div class="row mb-2 mx-0">
-								<div class="col-2"><i class="oi oi-calendar"></i></div>
-								<div class="col-10"><p>Fecha de Cierre: @((selectedAccount as CreditCard).DeadLine)</p></div>
-							</div>
-						}
-
-						@if (selectedAccount is PersonalAccount)
-						{
-
-							<div class="row mb-2 mx-0">
-								<div class="col-2"><i class="oi oi-media-record"></i></div>
-								<div class="col-10"><p>Monto inicial: @((selectedAccount as PersonalAccount).StartingAmount)</p></div>
-							</div>
-						}
-						<div class="row mb-2 mx-0">
-							<div class="col-2"><i class="oi oi-dollar"></i></div>
-							<NavLink class="col-10 nav-link" href="/workspace/TransactionListAccount">
-								<p>Transacciones <i class="oi oi-arrow-right"></i></p>
-							</NavLink>
-
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button class="btn btn-primary" @onclick="() => ShowEditAccountModal(selectedAccount)">Editar</button>
-						<button class="btn btn-danger" @onclick="() => DeleteAccount()">Eliminar</button>
-						<button type="button" class="btn btn-secondary" @onclick="HideSelectedAccountModal">Cerrar</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	}
-	@if (showEditAccountModal)
-	{
-		<div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Editar Cuenta</h5>
-						<button type="button" class="close" aria-label="Close" @onclick="HideEditAccountModal">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label for="name">Nombre</label>
-							<input type="text" class="form-control" id="name" value="@modifiedAccount.Name" @oninput="e => modifiedAccount.Name = e.Value.ToString()" />
-						</div>
-
-						<div class="form-group">
-							<label for="creationDate">Fecha de Creación</label>
-							<input type="date" class="form-control" id="creationDate" value="@modifiedAccount.CreationDate.ToString("yyyy-MM-dd")" @oninput="e => modifiedAccount.CreationDate = DateTime.Parse(e.Value.ToString())" max="@DateTime.Now.Date.ToString("yyyy-MM-dd")" />
-						</div>
-
-						@if (modifiedAccount is CreditCard creditCard)
-						{
-							<div class="form-group">
-								<label for="availableCredit">Crédito Disponible</label>
-								<input type="number" class="form-control" id="availableCredit" value="@creditCard.AvailableCredit" @oninput="e => creditCard.AvailableCredit = Convert.ToDouble(e.Value)" />
-							</div>
-
-							<div class="form-group">
-								<label for="bankName">Banco Emisor</label>
-								<input type="text" class="form-control" id="bankName" value="@creditCard.BankName" @oninput="e => creditCard.BankName = e.Value.ToString()" />
-							</div>
-
-							<div class="form-group">
-								<label for="lastDigits">Últimos 4 dígitos</label>
-								<input type="text" class="form-control" id="lastDigits" value="@creditCard.LastDigits" />
-							</div>
-
-							<div class="form-group">
-								<label for="deadline">Fecha de Cierre</label>
-								<input type="number" class="form-control" id="deadline" value="@creditCard.DeadLine" @oninput="e => creditCard.DeadLine = Convert.ToInt32(e.Value)" />
-							</div>
-
-						}
-
-						@if (modifiedAccount is PersonalAccount personalAccount)
-						{
-							<div class="form-group">
-								<label for="startingAmount">Monto Inicial</label>
-								<input type="text" class="form-control" id="startingAmount" value="@personalAccount.StartingAmount" @oninput="e => personalAccount.StartingAmount = Convert.ToDouble(e.Value)" />
-							</div>
-						}
-
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" @onclick="SaveChanges">Guardar Cambios</button>
-						<button type="button" class="btn btn-secondary" @onclick="HideEditAccountModal">Cancelar</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	}
-
-	@code {
-	private User CurrentUser;
-	private Domain.Workspace workspace;
-	private List<Account> accountList;
-	private AccountService _accountService;
-	private Account selectedAccount;
-	private Account modifiedAccount;
-
-	private String selectedAccountName;
-	private DateTime selectedCreationDate;
-
-	private bool showAddAccountModal = false;
-	private bool showSelectedAccountModal = false;
-	private bool showEditAccountModal = false;
-
-	private class AccountModel
-	{
-		public string Name { get; set; }
-		public DateTime CreationDate { get; set; } = DateTime.Today;
-		public CurrencyType Currency { get; set; }
-		public string Type { get; set; }
-		public string BankName { get; set; }
-		public string LastDigits { get; set; }
-		public double AvailableCredit { get; set; }
-		public int Deadline { get; set; } = 1;
-		public double StartingAmount { get; set; }
-	}
-	private AccountModel newAccount = new AccountModel();
-
-	private void ShowEditAccountModal(Account account)
-	{
-		selectedAccount = account;
-		selectedAccountName = account.Name;
-		selectedCreationDate = account.CreationDate;
-
-		if (account is CreditCard creditCard)
-		{
-			modifiedAccount = new CreditCard
-				{
-					Name = selectedAccountName,
-					CreationDate = selectedCreationDate,
-					Currency = account.Currency,
-					BankName = creditCard.BankName,
-					LastDigits = creditCard.LastDigits,
-					AvailableCredit = creditCard.AvailableCredit,
-					DeadLine = creditCard.DeadLine,
-					WorkSpace = workspace
-				};
-		}
-		else if (account is PersonalAccount personalAccount)
-		{
-			modifiedAccount = new PersonalAccount
-				{
-					Name = selectedAccountName,
-					CreationDate = selectedCreationDate,
-					Currency = account.Currency,
-					WorkSpace = workspace,
-					StartingAmount = personalAccount.StartingAmount
-				};
-		}
-
-		showEditAccountModal = true;
-	}
-
-	private async Task SaveChanges()
-	{
-		try
-		{
-			_accountService.Modify(selectedAccount.Name, modifiedAccount);
-			accountList = workspace.AccountList;
-			ToastService.Notify(new ToastMessage
-				{
-					Type = ToastType.Success,
-					Message = "Datos de la cuenta actualizados con éxito"
-				});
-			HideEditAccountModal();
-			HideSelectedAccountModal();
-		}
-		catch (Exception e)
-		{
-			ToastService.Notify(new ToastMessage
-				{
-					Type = ToastType.Danger,
-					Message = $"Error: {e.Message}"
-				});
-		}
-	}
-
-	private void DeleteAccount()
-	{
-
-		if (selectedAccount.TransactionList.Count == 0)
-		{
-			_accountService.Delete(workspace, selectedAccount.Name);
-			accountList = workspace.AccountList;
-			HideEditAccountModal();
-			HideAddAccountModal();
-			HideSelectedAccountModal();
-		}
-		else
-		{
-			ToastService.Notify(new(ToastType.Danger, "No se puede eliminar una cuenta con transacciones asociadas"));
-		}
-
-	}
-
-	protected override void OnInitialized()
-	{
-		if (MemoryDatabase.isLoggedIn)
-		{
-			CurrentUser = MemoryDatabase.currentUser;
-			workspace = MemoryDatabase.currentWorkspace;
-			accountList = workspace.AccountList;
-			_accountService = new AccountService(MemoryDatabase);
-		}
-	}
-
-	private void AddAccount()
-	{
-		HideAddAccountModal();
-
-		var type = newAccount.Type;
-
-		var accountName = newAccount.Name;
-		var creationDate = newAccount.CreationDate;
-		var currency = newAccount.Currency;
-
-		var bankName = newAccount.BankName;
-		var lastDigits = newAccount.LastDigits;
-		var availableCredit = newAccount.AvailableCredit;
-		var deadline = newAccount.Deadline;
-
-		var startingAmount = newAccount.StartingAmount;
-
-		try
-		{
-			if (newAccount.Type == "CreditCard")
-			{
-				Account creditCard = new CreditCard
-					{
-						Name = newAccount.Name,
-						Currency = newAccount.Currency,
-						CreationDate = newAccount.CreationDate,
-						LastDigits = newAccount.LastDigits,
-						BankName = newAccount.BankName,
-						DeadLine = newAccount.Deadline,
-						AvailableCredit = newAccount.AvailableCredit,
-						WorkSpace = workspace
-					};
-
-				_accountService.Add(workspace, creditCard);
-				accountList = workspace.AccountList;
-				ToastService.Notify(new(ToastType.Success, "Tarjeta de Credito agregada con exito!"));
-			}
-			else if (newAccount.Type == "PersonalAccount")
-			{
-				Account personalAccount = new PersonalAccount
-					{
-						Name = newAccount.Name,
-						Currency = newAccount.Currency,
-						CreationDate = newAccount.CreationDate,
-						StartingAmount = newAccount.StartingAmount,
-						WorkSpace = workspace
-					};
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideSelectedAccountModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-2 mx-0">
+                            <div class="col-2"><i class="oi oi-person"></i></div>
+                            <div class="col-10"><p>Nombre: @selectedAccount.Name</p></div>
+                        </div>
+                        <div class="row mb-2 mx-0">
+                            <div class="col-2"><i class="oi oi-calendar"></i></div>
+                            <div class="col-10"><p>Fecha de Creación: @selectedAccount.CreationDate.ToShortDateString()</p></div>
+                        </div>
+                        <div class="row mb-2 mx-0">
+                            <div class="col-2"><i class="oi oi-dollar"></i></div>
+                            <div class="col-10"><p>Moneda: @selectedAccount.Currency</p></div>
+                        </div>
 
 
-				_accountService.Add(workspace, personalAccount);
-				accountList = workspace.AccountList;
-				ToastService.Notify(new(ToastType.Success, "Cuenta Personal agregada con exito!"));
-			}
-			else
-			{
-				return;
-			}
-			newAccount = new AccountModel();
-			NavigationManager.NavigateTo("/workspace/AccountList");
+                        @if (selectedAccount is CreditCard)
+                        {
+                            <div class="row mb-2 mx-0">
+                                <div class="col-2"><i class="oi oi-briefcase"></i></div>
+                                <div class="col-10"><p>Banco emisor: @((selectedAccount as CreditCard).BankName)</p></div>
+                            </div>
+                            <div class="row mb-2 mx-0">
+                                <div class="col-2"><i class="oi oi-credit-card"></i></div>
+                                <div class="col-10"><p>Últimos 4 dígitos: @((selectedAccount as CreditCard).LastDigits)</p></div>
+                            </div>
+                            <div class="row mb-2 mx-0">
+                                <div class="col-2"><i class="oi oi-media-record"></i></div>
+                                <div class="col-10"><p>Credito disponible: @((selectedAccount as CreditCard).AvailableCredit)</p></div>
+                            </div>
+                            <div class="row mb-2 mx-0">
+                                <div class="col-2"><i class="oi oi-calendar"></i></div>
+                                <div class="col-10"><p>Fecha de Cierre: @((selectedAccount as CreditCard).DeadLine)</p></div>
+                            </div>
+                        }
 
-		}
-		catch (Exception e)
-		{
-			ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
-		}
-	}
+                        @if (selectedAccount is PersonalAccount)
+                        {
 
-	private void ShowAddAccountModal()
-	{
-		showAddAccountModal = true;
-	}
+                            <div class="row mb-2 mx-0">
+                                <div class="col-2"><i class="oi oi-media-record"></i></div>
+                                <div class="col-10"><p>Monto inicial: @((selectedAccount as PersonalAccount).StartingAmount.ToString())</p></div>
+                            </div>
+                        }
+                        <div class="row mb-2 mx-0">
+                            <div class="col-2"><i class="oi oi-dollar"></i></div>
+                            <NavLink class="col-10 nav-link" href="/workspace/TransactionListAccount">
+                                <p>Transacciones <i class="oi oi-arrow-right"></i></p>
+                            </NavLink>
 
-	private void HideAddAccountModal()
-	{
-		showAddAccountModal = false;
-	}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" @onclick="() => ShowEditAccountModal(selectedAccount)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteAccount()">Eliminar</button>
+                        <button type="button" class="btn btn-secondary" @onclick="HideSelectedAccountModal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (showEditAccountModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Cuenta</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="HideEditAccountModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="name">Nombre</label>
+                            <input type="text" class="form-control" id="name" value="@modifiedAccount.Name" @oninput="e => modifiedAccount.Name = e.Value.ToString()" />
+                        </div>
 
-	private void HideSelectedAccountModal()
-	{
-		showSelectedAccountModal = false;
-		MemoryDatabase.currentAccount = null;
-	}
+                        <div class="form-group">
+                            <label for="creationDate">Fecha de Creación</label>
+                            <input type="date" class="form-control" id="creationDate" value="@modifiedAccount.CreationDate.ToString("yyyy-MM-dd")" @oninput="e => modifiedAccount.CreationDate = DateTime.Parse(e.Value.ToString())" max="@DateTime.Now.Date.ToString("yyyy-MM-dd")" />
+                        </div>
 
-	private void ShowSelectedAccountModal(Account account)
-	{
-		selectedAccount = account;
-		showSelectedAccountModal = true;
-		MemoryDatabase.currentAccount = account;
-	}
-	private void HideEditAccountModal()
-	{
-		showEditAccountModal = false;
-	}
+                        @if (modifiedAccount is CreditCard creditCard)
+                        {
+                            <div class="form-group">
+                                <label for="availableCredit">Crédito Disponible</label>
+                                <input type="number" class="form-control" id="availableCredit" value="@creditCard.AvailableCredit" @oninput="e => creditCard.AvailableCredit = Convert.ToDouble(e.Value)" />
+                            </div>
 
+                            <div class="form-group">
+                                <label for="bankName">Banco Emisor</label>
+                                <input type="text" class="form-control" id="bankName" value="@creditCard.BankName" @oninput="e => creditCard.BankName = e.Value.ToString()" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lastDigits">Últimos 4 dígitos</label>
+                                <input type="text" class="form-control" id="lastDigits" @bind="@creditCard.LastDigits" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="deadline">Fecha de Cierre</label>
+                                <input type="number" class="form-control" id="deadline" value="@creditCard.DeadLine" @oninput="e => creditCard.DeadLine = Convert.ToInt32(e.Value)" />
+                            </div>
+
+                        }
+
+                        @if (modifiedAccount is PersonalAccount personalAccount)
+                        {
+                            <div class="form-group">
+                                <label for="startingAmount">Monto Inicial</label>
+                                <input type="text" class="form-control" id="startingAmount" value="@personalAccount.StartingAmount" @oninput="e => personalAccount.StartingAmount = Convert.ToDouble(e.Value)" />
+                            </div>
+                        }
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @onclick="SaveChanges">Guardar Cambios</button>
+                        <button type="button" class="btn btn-secondary" @onclick="HideEditAccountModal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @code {
+    private User CurrentUser;
+    private Domain.Workspace workspace;
+    private List<Account> accounts;
+    private AccountService _accountService;
+    private Account selectedAccount;
+    private Account modifiedAccount;
+    private String selectedAccountName;
+    private DateTime selectedCreationDate;
+    private bool showAddAccountModal = false;
+    private bool showSelectedAccountModal = false;
+    private bool showEditAccountModal = false;
+
+    private class AccountModel
+    {
+        public string Name { get; set; }
+        public DateTime CreationDate { get; set; } = DateTime.Today;
+        public CurrencyType Currency { get; set; }
+        public string Type { get; set; }
+        public string BankName { get; set; }
+        public string LastDigits { get; set; }
+        public double AvailableCredit { get; set; }
+        public int Deadline { get; set; } = 1;
+        public double StartingAmount { get; set; }
+    }
+    private AccountModel newAccount = new AccountModel();
+
+    private void ShowEditAccountModal(Account account)
+    {
+        selectedAccount = account;
+        selectedAccountName = account.Name;
+        selectedCreationDate = account.CreationDate;
+
+        if (account is CreditCard creditCard)
+        {
+            modifiedAccount = new CreditCard
+                {
+                    Name = selectedAccountName,
+                    CreationDate = selectedCreationDate,
+                    Currency = account.Currency,
+                    BankName = creditCard.BankName,
+                    LastDigits = creditCard.LastDigits,
+                    AvailableCredit = creditCard.AvailableCredit,
+                    DeadLine = creditCard.DeadLine,
+                    WorkSpace = workspace
+                };
+        }
+        else if (account is PersonalAccount personalAccount)
+        {
+            modifiedAccount = new PersonalAccount
+                {
+                    Name = selectedAccountName,
+                    CreationDate = selectedCreationDate,
+                    Currency = account.Currency,
+                    WorkSpace = workspace,
+                    StartingAmount = personalAccount.StartingAmount
+                };
+        }
+        showEditAccountModal = true;
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            _accountService.Modify(selectedAccount.Name, modifiedAccount);
+            accounts = workspace.Accounts;
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Success,
+                    Message = "Datos de la cuenta actualizados con éxito"
+                });
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new ToastMessage
+                {
+                    Type = ToastType.Danger,
+                    Message = $"Error: {e.Message}"
+                });
+        }
+        HideEditAccountModal();
+        HideSelectedAccountModal();
+    }
+
+    private void DeleteAccount()
+    {
+        if (selectedAccount.Transactions.Count == 0)
+        {
+            _accountService.Delete(workspace, selectedAccount.Name);
+            accounts = workspace.Accounts;
+        }
+        else
+        {
+            ToastService.Notify(new(ToastType.Danger, "No se puede eliminar una cuenta con transacciones asociadas"));
+        }
+        HideEditAccountModal();
+        HideAddAccountModal();
+        HideSelectedAccountModal();
+    }
+
+    protected override void OnInitialized()
+    {
+        if (FintracContext.isLoggedIn)
+        {
+            CurrentUser = FintracContext.currentUser;
+            workspace = FintracContext.currentWorkspace;
+            accounts = workspace.Accounts;
+            _accountService = new AccountService(FintracContext);
+            var user = FintracContext.Users
+            .Include(u => u.Workspaces)
+                .ThenInclude(w => w.Accounts)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+        }
+    }
+
+    private void AddAccount()
+    {
+        HideAddAccountModal();
+
+        var type = newAccount.Type;
+        var accountName = newAccount.Name;
+        var creationDate = newAccount.CreationDate;
+        var currency = newAccount.Currency;
+
+        var bankName = newAccount.BankName;
+        var lastDigits = newAccount.LastDigits;
+        var availableCredit = newAccount.AvailableCredit;
+        var deadline = newAccount.Deadline;
+        var startingAmount = newAccount.StartingAmount;
+
+        try
+        {
+            if (newAccount.Type == "CreditCard")
+            {
+                Account creditCard = new CreditCard
+                    {
+                        Name = newAccount.Name,
+                        Currency = newAccount.Currency,
+                        CreationDate = newAccount.CreationDate,
+                        LastDigits = newAccount.LastDigits,
+                        BankName = newAccount.BankName,
+                        DeadLine = newAccount.Deadline,
+                        AvailableCredit = newAccount.AvailableCredit,
+                        WorkSpace = workspace
+                    };
+
+                _accountService.Add(workspace, creditCard);
+                accounts = workspace.Accounts;
+                ToastService.Notify(new(ToastType.Success, "Tarjeta de Credito agregada con exito!"));
+            }
+            else if (newAccount.Type == "PersonalAccount")
+            {
+                Account personalAccount = new PersonalAccount
+                    {
+                        Name = newAccount.Name,
+                        Currency = newAccount.Currency,
+                        CreationDate = newAccount.CreationDate,
+                        StartingAmount = newAccount.StartingAmount,
+                        WorkSpace = workspace
+                    };
+                _accountService.Add(workspace, personalAccount);
+                accounts = workspace.Accounts;
+                ToastService.Notify(new(ToastType.Success, "Cuenta Personal agregada con exito!"));
+            }
+            else
+            {
+                return;
+            }
+            newAccount = new AccountModel();
+            NavigationManager.NavigateTo("/workspace/AccountList");
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+    }
+
+    private void ShowAddAccountModal()
+    {
+        showAddAccountModal = true;
+    }
+
+    private void HideAddAccountModal()
+    {
+        showAddAccountModal = false;
+    }
+
+    private void HideSelectedAccountModal()
+    {
+        showSelectedAccountModal = false;
+        FintracContext.currentAccount = null;
+    }
+
+    private void ShowSelectedAccountModal(Account account)
+    {
+        selectedAccount = account;
+        showSelectedAccountModal = true;
+        FintracContext.currentAccount = account;
+    }
+    private void HideEditAccountModal()
+    {
+        showEditAccountModal = false;
+    }
 }
 }
 else
 {
-	NavigationManager.NavigateTo("/login");
+    NavigationManager.NavigateTo("/login");
 }

@@ -1,5 +1,5 @@
-using Domain;
 using BusinessLogic;
+using Domain;
 using Domain.Exceptions;
 
 namespace TestBusinessLogic
@@ -8,16 +8,20 @@ namespace TestBusinessLogic
 	public class TestUserService
 	{
 		private UserService _service;
+		private WorkspaceService _serviceWorkspace;
+		private FintracContext newMemory;
 		[TestInitialize]
 		public void SetUp()
 		{
-			_service = new UserService(new MemoryDatabase());
-			
+			newMemory = TestContextFactory.CreateContext();
+			_service = new UserService(newMemory);
+			_serviceWorkspace = new WorkspaceService(newMemory);
 		}
+
 		[TestMethod]
 		public void AddUser()
 		{
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 			Assert.AreEqual(user, _service.Get(user.Email));
 
@@ -27,7 +31,7 @@ namespace TestBusinessLogic
 		[ExpectedException(typeof(UserAlreadyExistsException))]
 		public void AddUserAlreadyExists()
 		{
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 			_service.Add(user);
 		}
@@ -37,7 +41,7 @@ namespace TestBusinessLogic
 		public void GetUser()
 		{
 			string email = "test@test.com";
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 			Assert.AreEqual(email, _service.Get(email).Email);
 		}
@@ -46,7 +50,7 @@ namespace TestBusinessLogic
 		public void DeleteUser()
 		{
 			string email = "test@test.com";
-			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName" };
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "Pass.Word123" };
 			_service.Add(user);
 
 			_service.DeleteUser(user);
@@ -56,22 +60,42 @@ namespace TestBusinessLogic
 		[TestMethod]
 		public void ValidUserAndPassword()
 		{
-            var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password="1234567890"};
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "1234567890" };
 			string email = "test@test.com";
 			string password = "1234567890";
-			_service.Add(user);			
+			_service.Add(user);
 			Assert.IsTrue(_service.Login(email, password));
-        }
+		}
 
-        [TestMethod]
+		[TestMethod]
 		[ExpectedException(typeof(InvalidUserException))]
-        public void InvalidUserAndPassword()
-        {
-            var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "1234567890" };
-            string email = "test@test.com";
-            string password = "12341234";
-            _service.Add(user);
+		public void InvalidUserAndPassword()
+		{
+			var user = new User { Email = "test@test.com", Name = "Name", LastName = "LastName", Password = "1234567890" };
+			string email = "test@test.com";
+			string password = "12341234";
+			_service.Add(user);
 			_service.Login(email, password);
-        }
-    }
+		}
+
+		[TestMethod]
+		public void LeaveWorkspace()
+		{
+			User useradmin = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
+			User guestUser = new User { Name = "User1", LastName = "User1", Email = "user1@user.com", Password = "12345678909" };
+
+			Workspace workspace = new Workspace {UserAdmin = useradmin, Name = "Test"};
+
+			_service.Add(useradmin);
+			_serviceWorkspace.Add(useradmin, workspace);
+
+			_service.Add(guestUser);
+			_serviceWorkspace.Add(guestUser, workspace);
+
+			_service.LeaveWorkspace(guestUser, workspace);
+
+			Assert.IsFalse(guestUser.Workspaces.Contains(workspace));
+		}
+
+	}
 }

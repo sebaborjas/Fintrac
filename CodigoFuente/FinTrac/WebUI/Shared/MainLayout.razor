@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using BusinessLogic
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 
 <PageTitle>WebUI</PageTitle>
@@ -12,11 +12,11 @@
 	</div>
 
 	<main>
-		@if (MemoryDatabase.isLoggedIn)
+		@if (FintracContext.isLoggedIn)
 		{
 			<div class="top-row px-4">
 				<NavLink class="nav-link" href="/profile" name="@name">
-					@MemoryDatabase.currentUser.Name
+					@FintracContext.currentUser.Name
 				</NavLink>
 			</div>
 		}
@@ -28,22 +28,19 @@
 </div>
 <Toasts class="p-3 mt-5" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight"/>
 
-
-
 @code {
 	private String name;
 
 	protected override void OnInitialized()
 	{
-		if (MemoryDatabase.isLoggedIn)
+		if (FintracContext.isLoggedIn)
 		{
-			name = MemoryDatabase.currentUser.Name;
+			name = FintracContext.currentUser.Name;
 		}
-
 	}
 
 	public void LogOut()
 	{
-		MemoryDatabase.isLoggedIn = false;
+		FintracContext.isLoggedIn = false;
 	}
 }

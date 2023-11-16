@@ -11,33 +11,51 @@ namespace BusinessLogic
 {
     public class AccountService
     {
-        private readonly MemoryDatabase _memoryDatabase;
+        private readonly FintracContext _database;
 
-        public AccountService(MemoryDatabase memoryDatabase)
+        public AccountService(FintracContext database)
         {
-            _memoryDatabase = memoryDatabase;
+            _database = database;
         }
 
         public void Add(Workspace workspace, Account account)
         {
-            if (workspace.AccountList.Contains(account))
+            if (workspace.Accounts.Contains(account))
             {
                 throw new AccountAlreadyExistsException();
             }
             try
             {
-                workspace.AccountList.Add(account);
+                workspace.Accounts.Add(account);
             }
             catch (Exception exception)
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
 
         public Account Get(Workspace workspace, string name)
         {
-            return _memoryDatabase.Users.Find(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.Find(x => x.ID == workspace.ID).AccountList.Find(x => x.Name == name);
-            
+            User user = _database.Users.Where(x => x.Workspaces.Contains(workspace)).FirstOrDefault<User>();
+
+            if (user == null) {
+				return null;
+			}
+            Workspace workspaceToFind = user.Workspaces.FirstOrDefault(x => x.ID == workspace.ID);
+
+			if (workspaceToFind == null)
+			{
+				return null;
+			}
+
+            Account account = workspaceToFind.Accounts.FirstOrDefault(x => x.Name == name);
+
+            if (account == null)
+            {
+				return null;
+			}
+            return account;
         }
 
         public void Modify(string oldName, Account accountModified)
@@ -45,20 +63,18 @@ namespace BusinessLogic
             try 
             {
                 Account oldAccount = Get(accountModified.WorkSpace, oldName);
-
                 Account newAccountAlreadyExists = Get(accountModified.WorkSpace, accountModified.Name);
                 if (oldName != accountModified.Name && newAccountAlreadyExists != null)
                 {
                     throw new AccountAlreadyExistsException();
                 }
-
-				oldAccount.Update(accountModified);
-                
+				oldAccount.Update(accountModified);                
             }
             catch(Exception exception) 
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
 
         public void Delete(Workspace workspace, string name)
@@ -66,11 +82,12 @@ namespace BusinessLogic
             try 
             {
                 Account account = Get(workspace, name);
-                _memoryDatabase.Users.First(x => x.WorkspaceList.Contains(workspace)).WorkspaceList.First(x => x.ID == workspace.ID).AccountList.Remove(account);
+                _database.Users.First(x => x.Workspaces.Contains(workspace)).Workspaces.First(x => x.ID == workspace.ID).Accounts.Remove(account);
             } catch(Exception exception) 
             {
                 throw exception;
             }
+            _database.SaveChanges();
         }
     }
 }

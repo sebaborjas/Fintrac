@@ -2,14 +2,18 @@
 @using System.Text.Json
 @using Domain
 @using Domain.DataTypes
-@inject MemoryDatabase MemoryDatabase
+@inject FintracContext FintracContext
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 
-
-@if (MemoryDatabase.isLoggedIn)
+@if (FintracContext.isLoggedIn)
 {
     <PageTitle>Lista de transacciones para la cuenta @currentAccount.Name</PageTitle>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/workspace">
+            <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+        </NavLink>
+    </div>
 
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
@@ -37,7 +41,7 @@
                         <tr>
                             <td>@transaction.Title</td>
                             <td>@transaction.CreationDate.ToShortDateString()</td>
-                            <td>@transaction.Amount</td>
+                            <td>@transaction.Amount.ToString("N2")</td>
                             <td>@transaction.Currency</td>
                             <td>@transaction.Account.Name</td>
                             <td>@transaction.Category.Name</td>
@@ -112,8 +116,6 @@
                             <input type="text" class="form-control" id="account" value="@currentAccount.Name" readonly />
                         </div>
 
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @onclick="() => HideAddTransactionModal()">Cancelar</button>
@@ -163,41 +165,38 @@
     private WorkspaceService _workspaceService;
     private AccountService _accountService;
     private CategoryService _categoryService;
-    private List<Transaction> transactionList;
+    private List<Transactions> transactionList;
     private bool showEditTransactionModal = false;
     private bool showAddTransactionModal = false;
-    private Transaction newTransaction;
-    private Transaction selectedTransaction;
-    private Transaction editedTransaction;
+    private Transactions newTransaction;
+    private Transactions selectedTransaction;
+    private Transactions editedTransaction;
     private List<Domain.Category> categories;
     private string selectedCategoryName;
     private Account currentAccount;
     private Category selectedCategory;
     private double amountEditTrasaction;
     private string titleEditTrasaction;
-    private Transaction duplicatedTransaction;
+    private Transactions duplicatedTransaction;
 
     private List<User> GuestUsers;
     protected override void OnInitialized()
     {
-        if (MemoryDatabase.isLoggedIn)
+        if (FintracContext.isLoggedIn)
         {
-            CurrentUser = MemoryDatabase.currentUser;
-            currentAccount = MemoryDatabase.currentAccount;
-
-            workspace = MemoryDatabase.currentWorkspace;
-            _workspaceService = new WorkspaceService(MemoryDatabase);
-            _transactionService = new TransactionService(MemoryDatabase);
-
-            _categoryService = new CategoryService(MemoryDatabase);
-            newTransaction = new Transaction();
-            categories = workspace.CategoryList;
-            transactionList = currentAccount.TransactionList;
+            CurrentUser = FintracContext.currentUser;
+            currentAccount = FintracContext.currentAccount;
+            workspace = FintracContext.currentWorkspace;
+            _workspaceService = new WorkspaceService(FintracContext);
+            _transactionService = new TransactionService(FintracContext);
+            _categoryService = new CategoryService(FintracContext);
+            newTransaction = new Transactions();
+            categories = workspace.Categories;
+            transactionList = currentAccount.Transactions;
         }
     }
 
-
-    private void ShowEditTransactionModal(Transaction transaction)
+    private void ShowEditTransactionModal(Transactions transaction)
     {
         showEditTransactionModal = true;
         editedTransaction = transaction;
@@ -219,25 +218,24 @@
                     Type = ToastType.Success,
                     Message = "Transaccion editada con éxito"
                 });
-            HideEditTransactionModal();
             transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
-            HideEditTransactionModal();
             ToastService.Notify(new ToastMessage
                 {
                     Type = ToastType.Danger,
                     Message = $"Error: {e.Message}"
                 });
         }
+        HideEditTransactionModal();
     }
 
-    private void DuplicateTransaction(Transaction transaction)
+    private void DuplicateTransaction(Transactions transaction)
     {
         try
         {
-            duplicatedTransaction = new Transaction
+            duplicatedTransaction = new Transactions
                 {
                     Title = transaction.Title,
                     CreationDate = DateTime.Today,
@@ -274,7 +272,6 @@
         showAddTransactionModal = false;
     }
 
-
     private void AddTransaction()
     {
         try
@@ -288,19 +285,18 @@
                     Type = ToastType.Success,
                     Message = "Cuenta agregada con éxito"
                 });
-                HideAddTransactionModal();
             transactionList = _workspaceService.ListAllTransactionsAllAcounts(workspace);
         }
         catch (Exception e)
         {
-            HideAddTransactionModal();
             ToastService.Notify(new ToastMessage
                 {
                     Type = ToastType.Danger,
                     Message = $"Error: {e.Message}"
                 });
         }
-        newTransaction = new Transaction();
+        HideAddTransactionModal();
+        newTransaction = new Transactions();
     }
 
 }

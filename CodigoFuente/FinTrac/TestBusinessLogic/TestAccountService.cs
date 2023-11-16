@@ -24,14 +24,14 @@ namespace TestBusinessLogic
         [TestInitialize]
         public void SetUp()
         {
-            MemoryDatabase _database = new MemoryDatabase();
+            FintracContext _database = TestContextFactory.CreateContext();
             _service = new AccountService(_database);
             _workspaceService = new WorkspaceService(_database);
             _userService = new UserService(_database);
 
             _user = new User { Email = "test@test.com", Name = "Test", LastName = "Test", Password = "12345678901" };
 
-            _workspace = new Workspace(_user, "Test");
+            _workspace = new Workspace{ UserAdmin = _user, Name = $"Espacio personal de {_user.Name} {_user.LastName}" };
 
             _userService.Add(_user);
             _workspaceService.Add(_user, _workspace);
@@ -92,7 +92,7 @@ namespace TestBusinessLogic
         }
 
         [TestMethod]
-        public void GetAccountDoesntExists() 
+		public void GetAccountDoesntExists() 
         {
             Account account = _service.Get(_workspace ,"Santander");
             Assert.IsNull(account);
@@ -261,7 +261,7 @@ namespace TestBusinessLogic
         }
 
         [TestMethod]
-        public void DeletePersonalAccount() 
+		public void DeletePersonalAccount() 
         {
             PersonalAccount personalAccount = new PersonalAccount
             {
@@ -277,11 +277,13 @@ namespace TestBusinessLogic
 
             _service.Delete(personalAccount.WorkSpace, nameToFind);
 
-            Assert.IsNull(_service.Get(personalAccount.WorkSpace, nameToFind));
+            var expectedREsult = _service.Get(personalAccount.WorkSpace, nameToFind);
+
+            Assert.IsNull(expectedREsult);
         }
 
         [TestMethod]
-        public void DeleteCreditCard() 
+		public void DeleteCreditCard() 
         {
             CreditCard creditCardAccount = new CreditCard
             {
@@ -300,7 +302,9 @@ namespace TestBusinessLogic
 
             _service.Delete(creditCardAccount.WorkSpace, nameToFind);
 
-            Assert.IsNull(_service.Get(creditCardAccount.WorkSpace, nameToFind));
+            var expectedResult = _service.Get(creditCardAccount.WorkSpace, nameToFind);
+
+            Assert.IsNull(expectedResult);
         }
     }
 }

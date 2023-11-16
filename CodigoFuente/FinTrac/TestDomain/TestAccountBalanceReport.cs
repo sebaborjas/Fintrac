@@ -18,9 +18,9 @@ namespace TestDomain
         public void Setup()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            workSpace = new Workspace(newUser, "Test");
+            workSpace = new Workspace { UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             PersonalAccount account = new PersonalAccount { Name = "Test", StartingAmount = 0, WorkSpace = workSpace, Currency = CurrencyType.UYU, CreationDate = DateTime.Today.AddDays(-5) };
-            workSpace.AccountList.Add(account);
+            workSpace.Accounts.Add(account);
 
             accountBalanceReport = new AccountBalanceReport { Account = account };
         }
@@ -36,7 +36,7 @@ namespace TestDomain
         public void SetCorrectWorkspace()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
-            Workspace newWorkspace = new Workspace(newUser, "Nuevo");
+            Workspace newWorkspace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             accountBalanceReport.WorkSpace = newWorkspace;
         }
 
@@ -51,7 +51,7 @@ namespace TestDomain
         public void SetCorrectAccount()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Address = "", Password = "12345678901", Email = "test@test.com" };
-            Workspace newWorkspace = new Workspace (newUser, "Nuevo");
+            Workspace newWorkspace = new Workspace { UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
             PersonalAccount newAccount = new PersonalAccount { Name = "Nuevo", WorkSpace = newWorkspace, StartingAmount = 0, CreationDate = DateTime.Today.AddDays(-5) };
             accountBalanceReport.Account = newAccount;
         }
@@ -67,14 +67,14 @@ namespace TestDomain
             Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
             Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
 
-            Transaction trasaccionIngreso = new Transaction { 
+            Transactions trasaccionIngreso = new Transactions { 
                 Title = "Transaction 1",
                 Amount = ingresos,
                 Currency = CurrencyType.UYU,
                 Category = categoriaIngreso,
             };
 
-            Transaction trasaccionCosto = new Transaction
+            Transactions trasaccionCosto = new Transactions
             {
                 Title = "Transaction 2",
                 Amount = costos,
@@ -83,8 +83,8 @@ namespace TestDomain
             };
 
             accountBalanceReport.Account.StartingAmount = montoInicial;
-            accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
-            accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
+            accountBalanceReport.Account.Transactions.Add(trasaccionIngreso);
+            accountBalanceReport.Account.Transactions.Add(trasaccionCosto);
 
             Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
         }
@@ -97,12 +97,13 @@ namespace TestDomain
             int costos = 30;
             double DollarToday = 50;
             double DollarBefore = 47.4;
-            double balance = montoInicial * DollarBefore + ingresos * DollarToday - costos * DollarBefore;
+            double balance = 6078;
             accountBalanceReport.Currency = CurrencyType.USD;
+            accountBalanceReport.WorkSpace = workSpace;
             Category categoriaIngreso = new Category { Name = "Ingreso", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
             Category categoriaCostos = new Category { Name = "Costo", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today };
 
-            Transaction trasaccionIngreso = new Transaction
+            Transactions trasaccionIngreso = new Transactions
             {
                 Title = "Transaction 1",
                 Amount = ingresos,
@@ -110,7 +111,7 @@ namespace TestDomain
                 Category = categoriaIngreso,
             };
 
-            Transaction trasaccionCosto = new Transaction
+            Transactions trasaccionCosto = new Transactions
             {
                 Title = "Transaction 2",
                 Amount = costos,
@@ -119,15 +120,15 @@ namespace TestDomain
                 CreationDate = DateTime.Today.AddDays(-2)
             };
 
-            Exchange exchangeToday = new Exchange { DollarValue = DollarToday, Date = DateTime.Today, Workspace = accountBalanceReport.WorkSpace };
-            Exchange exchangeYesterday = new Exchange { DollarValue = DollarBefore, Date = DateTime.Today.AddDays(-5), Workspace = accountBalanceReport.WorkSpace };
+            Exchange exchangeToday = new Exchange { Currency = CurrencyType.USD, CurrencyValue = DollarToday, Date = DateTime.Today, Workspace = accountBalanceReport.WorkSpace };
+            Exchange exchangeYesterday = new Exchange { Currency = CurrencyType.USD, CurrencyValue = DollarBefore, Date = DateTime.Today.AddDays(-5), Workspace = accountBalanceReport.WorkSpace };
 
-            workSpace.ExchangeList.Add(exchangeToday);
-            workSpace.ExchangeList.Add(exchangeYesterday);
+            workSpace.Exchanges.Add(exchangeToday);
+            workSpace.Exchanges.Add(exchangeYesterday);
 
             accountBalanceReport.Account.StartingAmount = montoInicial;
-            accountBalanceReport.Account.TransactionList.Add(trasaccionIngreso);
-            accountBalanceReport.Account.TransactionList.Add(trasaccionCosto);
+            accountBalanceReport.Account.Transactions.Add(trasaccionIngreso);
+            accountBalanceReport.Account.Transactions.Add(trasaccionCosto);
 
             Assert.AreEqual(balance, accountBalanceReport.CalculateBalance());
         }

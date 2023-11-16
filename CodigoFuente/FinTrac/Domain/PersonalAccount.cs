@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Domain
 {
 	public class PersonalAccount : Account
 	{
-		private double _startingAmount;
+        public int Id { get; set; }
+
+        private double _startingAmount;
 		public double StartingAmount 
 		{
 			get
@@ -26,18 +23,15 @@ namespace Domain
 		}
 
 		public override void Update(Account account)
-		{
-			
+		{			
 			PersonalAccount personalAccount = account as PersonalAccount;
 
 			this.Name = personalAccount.Name;
 			this.CreationDate = personalAccount.CreationDate;
 			this.WorkSpace = personalAccount.WorkSpace;
 			this.Currency = personalAccount.Currency;
-			this.TransactionList = personalAccount.TransactionList;
+			this.Transactions = personalAccount.Transactions;
 			this.StartingAmount = personalAccount.StartingAmount;
 		}
-
-
     }
 }

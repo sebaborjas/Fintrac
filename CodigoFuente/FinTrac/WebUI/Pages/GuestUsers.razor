@@ -1,0 +1,172 @@
+@page "/workspace/GuestUsers"
+@using System.Text.Json
+@using Domain
+@using Domain.DataTypes;
+@using Microsoft.EntityFrameworkCore;
+@inject FintracContext FintracContext
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+
+@if (FintracContext.isLoggedIn)
+{
+    <PageTitle>Administrar Usuarios</PageTitle>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/workspace">
+            <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver
+        </NavLink>
+    </div>
+    @if (CurrentUser == workspace.UserAdmin)
+    {
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>Usuarios agregados</h3>
+            <button class="btn btn-primary" @onclick="() => ShowInviteUserModal()">Invitar usuario</button>
+        </div>
+    }
+
+    @if (guestUsers.Any())
+    {
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in guestUsers)
+                    {
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Email</td>
+                            <td>
+                                @if (CurrentUser == workspace.UserAdmin && CurrentUser != user)
+                                {
+                                    <button class="btn btn-danger" @onclick="() => DeleteUser(user)">Eliminar</button>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p>No hay usuarios invitados.</p>
+
+    }
+    @if (showInviteUserModal)
+    {
+        <div class="modal fade show" style="display: block; background: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Enviar Invitacion para el Workspace</h5>
+                        <button type="button" class="close" aria-label="Close" @onclick="() => HideInviteUserModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="workspaceName">Email del usuario a invitar</label>
+                            <input type="text" class="form-control" id="workspaceName" @bind="emailuserToInvite" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="() => HideInviteUserModal()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" @onclick="() => inviteUser()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @code {
+    private UserService _userService;
+    private WorkspaceService _workspaceService;
+    private InvitationService _invitationService;
+    private User CurrentUser;
+    private User userToInvite;
+    private List<User> guestUsers;
+    private Domain.Workspace workspace;
+    private bool showInviteUserModal = false;
+    private string emailuserToInvite;
+
+    private void DeleteUser(User user)
+    {
+        try
+        {
+            _userService.LeaveWorkspace(user, workspace);
+            ToastService.Notify(new(ToastType.Success, "Usuario eliminado con éxito!"));
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (FintracContext.isLoggedIn)
+        {
+            CurrentUser = FintracContext.currentUser;
+            workspace = FintracContext.currentWorkspace;
+            _invitationService = new InvitationService(FintracContext);
+            _userService = new UserService(FintracContext);
+            _workspaceService = new WorkspaceService(FintracContext);
+            guestUsers = _workspaceService.ListGuestUsers(workspace);
+            var user = FintracContext.Users
+                .Include(u => u.Workspaces)
+                .FirstOrDefault(u => u.Email == CurrentUser.Email);
+        }
+    }
+
+    private void ShowInviteUserModal()
+    {
+        showInviteUserModal = true;
+    }
+
+    private void HideInviteUserModal()
+    {
+        showInviteUserModal = false;
+    }
+
+    private void inviteUser()
+    {
+        try
+        {
+            userToInvite = _userService.Get(emailuserToInvite);
+            if (userToInvite != null)
+            {
+                Invitation invitation = new Invitation
+                    {
+                        Admin = CurrentUser,
+                        Workspace = workspace,
+                        UserToInvite = userToInvite
+                    };
+                _invitationService.Add(invitation);
+                ToastService.Notify(new(ToastType.Success, "Invitación enviada con éxito!"));
+                emailuserToInvite = "";
+                NavigationManager.NavigateTo("/workspace");
+            }
+            else
+            {
+                ToastService.Notify(new(ToastType.Danger, $"Error: Usuario no encontrado!"));
+            }
+        }
+        catch (Exception e)
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error: {e.Message}."));
+        }
+        HideInviteUserModal();
+    }
+}
+}
+else
+{
+    NavigationManager.NavigateTo("/login");
+}

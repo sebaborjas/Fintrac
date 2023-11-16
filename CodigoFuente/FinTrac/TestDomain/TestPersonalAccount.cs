@@ -41,7 +41,7 @@ namespace TestDomain
 		public void SetWorkSpace()
 		{
 			User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-			Workspace workSpace = new Workspace(newUser, "Test");
+			Workspace workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
 			account.WorkSpace = workSpace;
 			Assert.AreEqual(workSpace, account.WorkSpace);
 		}
@@ -101,7 +101,7 @@ namespace TestDomain
 		[TestMethod]
         public void NotNullListOfTransactions()
 		{
-            Assert.IsNotNull(account.TransactionList);
+            Assert.IsNotNull(account.Transactions);
         }
 	}
 }

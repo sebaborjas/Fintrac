@@ -13,14 +13,14 @@ namespace TestDomain
     {
         private CreditCardReport creditCardReport;
         private Workspace workSpace;
-        private List<Transaction> transactionList;
+        private List<Transactions> transactionList;
         CreditCard account;
 
         [TestInitialize]
         public void SetUp()
         {
             User newUser = new User { Name = "Test", LastName = "Test", Email = "a@a.com", Password = "12345678909" };
-            workSpace = new Workspace(newUser, "Test");
+            workSpace = new Workspace{ UserAdmin = newUser, Name = $"Espacio personal de {newUser.Name} {newUser.LastName}" };
 
 
             account = new CreditCard { Name = "Cuenta personal", CreationDate = DateTime.Today.AddDays(-60), WorkSpace = workSpace, BankName = "Santander", LastDigits = "1234", AvailableCredit = 300, DeadLine = 20 };
@@ -30,23 +30,23 @@ namespace TestDomain
             Category categoryCost = new Category { Name = "Egresos", Type = CategoryType.Cost, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-59) };
             Category categoryIncome = new Category { Name = "Ingresos", Type = CategoryType.Income, Status = CategoryStatus.Active, CreationDate = DateTime.Today.AddDays(-7) };
 
-            Transaction firstTransaction = new Transaction { Title = "Gasto panaderia", Amount = 100, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddDays(-55) };
-            Transaction secondTransaction = new Transaction { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddDays(-20) };
-            Transaction thirdTransaction = new Transaction { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddDays(-15) };
+            Transactions firstTransaction = new Transactions { Title = "Gasto panaderia", Amount = 100, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddMonths(-2) };
+            Transactions secondTransaction = new Transactions { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today.AddMonths(-3) };
+            Transactions thirdTransaction = new Transactions { Title = "Gasto super", Amount = 200, Currency = CurrencyType.UYU, Category = categoryCost, Account = account, CreationDate = DateTime.Today };
 
-            Transaction fourthRransaction = new Transaction { Title = "Venta remera", Amount = 600, Currency = CurrencyType.UYU, Category = categoryIncome, Account = account, CreationDate = DateTime.Today.AddDays(-2) };
+            Transactions fourthRransaction = new Transactions { Title = "Venta remera", Amount = 600, Currency = CurrencyType.UYU, Category = categoryIncome, Account = account, CreationDate = DateTime.Today };
 
-            transactionList = new List<Transaction> { secondTransaction, thirdTransaction };
-
-
-
-            account.TransactionList.Add(firstTransaction);
-            account.TransactionList.Add(secondTransaction);
-            account.TransactionList.Add(thirdTransaction);
-            account.TransactionList.Add(fourthRransaction);
+            transactionList = new List<Transactions> { thirdTransaction };
 
 
-            workSpace.AccountList.Add(account);
+
+            account.Transactions.Add(firstTransaction);
+            account.Transactions.Add(secondTransaction);
+            account.Transactions.Add(thirdTransaction);
+            account.Transactions.Add(fourthRransaction);
+
+
+            workSpace.Accounts.Add(account);
             
             creditCardReport = new CreditCardReport { WorkSpace = workSpace };
         }
@@ -54,7 +54,7 @@ namespace TestDomain
         [TestMethod]
         public void ShowCostsOfMonth() 
         {
-            List<Transaction> costsOfMonth = creditCardReport.CalculateCreditCardReport(account);
+            List<Transactions> costsOfMonth = creditCardReport.CalculateCreditCardReport(account);
 
             CollectionAssert.AreEqual(costsOfMonth, transactionList);
         }
