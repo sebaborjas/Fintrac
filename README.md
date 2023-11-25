@@ -36,9 +36,9 @@ Timeout=10;TrustServerCertificate=true"
 }
 ```
 
-Asegúrese de reemplazar los valores <DESKTOP-XXXXX> por el nombre de su
-equipo, **<usuario>** por el nombre de usuario creado en SQL Server, <password>
-por la contraseña del usuario de SQL Server, y <database-name> por el nombre
+Asegúrese de reemplazar los valores ```<DESKTOP-XXXXX>``` por el nombre de su
+equipo, ```<usuario>``` por el nombre de usuario creado en SQL Server, ```<password>```
+por la contraseña del usuario de SQL Server, y ```<database-name>``` por el nombre
 de la base de datos que haya creado en SQL Management Studio.
 ### Ejecución del Proyecto:
 Localice el ejecutable WebUI.exe que se encuentra en Release_Fintrac y ejecutelo
