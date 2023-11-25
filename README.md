@@ -36,7 +36,7 @@ Timeout=10;TrustServerCertificate=true"
 }
 ```
 
->Asegúrese de reemplazar los valores **<DESKTOP-XXXXX>** por el nombre de su
+Asegúrese de reemplazar los valores **<DESKTOP-XXXXX>** por el nombre de su
 equipo, **<usuario>** por el nombre de usuario creado en SQL Server, **<password>**
 por la contraseña del usuario de SQL Server, y <database-name> por el nombre
 de la base de datos que haya creado en SQL Management Studio.
